@@ -12,7 +12,7 @@ import LayerSearchSource from 'esri/widgets/Search/LayerSearchSource';
 import FieldColumnConfig from 'esri/widgets/FeatureTable/FieldColumnConfig';
 import PopupTemplate from 'esri/PopupTemplate';
 import ExpressionInfo from 'esri/popup/ExpressionInfo';
-
+import MenuButtonItem from 'esri/widgets/FeatureTable/Grid/support/ButtonMenuItem';
 @subclass('app.widgets.PropertySearch.PropertySearchViewModel')
 export default class PropertySearchViewModel extends declared(Accessor) {
   @property() view: esri.MapView | esri.SceneView;
@@ -124,15 +124,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
 
   popupTemplate = new PopupTemplate({
     expressionInfos: this.arcadeExpressionInfos,
-    // content: (event: any) => {
-    //   const graphic = event.graphic;
-    //   const container = document.createElement('div');
-    //   const div = document.createElement('div');
-    //   div.classList.add('text-green');
-    //   container.append(div);
-    //   div.textContent = graphic.getAttribute('SITE_ADDRESS');
-    //   return container;
-    // },
     content: [
       {
         type: 'text',
@@ -196,6 +187,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
 
   searchComplete = (event: esri.SearchSearchCompleteEvent) => {
     if (!this.searchWidget.viewModel.selectedSuggestion) {
+      const oids: any[] = [];
       let where =
         "OWNER like '" +
         event.searchTerm.toUpperCase() +
@@ -208,15 +200,17 @@ export default class PropertySearchViewModel extends declared(Accessor) {
       this.condosTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
         console.log(result);
         tableFeatures = result.features;
-
+        result.features.forEach(f => {
+          oids.push(f.getObjectId());
+        });
         where = "ADDRESS like '%" + event.searchTerm.toUpperCase() + "%'";
-        this.addressTable.queryFeatures({ where: where, outFields: ['*'] }).then(() => {
+        this.addressTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
           const relationship = this.addressTable.relationships.find(r => {
             return r.name === 'ADDRESSES_CONDO';
           });
-          const oids: any[] = [];
-          event.results[0].results.forEach(r => {
-            oids.push(r.feature.getObjectId());
+
+          result.features.forEach(f => {
+            oids.push(f.getObjectId());
           });
           if (relationship && oids.length) {
             this.addressTable
@@ -228,10 +222,11 @@ export default class PropertySearchViewModel extends declared(Accessor) {
                     console.log(feature);
                     oids.push(feature.getAttribute('OBJECTID'));
                     tableFeatures.push(feature);
+                    debugger;
                     //this.getProperty(oids);
                     //feature.layer = this.condosTable;
-                    this.setFeature(feature, this.view as esri.MapView, [], oids);
-                    this.toggleContent('feature');
+                    // this.setFeature(feature, this.view as esri.MapView, [], oids);
+                    //this.toggleContent('feature');
                   });
                 }
                 this.featureTable.layer = new FeatureLayer({
@@ -241,6 +236,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
                   geometryType: 'point',
                   objectIdField: 'OBJECTID'
                 });
+                this.getProperty(oids);
                 this.featureTable.renderNow();
               });
           } else {
@@ -331,6 +327,44 @@ export default class PropertySearchViewModel extends declared(Accessor) {
         console.log(feature);
       });
   }
+
+  exportTable() {
+    this.featureTable.layer.queryFeatures({ outFields: ['*'] }).then(result => {
+      let csv = '';
+      result.fields.forEach(field => {
+        csv += field.alias + ',';
+      });
+      csv += '\r\n';
+      result.features.forEach(feature => {
+        for (const key in feature.attributes) {
+          if (key.toLowerCase().includes('date')) {
+            csv += '"' + new Date(feature.attributes[key]).toDateString() + '",';
+          } else if (key.toLowerCase().includes('acres')) {
+            csv += '"' + parseFloat(feature.attributes[key]).toFixed(2) + '",';
+          } else {
+            csv += '"' + feature.attributes[key] + '",';
+          }
+        }
+        csv += '\r\n';
+      });
+      const exportedFilenmae = 'imaps_export.csv';
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      if (link.download !== undefined) {
+        // feature detection
+        // Browsers that support HTML5 download attribute
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', exportedFilenmae);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    });
+  }
+
   initSearch(condosTable: esri.FeatureLayer) {
     const tableLayer = new FeatureLayer({
       fields: [
@@ -373,8 +407,23 @@ export default class PropertySearchViewModel extends declared(Accessor) {
           editable: false,
           required: true
         })
-      ]
+      ],
+      menuConfig: {
+        items: [
+          ({
+            label: 'Export'
+          } as unknown) as MenuButtonItem
+        ]
+      }
     });
+    const button: MenuButtonItem = this.featureTable?.menuConfig?.items?.find(item => {
+      return item.label === 'Export';
+    }) as MenuButtonItem;
+    button.clickFunction = () => {
+      this.exportTable();
+    };
+    button.clickFunction.bind(this.featureTable);
+
     this.featureTable.on('selection-change', event => {
       if (event.added.length) {
         this.getProperty([event.added[0].feature.getAttribute('OBJECTID')]);
