@@ -1,0 +1,108 @@
+import esri = __esri;
+
+import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+
+import { renderable, tsx } from 'esri/widgets/support/widget';
+
+import Widget from 'esri/widgets/Widget';
+import Color from 'esri/Color';
+import DrawViewModel from './Draw/DrawViewModel';
+
+export interface DrawProperties extends esri.WidgetProperties {
+  name?: string;
+  view?: esri.MapView | esri.SceneView;
+}
+
+const CSS = {
+  base: 'esri-widget draw-base'
+};
+
+@subclass('app.widgets.Draw')
+export default class Draw extends declared(Widget) {
+  @aliasOf('viewModel.view')
+  view: esri.MapView | esri.SceneView;
+  @aliasOf('viewModel.label')
+  label: string;
+  @aliasOf('viewModel.textColor')
+  textColor: Color;
+  @property({
+    type: DrawViewModel
+  })
+  @renderable()
+  viewModel: DrawViewModel = new DrawViewModel();
+
+  constructor(properties?: DrawProperties) {
+    super(properties);
+  }
+
+  _drawUpdated = (element: any) => {
+    if (!this.viewModel.sketch) {
+      this.viewModel.initDraw();
+    }
+  };
+
+  render() {
+    const fill = document.querySelector('#fill');
+    fill?.addEventListener('calciteColorChange', (e: any) => {
+      const hex: string = e.target.value;
+      this.viewModel.sketch.viewModel.pointSymbol.color = Color.fromHex(hex);
+      this.viewModel.sketch.viewModel.polygonSymbol.color = Color.fromHex(hex);
+    });
+    const line = document.querySelector('#line');
+    line?.addEventListener('calciteColorChange', (e: any) => {
+      const hex: string = e.target.value;
+      this.viewModel.sketch.viewModel.polylineSymbol.color = Color.fromHex(hex);
+      (this.viewModel.sketch.viewModel.pointSymbol as esri.SimpleMarkerSymbol).outline.color = Color.fromHex(hex);
+      (this.viewModel.sketch.viewModel.polygonSymbol as esri.SimpleFillSymbol).outline.color = Color.fromHex(hex);
+    });
+    const opacity = document.querySelector('#opacity');
+    opacity?.addEventListener('calciteInputBlur', (e: any) => {
+      this.viewModel.graphics.opacity = parseFloat(e.target.value);
+    });
+    const width = document.querySelector('#width');
+    width?.addEventListener('calciteInputBlur', (e: any) => {
+      (this.viewModel.sketch.viewModel.polylineSymbol as esri.SimpleLineSymbol).width = parseFloat(e.target.value);
+      (this.viewModel.sketch.viewModel.pointSymbol as esri.SimpleMarkerSymbol).outline.width = parseFloat(
+        e.target.value
+      );
+      (this.viewModel.sketch.viewModel.polygonSymbol as esri.SimpleFillSymbol).outline.width = parseFloat(
+        e.target.value
+      );
+    });
+    const label = document.querySelector('#label');
+    label?.addEventListener('calciteInputBlur', (e: any) => {
+      debugger;
+      this.set('label', e.target.value);
+    });
+    const textColor = document.querySelector('#textColor');
+    textColor?.addEventListener('calciteColorChange', (e: any) => {
+      this.set('textColor', Color.fromHex(e.target.value));
+    });
+    return (
+      <div class={CSS.base}>
+        <div afterUpdate={this._drawUpdated} id="sketchDiv"></div>
+        <calcite-block heading="Settings" open collapsible>
+          <calcite-block-section text="Color">
+            <calcite-label>Fill Color</calcite-label>
+            <calcite-color id="fill" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+            <calcite-label>Line Color</calcite-label>
+            <calcite-color id="line" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+          </calcite-block-section>
+          <calcite-block-section text="Opacity">
+            <calcite-label>Opacity</calcite-label>
+            <calcite-input id="opacity" type="number" max="1" min="0" value="1" step="0.1"></calcite-input>
+          </calcite-block-section>
+          <calcite-block-section text="Outline">
+            <calcite-label>Width</calcite-label>
+            <calcite-input id="width" type="number" max="10" min="0" value="1" step="0.5"></calcite-input>
+          </calcite-block-section>
+          <calcite-block-section text="Labeling">
+            <calcite-label>Label</calcite-label>
+            <calcite-input id="label" type="textarea"></calcite-input>
+            <calcite-color id="textColor" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+          </calcite-block-section>
+        </calcite-block>
+      </div>
+    );
+  }
+}
