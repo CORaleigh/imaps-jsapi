@@ -117,7 +117,8 @@ debugger;
 
 document.querySelectorAll('calcite-panel').forEach(item => {
   debugger;
-  item?.shadowRoot?.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
+  //item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
+  item.shadowRoot.innerHTML += '<style>.content-container { height: 100%; } </style>';
 });
 window.addEventListener('beforeunload', () => {
   view.map.removeMany(
