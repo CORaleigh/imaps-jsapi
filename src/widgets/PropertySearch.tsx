@@ -91,7 +91,7 @@ export default class PropertySearch extends declared(Widget) {
           <calcite-radio-group-item checked value="table" id="tableItem">
             List
           </calcite-radio-group-item>
-          <calcite-radio-group-item value="feature" id="featureItem">
+          <calcite-radio-group-item value="feature" id="featureItem" disabled>
             Details
           </calcite-radio-group-item>
         </calcite-radio-group>

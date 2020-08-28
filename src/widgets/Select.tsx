@@ -46,15 +46,15 @@ export default class Select extends declared(Widget) {
     this.set('bufferDistance', parseInt(ev.target.value));
   }
   render() {
-    document.querySelector('#selectDiv calcite-input')?.addEventListener('change', (ev: any) => {
+    document.querySelector('#selectDiv calcite-input')?.addEventListener('calciteInputBlur', (ev: any) => {
       this.handleChange(ev);
     });
 
     return (
       <div class={CSS.base}>
         <div afterUpdate={this._sketchCreated} id="selectWidget"></div>
-        <calcite-label>Buffer Distance (feet) </calcite-label>
-        <calcite-input type="number" min="0" max="2000" step="50" value={this.bufferDistance}></calcite-input>
+        <calcite-label scale="s">Buffer Distance (feet) </calcite-label>
+        <calcite-input scale="s" type="number" min="0" max="2000" step="50" value={this.bufferDistance}></calcite-input>
       </div>
     );
   }

@@ -7,6 +7,7 @@ import BasemapGallery from 'esri/widgets/BasemapGallery';
 //import Measurement from 'esri/widgets/Measurement';
 import PropertySearch from './widgets/PropertySearch';
 import CoordinateConversion from 'esri/widgets/CoordinateConversion';
+import Expand from 'esri/widgets/Expand';
 import Measure from './widgets/Measure';
 
 import { condosTable, addressTable, featureLayer } from './data/search';
@@ -19,7 +20,11 @@ export const propertySearch: PropertySearch = new PropertySearch();
 export const drawWidget: Draw = new Draw();
 export function initWidgets(view: esri.MapView | esri.SceneView) {
   new Legend({ view, container: 'legendDiv' });
-  new LayerList({ view, container: 'layerDiv' });
+  const layerList = new LayerList({
+    view,
+    container: 'layerDiv',
+    listItemCreatedFunction: event => {}
+  });
   new Print({
     view,
     container: 'printDiv',
@@ -31,7 +36,9 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   new BasemapGallery({ view, container: 'basemapDiv' });
 
   const coordinates: esri.CoordinateConversion = new CoordinateConversion({ view });
-  view.ui.add(coordinates, 'bottom-left');
+  const coordinatesExpand: Expand = new Expand({ content: coordinates, mode: 'floating' });
+
+  view.ui.add(coordinatesExpand, 'bottom-left');
   measurement.view = view;
   measurement.container = 'measureDiv';
   drawWidget.view = view;
@@ -45,6 +52,7 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   //   propertyLayer: featureLayer,
   //   container: 'sideDiv'
   // });
+  debugger;
   propertySearch.view = view;
   propertySearch.condosTable = condosTable;
   propertySearch.addressTable = addressTable;

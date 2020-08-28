@@ -39,16 +39,28 @@ body {
   padding: 0;
   margin: 0;
   height: 100%;
-  width: calc(100% - 400px);
+  width: 100%;
 } 
 .panel {
-  width: 400px; 
+  min-width: 350px;
   height: 100%;
 }
+@media only screen and (max-width: 500px) {
+  .panel {
+   min-width: calc(100% - 51px);
+  }
+  .maximize {
+    display: none;
+  }
+}
+
 
 .esri-search {
   width: 100%;
 } 
+#sideDiv {
+  height: 100%;
+}
 
 #table {
   height: calc(100% - 80px);
@@ -86,4 +98,8 @@ calcite-radio-group {
   position: -webkit-sticky;
   position: sticky;
   bottom: 0;
+}
+
+calcite-action-bar {
+  min-width: 50px;
 }

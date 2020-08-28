@@ -276,6 +276,13 @@ export default class PropertySearchViewModel extends declared(Accessor) {
                     feature.layer = this.condosTable;
                     this.setFeature(feature, this.view as esri.MapView, [], oids);
                     this.toggleContent('feature');
+                    this.featureTable.layer = new FeatureLayer({
+                      fields: this.condosTable.fields,
+                      source: [feature],
+                      title: 'Selected properties',
+                      geometryType: 'point',
+                      objectIdField: 'OBJECTID'
+                    });
                   });
                 }
               });
@@ -289,6 +296,13 @@ export default class PropertySearchViewModel extends declared(Accessor) {
             this.getProperty(oids);
             this.setFeature(result.features[0], this.view as esri.MapView, [], oids);
             this.toggleContent('feature');
+            this.featureTable.layer = new FeatureLayer({
+              fields: this.condosTable.fields,
+              source: result.features,
+              title: 'Selected properties',
+              geometryType: 'point',
+              objectIdField: 'OBJECTID'
+            });
           });
         }
       }

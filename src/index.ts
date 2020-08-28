@@ -21,9 +21,16 @@ const toggleAction = (action: string) => {
     if (panel.title != action) {
       panel.classList.add('hidden');
     } else {
+      panel.removeAttribute('dismissed');
+      debugger;
+      if (window.outerWidth < 500) {
+        panel.setAttribute('style', 'min-width: calc(100% - 50px)');
+      } else {
+        panel.setAttribute('style', 'min-width: 350px');
+      }
       panel.classList.remove('hidden');
       if (panel.title != 'Measure') {
-        measurement.measurement.clear();
+        //measurement.measurement.clear();
       } else {
         measurement.measureOpened();
       }
@@ -49,6 +56,7 @@ view.when(() => {
     propertySearch.propertyLayer = propertyLayer as __esri.FeatureLayer;
     select.viewModel.sketch.on('create', (ev: any) => {
       if (ev.state === 'complete') {
+        debugger;
         if (select.viewModel?.bufferDistance > 0) {
           const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'meters');
           propertySearch.geometry = g as __esri.Polygon;
@@ -61,6 +69,49 @@ view.when(() => {
   });
 });
 
+document.querySelectorAll('calcite-panel').forEach(item => {
+  item.addEventListener('calcitePanelDismissedChange', event => {
+    document.querySelectorAll('calcite-panel').forEach(item => {
+      item.setAttribute('style', 'min-width: 0px');
+      document.querySelectorAll('.maximize').forEach(item => {
+        item.setAttribute('icon', 'maximize');
+      });
+    });
+  });
+});
+document.querySelectorAll('.maximize').forEach(item => {
+  item.addEventListener('click', event => {
+    item.parentElement?.parentElement?.removeAttribute('dismissed');
+    item.parentElement?.parentElement?.classList.remove('hidden');
+    if (item.getAttribute('icon') === 'maximize') {
+      item.setAttribute('icon', 'minimize');
+      item.parentElement?.parentElement?.setAttribute('style', 'min-width: calc(100% - 50px)');
+    } else if (item.getAttribute('icon') === 'minimize') {
+      item.setAttribute('icon', 'maximize');
+      item.parentElement?.parentElement?.setAttribute('style', 'min-width:350px');
+    }
+  });
+});
+window.onresize = event => {
+  if (event.target.outerWidth >= 500) {
+    document.querySelectorAll('calcite-panel').forEach(item => {
+      debugger;
+      if (item.querySelector('.maximize')?.getAttribute('icon') === 'minimize') {
+        item.setAttribute('style', 'min-width: calc(100% - 50px)');
+      } else {
+        item.setAttribute('style', 'min-width: 350px');
+      }
+    });
+  } else {
+    document.querySelectorAll('calcite-panel').forEach(item => {
+      if (item.getAttribute('dismissed')) {
+        item.setAttribute('style', 'min-width: 0px');
+      } else {
+        item.setAttribute('style', 'min-width: calc(100% - 50px)');
+      }
+    });
+  }
+};
 view.when(initWidgets);
 window.addEventListener('beforeunload', () => {
   view.map.removeMany(

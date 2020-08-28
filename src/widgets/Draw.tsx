@@ -83,22 +83,22 @@ export default class Draw extends declared(Widget) {
         <div afterUpdate={this._drawUpdated} id="sketchDiv"></div>
         <calcite-block heading="Settings" open collapsible>
           <calcite-block-section text="Color">
-            <calcite-label>Fill Color</calcite-label>
+            <calcite-label scale="s">Fill Color</calcite-label>
             <calcite-color id="fill" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
-            <calcite-label>Line Color</calcite-label>
+            <calcite-label scale="s">Line Color</calcite-label>
             <calcite-color id="line" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
           </calcite-block-section>
           <calcite-block-section text="Opacity">
-            <calcite-label>Opacity</calcite-label>
-            <calcite-input id="opacity" type="number" max="1" min="0" value="1" step="0.1"></calcite-input>
+            <calcite-label scale="s">Opacity</calcite-label>
+            <calcite-input scale="s" id="opacity" type="number" max="1" min="0" value="1" step="0.1"></calcite-input>
           </calcite-block-section>
           <calcite-block-section text="Outline">
-            <calcite-label>Width</calcite-label>
-            <calcite-input id="width" type="number" max="10" min="0" value="1" step="0.5"></calcite-input>
+            <calcite-label scale="s">Width</calcite-label>
+            <calcite-input scale="s" id="width" type="number" max="10" min="0" value="1" step="0.5"></calcite-input>
           </calcite-block-section>
           <calcite-block-section text="Labeling">
-            <calcite-label>Label</calcite-label>
-            <calcite-input id="label" type="textarea"></calcite-input>
+            <calcite-label scale="s">Label</calcite-label>
+            <calcite-input scale="s" id="label" type="textarea"></calcite-input>
             <calcite-color id="textColor" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
           </calcite-block-section>
         </calcite-block>

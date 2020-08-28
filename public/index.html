@@ -42,15 +42,88 @@
     
     <div class="content">
       <div id="viewDiv"></div>
-      <div id="sideDiv" title="Search" class="panel"></div>
-      <div id="layerDiv" title="Layers" class="panel hidden"></div>
-      <div id="printDiv" title="Print" class="panel hidden"></div>
-      <div id="legendDiv" title="Legend" class="panel hidden"></div>
-      <div id="bookmarkDiv" title="Bookmarks" class="panel hidden"></div>
-      <div id="basemapDiv" title="Basemaps" class="panel hidden"></div>
-      <div id="measureDiv" title="Measure" class="panel hidden"></div>
-      <div id="drawDiv" title="Draw" class="panel hidden"></div>
-      <div id="selectDiv" title="Select" class="panel hidden"></div>
+      <calcite-panel title="Search" class="panel" dismissible>
+        <div slot="header-content">Search</div>        
+        <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="sideDiv"></div>
+      </calcite-panel>     
+      <calcite-panel title="Layers" class="panel hidden" dismissible>
+        <div slot="header-content">Layers</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="layerDiv"></div>
+      </calcite-panel>      
+      <calcite-panel title="Print" class="panel hidden" dismissible>
+        <div slot="header-content">Print</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="printDiv"></div>
+      </calcite-panel>        
+      <calcite-panel title="Legend" class="panel hidden"dismissible>
+        <div slot="header-content">Legend</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="legendDiv"></div>
+      </calcite-panel>       
+  
+      <calcite-panel title="Bookmarks" class="panel hidden" dismissible>
+        <div slot="header-content">Bookmarks</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="bookmarkDiv"></div>
+      </calcite-panel>       
+      <calcite-panel title="Basemaps" class="panel hidden" dismissible>
+        <div slot="header-content">Basemaps</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="basemapDiv"></div>
+      </calcite-panel>      
+      <calcite-panel title="Measure" class="panel hidden" dismissible>
+        <div slot="header-content">Measure</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="measureDiv"></div>
+      </calcite-panel>         
+      <calcite-panel title="Draw" class="panel hidden" dismissible>
+        <div slot="header-content">Draw</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="drawDiv"></div>
+      </calcite-panel>    
+      <calcite-panel title="Select" class="panel hidden" dismissible>
+        <div slot="header-content">Select</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="selectDiv"></div>
+      </calcite-panel>                                
 
       
         <calcite-action-bar theme="dark">
