@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>iMAPS</title>
+  <link rel="stylesheet" href="https://unpkg.com/@esri/calcite-app-components@6.2.0/dist/calcite-app/calcite-app.css" />
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@esri/calcite-components/dist/calcite/calcite.css" />
+
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css">
+  <link rel="stylesheet" href="index.css">
+
+
+  <script>
+    var locationPath = location.pathname.replace(/\/[^\/]+$/, "");
+    window.dojoConfig = {
+      packages: [
+        {
+          name: "app",
+          location: locationPath + "."
+        }
+      ],
+      deps: ['app/index']
+    };
+  </script>
+  <script src="https://js.arcgis.com/4.16/"></script>
+  <script type="module" src="https://unpkg.com/@esri/calcite-app-components@6.2.0/dist/calcite-app/calcite-app.esm.js"></script>
+  <script nomodule="" src="https://unpkg.com/@esri/calcite-app-components@6.2.0/dist/calcite-app/calcite-app.js"></script>  
+  <script type="module" src="https://unpkg.com/@esri/calcite-components/dist/calcite/calcite.esm.js"></script>
+  <script nomodule="" src="https://unpkg.com/@esri/calcite-components/dist/calcite/calcite.js"></script>
+</head>
+<body>
+  <noscript> JavaScript is required in order to use this app </noscript>
+  
+ <div class="app-container">
+    <header class="header">
+      <h2 class="heading">iMAPS</h2>
+    </header>
+    
+    <div class="content">
+      <div id="viewDiv"></div>
+      <calcite-panel title="Search" class="panel" dismissible>
+        <div slot="header-content">Search</div>        
+        <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="sideDiv"></div>
+      </calcite-panel>     
+      <calcite-panel title="Layers" class="panel hidden" dismissible>
+        <div slot="header-content">Layers</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="layerDiv"></div>
+      </calcite-panel>      
+      <calcite-panel title="Print" class="panel hidden" dismissible>
+        <div slot="header-content">Print</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="printDiv"></div>
+      </calcite-panel>        
+      <calcite-panel title="Legend" class="panel hidden"dismissible>
+        <div slot="header-content">Legend</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="legendDiv"></div>
+      </calcite-panel>       
+  
+      <calcite-panel title="Bookmarks" class="panel hidden" dismissible>
+        <div slot="header-content">Bookmarks</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="bookmarkDiv"></div>
+      </calcite-panel>       
+      <calcite-panel title="Basemaps" class="panel hidden" dismissible>
+        <div slot="header-content">Basemaps</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="basemapDiv"></div>
+      </calcite-panel>      
+      <calcite-panel title="Measure" class="panel hidden" dismissible>
+        <div slot="header-content">Measure</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="measureDiv"></div>
+      </calcite-panel>         
+      <calcite-panel title="Draw" class="panel hidden" dismissible>
+        <div slot="header-content">Draw</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="drawDiv"></div>
+      </calcite-panel>    
+      <calcite-panel title="Select" class="panel hidden" dismissible>
+        <div slot="header-content">Select</div>
+                <div slot="header-trailing-content">
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="selectDiv"></div>
+      </calcite-panel>                                
+
+      
+        <calcite-action-bar theme="dark">
+          <calcite-action text="Search" icon="search">
+          </calcite-action>
+          <calcite-action text="Layers" icon="layers"></calcite-action>
+          <calcite-action text="Legend" icon="legend"></calcite-action>
+          <calcite-action text="Basemaps" icon="basemap"></calcite-action>
+          <calcite-action text="Select" icon="selection"></calcite-action>
+
+          <calcite-action text="Measure" icon="measure"></calcite-action>
+          <calcite-action text="Draw" icon="pencil-mark"></calcite-action>
+
+          <calcite-action text="Bookmarks" icon="bookmark"></calcite-action>
+
+          <calcite-action text="Print" icon="print"></calcite-action>
+
+        </calcite-action-bar>
+      </div>
+    </div>
+
+  </div> 
+</body>
+</html>
+
