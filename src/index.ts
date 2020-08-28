@@ -120,7 +120,7 @@ document.querySelectorAll('calcite-panel').forEach(item => {
   //item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
   item.shadowRoot.innerHTML += '<style>.content-container { height: 100%; } </style>';
 });
-window.addEventListener('beforeunload', () => {
+window.addEventListener('pagehide', () => {
   view.map.removeMany(
     view.map.allLayers
       .filter(layer => {

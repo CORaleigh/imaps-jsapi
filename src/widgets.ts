@@ -9,6 +9,9 @@ import PropertySearch from './widgets/PropertySearch';
 import CoordinateConversion from 'esri/widgets/CoordinateConversion';
 import Expand from 'esri/widgets/Expand';
 import Measure from './widgets/Measure';
+import Compass from 'esri/widgets/Compass';
+import Locate from 'esri/widgets/Locate';
+import Track from 'esri/widgets/Track';
 
 import { condosTable, addressTable, featureLayer } from './data/search';
 import esri = __esri;
@@ -39,6 +42,12 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   const coordinatesExpand: Expand = new Expand({ content: coordinates, mode: 'floating' });
 
   view.ui.add(coordinatesExpand, 'bottom-left');
+
+  view.ui.add(new Compass({ view: view }), 'top-left');
+  view.ui.add(new Locate({ view: view }), 'top-left');
+
+  view.ui.add(new Track({ view: view }), 'top-left');
+
   measurement.view = view;
   measurement.container = 'measureDiv';
   drawWidget.view = view;
