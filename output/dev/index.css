@@ -103,3 +103,7 @@ calcite-radio-group {
 calcite-action-bar {
   min-width: 50px;
 }
+
+.container {
+  height: 100%;
+}

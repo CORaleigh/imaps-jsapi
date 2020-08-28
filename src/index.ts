@@ -113,6 +113,12 @@ window.onresize = event => {
   }
 };
 view.when(initWidgets);
+debugger;
+
+document.querySelectorAll('calcite-panel').forEach(item => {
+  debugger;
+  item?.shadowRoot?.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
+});
 window.addEventListener('beforeunload', () => {
   view.map.removeMany(
     view.map.allLayers
