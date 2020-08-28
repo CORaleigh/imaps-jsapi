@@ -109,6 +109,6 @@ calcite-action-bar {
   min-width: 50px;
 }
 
-.container {
+:host > .content-container {
   height: 100%;
 }
