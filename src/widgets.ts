@@ -44,9 +44,17 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   view.ui.add(coordinatesExpand, 'bottom-left');
 
   view.ui.add(new Compass({ view: view }), 'top-left');
-  view.ui.add(new Locate({ view: view }), 'top-left');
+  const locate: Locate = new Locate({ view: view });
+  locate.on('locate-error', (event: any) => {
+    console.log(event);
+  });
+  view.ui.add(locate, 'top-left');
 
-  view.ui.add(new Track({ view: view }), 'top-left');
+  const track: Track = new Track({ view: view });
+  track.on('track-error', (event: any) => {
+    console.log(event);
+  });
+  view.ui.add(track, 'top-left');
 
   measurement.view = view;
   measurement.container = 'measureDiv';
