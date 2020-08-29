@@ -40,6 +40,13 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  position: sticky;
+  left: 0;
+  right: 0;
 } 
 .panel {
   min-width: 350px;
