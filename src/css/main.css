@@ -61,12 +61,8 @@ body {
   body {
     font-size: 16px;
   }
-  input, select { font-size: 100%;}
-  .esri-search {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
+  input, select { font-size: 100% !important;}
+
 }
 
 
