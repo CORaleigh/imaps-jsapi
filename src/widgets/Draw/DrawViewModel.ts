@@ -28,7 +28,7 @@ export default class DrawViewModel extends declared(Accessor) {
 
     // this.view.whenLayerView(this.graphics).then(() => {
     //   if (window.localStorage.getItem('imaps_draw')) {
-    //     debugger;
+    //
     //     this.graphics.graphics.addMany(JSON.parse(window.localStorage.getItem('imaps_draw') as string));
     //   }
     // });

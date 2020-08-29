@@ -222,7 +222,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
                     console.log(feature);
                     oids.push(feature.getAttribute('OBJECTID'));
                     tableFeatures.push(feature);
-                    debugger;
                     //this.getProperty(oids);
                     //feature.layer = this.condosTable;
                     // this.setFeature(feature, this.view as esri.MapView, [], oids);

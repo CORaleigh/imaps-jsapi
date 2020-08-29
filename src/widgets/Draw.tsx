@@ -71,7 +71,6 @@ export default class Draw extends declared(Widget) {
     });
     const label = document.querySelector('#label');
     label?.addEventListener('calciteInputBlur', (e: any) => {
-      debugger;
       this.set('label', e.target.value);
     });
     const textColor = document.querySelector('#textColor');

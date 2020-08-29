@@ -22,7 +22,6 @@ const toggleAction = (action: string) => {
       panel.classList.add('hidden');
     } else {
       panel.removeAttribute('dismissed');
-      debugger;
       if (window.outerWidth < 500) {
         panel.setAttribute('style', 'min-width: calc(100% - 50px)');
       } else {
@@ -56,7 +55,6 @@ view.when(() => {
     propertySearch.propertyLayer = propertyLayer as __esri.FeatureLayer;
     select.viewModel.sketch.on('create', (ev: any) => {
       if (ev.state === 'complete') {
-        debugger;
         if (select.viewModel?.bufferDistance > 0) {
           const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'meters');
           propertySearch.geometry = g as __esri.Polygon;
@@ -69,12 +67,11 @@ view.when(() => {
   });
 });
 
+if (window.outerWidth >= 500) {
+  document.querySelector('calcite-panel')?.classList.remove('hidden');
+}
+
 document.querySelectorAll('calcite-panel').forEach(item => {
-  if (window.outerWidth < 500) {
-    if (!item.classList.contains('hidden')) {
-      item.classList.add('hidden');
-    }
-  }
   item.addEventListener('calcitePanelDismissedChange', event => {
     document.querySelectorAll('calcite-panel').forEach(item => {
       item.setAttribute('style', 'min-width: 0px');
@@ -100,7 +97,6 @@ document.querySelectorAll('.maximize').forEach(item => {
 window.onresize = event => {
   if (event.target.outerWidth >= 500) {
     document.querySelectorAll('calcite-panel').forEach(item => {
-      debugger;
       if (item.querySelector('.maximize')?.getAttribute('icon') === 'minimize') {
         item.setAttribute('style', 'min-width: calc(100% - 50px)');
       } else {
@@ -118,10 +114,8 @@ window.onresize = event => {
   }
 };
 view.when(initWidgets);
-debugger;
 
 document.querySelectorAll('calcite-panel').forEach(item => {
-  debugger;
   //item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
   item.shadowRoot.innerHTML += '<style>.content-container { height: 100%; } </style>';
 });

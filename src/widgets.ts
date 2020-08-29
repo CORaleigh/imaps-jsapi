@@ -61,7 +61,6 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   //   propertyLayer: featureLayer,
   //   container: 'sideDiv'
   // });
-  debugger;
   propertySearch.view = view;
   propertySearch.condosTable = condosTable;
   propertySearch.addressTable = addressTable;
