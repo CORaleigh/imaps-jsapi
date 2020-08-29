@@ -56,12 +56,23 @@ body {
     font-size: 16px;
   }
   input, select { font-size: 100% !important;}
-
+  .esri-search {
+    font-size: 16px !important;
+  }
+  .esri-search {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
 }
 
 
 .esri-search {
   width: 100%;
+  border-bottom-color: rgb(234, 234, 234);
+  border-bottom-style: solid;
+  border-bottom-width: 1px;  
 } 
 #sideDiv {
   height: 100%;
