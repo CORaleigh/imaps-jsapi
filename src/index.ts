@@ -70,6 +70,11 @@ view.when(() => {
 });
 
 document.querySelectorAll('calcite-panel').forEach(item => {
+  if (window.outerWidth < 500) {
+    if (!item.classList.contains('hidden')) {
+      item.classList.add('hidden');
+    }
+  }
   item.addEventListener('calcitePanelDismissedChange', event => {
     document.querySelectorAll('calcite-panel').forEach(item => {
       item.setAttribute('style', 'min-width: 0px');

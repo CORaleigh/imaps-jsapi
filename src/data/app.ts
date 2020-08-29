@@ -4,6 +4,7 @@
 //import { featureLayer } from './search';
 import WebMap from 'esri/WebMap';
 export let map = new WebMap();
+debugger;
 if (window.localStorage.getItem('imaps')) {
   map = WebMap.fromJSON(JSON.parse(window.localStorage.getItem('imaps') as string));
 } else {
