@@ -69,7 +69,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
               objectIdField: 'OBJECTID'
             });
             if (features.length === 1) {
-              this.setFeature(features[0], this.view as esri.MapView, [], oids);
+              this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getObjectId()]);
               this.toggleContent('feature');
             }
             this.featureTable.renderNow();
@@ -222,10 +222,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
                     console.log(feature);
                     oids.push(feature.getAttribute('OBJECTID'));
                     tableFeatures.push(feature);
-                    //this.getProperty(oids);
-                    //feature.layer = this.condosTable;
-                    // this.setFeature(feature, this.view as esri.MapView, [], oids);
-                    //this.toggleContent('feature');
                   });
                 }
                 this.featureTable.layer = new FeatureLayer({

@@ -1,7 +1,7 @@
 import esri = __esri;
 
 import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { renderable, tsx } from 'esri/widgets/support/widget';
 
 import Widget from 'esri/widgets/Widget';
@@ -19,7 +19,6 @@ const CSS = {
 
 @subclass('app.widgets.Layers')
 export default class Layers extends declared(Widget) {
-
   @aliasOf('viewModel.view')
   view: esri.MapView | esri.SceneView;
 
@@ -44,5 +43,4 @@ export default class Layers extends declared(Widget) {
       </div>
     );
   }
-
 }

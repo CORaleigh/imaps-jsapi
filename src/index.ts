@@ -3,11 +3,14 @@ import './css/main.css';
 
 // Map data
 import { map } from './data/app';
+import { initTips } from './tips';
+import { showAlert } from './alert';
 // MapView
 import MapView from 'esri/views/MapView';
 import geometryEngine from 'esri/geometry/geometryEngine';
 // widget utils
-import { initWidgets, measurement, select, propertySearch, drawWidget } from './widgets';
+import { initWidgets, measurement, select, propertySearch, layerList } from './widgets';
+import Legend from './__mocks__/esri/widgets/Legend';
 /**
  * Initialize application
  */
@@ -45,26 +48,47 @@ actions?.forEach((action: any) => {
 });
 
 view.when(() => {
-  const propertyLayer = map.layers.find(layer => {
-    return layer.title === 'Property';
+  view.map.allLayers.forEach(layer => {
+    if (layer.type != 'group') {
+      layer.watch('visible', visible => {
+        layerList.operationalItems.forEach(item => {
+          if (item.layer.type === 'group') {
+            const child = item.children.find(i => {
+              return i.layer === layer;
+            });
+            if (child) {
+              child.panel.open = visible;
+            }
+          }
+        });
+      });
+    }
+  });
+  const propertyLayer = map.allLayers.find(layer => {
+    return layer.title === 'Property' && layer.type === 'feature';
   });
   view.on('hold', e => {
     propertySearch.geometry = e.mapPoint;
   });
-  view.whenLayerView(propertyLayer).then(() => {
-    propertySearch.propertyLayer = propertyLayer as __esri.FeatureLayer;
-    select.viewModel.sketch.on('create', (ev: any) => {
-      if (ev.state === 'complete') {
-        if (select.viewModel?.bufferDistance > 0) {
-          const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'meters');
-          propertySearch.geometry = g as __esri.Polygon;
-        } else {
-          propertySearch.geometry = ev.graphic.geometry;
+  view
+    .whenLayerView(propertyLayer)
+    .then(() => {
+      propertySearch.propertyLayer = propertyLayer as __esri.FeatureLayer;
+      select.viewModel.sketch.on('create', (ev: any) => {
+        if (ev.state === 'complete') {
+          if (select.viewModel?.bufferDistance > 0) {
+            const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'meters');
+            propertySearch.geometry = g as __esri.Polygon;
+          } else {
+            propertySearch.geometry = ev.graphic.geometry;
+          }
+          toggleAction('Search');
         }
-        toggleAction('Search');
-      }
+      });
+    })
+    .catch(() => {
+      showAlert('Property layer did not load. Please contact iMAPS Help Desk.', 'red');
     });
-  });
 });
 
 if (window.outerWidth >= 500) {
@@ -72,7 +96,7 @@ if (window.outerWidth >= 500) {
 }
 
 document.querySelectorAll('calcite-panel').forEach(item => {
-  item.addEventListener('calcitePanelDismissedChange', event => {
+  item.addEventListener('calcitePanelDismissedChange', () => {
     document.querySelectorAll('calcite-panel').forEach(item => {
       item.setAttribute('style', 'min-width: 0px');
       document.querySelectorAll('.maximize').forEach(item => {
@@ -82,7 +106,8 @@ document.querySelectorAll('calcite-panel').forEach(item => {
   });
 });
 document.querySelectorAll('.maximize').forEach(item => {
-  item.addEventListener('click', event => {
+  item.addEventListener('click', () => {
+    debugger;
     item.parentElement?.parentElement?.removeAttribute('dismissed');
     item.parentElement?.parentElement?.classList.remove('hidden');
     if (item.getAttribute('icon') === 'maximize') {
@@ -94,8 +119,8 @@ document.querySelectorAll('.maximize').forEach(item => {
     }
   });
 });
-window.onresize = event => {
-  if (event.target.outerWidth >= 500) {
+window.onresize = () => {
+  if ((event?.target as any)?.outerWidth >= 500) {
     document.querySelectorAll('calcite-panel').forEach(item => {
       if (item.querySelector('.maximize')?.getAttribute('icon') === 'minimize') {
         item.setAttribute('style', 'min-width: calc(100% - 50px)');
@@ -108,16 +133,18 @@ window.onresize = event => {
       if (item.getAttribute('dismissed')) {
         item.setAttribute('style', 'min-width: 0px');
       } else {
-        item.setAttribute('style', 'min-width: calc(100% - 50px)');
+        item.setAttribute('style', 'min-width: calc(100% src)');
       }
     });
   }
 };
 view.when(initWidgets);
 
+view.when(initTips);
+
 document.querySelectorAll('calcite-panel').forEach(item => {
   //item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
-  item.shadowRoot.innerHTML += '<style>.content-container { height: 100%; } </style>';
+  (item.shadowRoot as any).innerHTML += '<style>.content-container { height: 100%; } </style>';
 });
 window.addEventListener('pagehide', () => {
   view.map.removeMany(
@@ -130,6 +157,7 @@ window.addEventListener('pagehide', () => {
   const json = (view.map as any).toJSON();
   json.initialState.viewpoint.targetGeometry = view.extent;
   window.localStorage.setItem('imaps', JSON.stringify(json));
+  window.localStorage.setItem('imaps_created', JSON.stringify((view.map as __esri.WebMap).portalItem.modified));
   // if (drawWidget.viewModel.graphics.graphics.length) {
   //   drawWidget.viewModel.graphics.graphics.removeMany(
   //     drawWidget.viewModel.graphics.graphics.filter(graphic => {

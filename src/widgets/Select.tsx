@@ -1,7 +1,7 @@
 import esri = __esri;
 
 import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { renderable, tsx } from 'esri/widgets/support/widget';
 
 import Widget from 'esri/widgets/Widget';
@@ -54,7 +54,14 @@ export default class Select extends declared(Widget) {
       <div class={CSS.base}>
         <div afterUpdate={this._sketchCreated} id="selectWidget"></div>
         <calcite-label scale="s">Buffer Distance (feet) </calcite-label>
-        <calcite-input scale="s" type="number" min="0" max="2000" step="50" value={this.bufferDistance}></calcite-input>
+        <calcite-input
+          scale="s"
+          type="number"
+          min="0"
+          max="2000"
+          step="50"
+          value={this.viewModel.bufferDistance}
+        ></calcite-input>
       </div>
     );
   }

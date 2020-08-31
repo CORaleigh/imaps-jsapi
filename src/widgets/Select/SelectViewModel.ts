@@ -38,6 +38,6 @@ export default class SelectViewModel extends declared(Accessor) {
   }
   init(view: esri.MapView | esri.SceneView) {
     console.log(view.scale);
-    this.bufferDistance = 0;
+    this.set('bufferDistance', 0);
   }
 }

@@ -4,11 +4,15 @@
 //import { featureLayer } from './search';
 import WebMap from 'esri/WebMap';
 export let map = new WebMap();
-if (window.localStorage.getItem('imaps')) {
-  map = WebMap.fromJSON(JSON.parse(window.localStorage.getItem('imaps') as string));
-} else {
-  map = new WebMap({ portalItem: { id: '95092428774c4b1fb6a3b6f5fed9fbc4' } });
-}
+map = new WebMap({ portalItem: { id: '95092428774c4b1fb6a3b6f5fed9fbc4' } });
+map.portalItem.load().then(() => {
+  if (window.localStorage.getItem('imaps')) {
+    const mapcached: WebMap = WebMap.fromJSON(JSON.parse(window.localStorage.getItem('imaps') as string));
+    mapcached.load().then(mapcached => {
+      debugger;
+    });
+  }
+});
 
 // export const map = new ArcGISMap({
 //   basemap: {

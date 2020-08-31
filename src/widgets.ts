@@ -19,14 +19,35 @@ import Draw from './widgets/Draw';
 import Select from './widgets/Select';
 export const measurement: Measure = new Measure();
 export const select: Select = new Select();
+export let layerList: LayerList;
 export const propertySearch: PropertySearch = new PropertySearch();
 export const drawWidget: Draw = new Draw();
 export function initWidgets(view: esri.MapView | esri.SceneView) {
   new Legend({ view, container: 'legendDiv' });
-  const layerList = new LayerList({
+  layerList = new LayerList({
     view,
     container: 'layerDiv',
-    listItemCreatedFunction: event => {}
+    listItemCreatedFunction: event => {
+      const item = event.item;
+      if (item.layer.type != 'group') {
+        const slider = document.createElement('calcite-slider');
+        slider.setAttribute('min', '0');
+        slider.setAttribute('max', '100');
+        slider.setAttribute('min-label', '0%');
+        slider.setAttribute('max-label', '100%');
+        slider.setAttribute('label-handles', '');
+        slider.setAttribute('value', (item?.layer.opacity * 100).toString());
+        slider.setAttribute('data', item.layer.id);
+        slider.addEventListener('calciteSliderUpdate', event => {
+          view.map.findLayerById((event.target as HTMLElement).getAttribute('data')).opacity =
+            parseInt(event.target.getAttribute('value')) / 100;
+        });
+        item.panel = {
+          content: [slider, 'legend'],
+          open: false
+        };
+      }
+    }
   });
   new Print({
     view,
@@ -39,7 +60,11 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   new BasemapGallery({ view, container: 'basemapDiv' });
 
   const coordinates: esri.CoordinateConversion = new CoordinateConversion({ view });
-  const coordinatesExpand: Expand = new Expand({ content: coordinates, mode: 'floating' });
+  const coordinatesExpand: Expand = new Expand({
+    content: coordinates,
+    mode: 'floating',
+    expandIconClass: 'esri-icon-map-pin'
+  });
 
   view.ui.add(coordinatesExpand, 'bottom-left');
 
