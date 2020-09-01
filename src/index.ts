@@ -144,7 +144,7 @@ view.when(initTips);
 
 document.querySelectorAll('calcite-panel').forEach(item => {
   //item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
-  (item.shadowRoot as any).innerHTML += '<style>.content-container { height: 100%; } </style>';
+  // (item.shadowRoot as any).innerHTML += '<style>.content-container { height: 100%; } </style>';
 });
 window.addEventListener('pagehide', () => {
   view.map.removeMany(
@@ -166,4 +166,10 @@ window.addEventListener('pagehide', () => {
   //   );
   //   window.localStorage.setItem('imaps_draw', JSON.stringify((drawWidget.viewModel.graphics.graphics as any).toJSON()));
   // }
+});
+
+document.querySelectorAll('calcite-panel div').forEach(panel => {
+  if (panel.slot === 'header-trailing-content') {
+    panel.setAttribute('style', 'display: flex; flex-direction: row;');
+  }
 });

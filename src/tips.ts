@@ -30,11 +30,6 @@ const tipGroups = [
   }
 ];
 export function initTips() {
-  document.querySelectorAll('calcite-panel div').forEach(panel => {
-    if (panel.slot === 'header-trailing-content') {
-      panel.setAttribute('style', 'display: flex; flex-direction: row;');
-    }
-  });
   document.querySelectorAll('.tip').forEach(item => {
     item.addEventListener('click', () => {
       document.querySelector('calcite-tip-manager')?.remove();
