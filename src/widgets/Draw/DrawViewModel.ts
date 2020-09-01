@@ -8,6 +8,7 @@ import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import { whenDefinedOnce } from 'esri/core/watchUtils';
 import Graphic from 'esri/Graphic';
 import TextSymbol from 'esri/symbols/TextSymbol';
+import { measurement } from '../../widgets';
 
 @subclass('app.widgets.Draw.DrawViewModel')
 export default class DrawViewModel extends declared(Accessor) {
@@ -22,6 +23,7 @@ export default class DrawViewModel extends declared(Accessor) {
     super(params);
     whenDefinedOnce(this, 'view', this.init.bind(this));
   }
+
   initDraw() {
     this.graphics = new GraphicsLayer({ listMode: 'hide' });
     this.view.map.add(this.graphics);
@@ -33,8 +35,16 @@ export default class DrawViewModel extends declared(Accessor) {
     //   }
     // });
 
-    this.sketch = new Sketch({ view: this.view, container: 'sketchDiv', layer: this.graphics });
+    this.sketch = new Sketch({ view: this.view, container: 'sketchDiv', layer: this.graphics, creationMode: 'single' });
+    this.sketch.watch('activeTool', tool => {
+      if (tool != undefined) {
+        measurement?.measurement?.clear();
+      }
+    });
     this.sketch.on('create', e => {
+      if (e.state === 'start') {
+        measurement?.measurement?.clear();
+      }
       if (e.state === 'complete' && this.label?.length) {
         let labelPoint: esri.Geometry = e.graphic.geometry;
         if (e.graphic.geometry.type === 'polygon') {

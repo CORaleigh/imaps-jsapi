@@ -85,6 +85,7 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   measurement.container = 'measureDiv';
   drawWidget.view = view;
   drawWidget.container = 'drawDiv';
+
   //view.ui.add(measurement, 'top-right');
 
   // propertySearch = new PropertySearch({

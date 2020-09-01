@@ -44,6 +44,7 @@ body {
 } 
 .panel {
   min-width: 350px;
+  max-width: 350px;
   height: 100%;
 }
 @media only screen and (max-width: 500px) {
@@ -124,11 +125,10 @@ calcite-action-bar {
 
 calcite-tip-manager {
   position: absolute;
-  left: 25%;
-  right: 25%;
+  left: 1em;
+  right: 1em;
   bottom: 0;
   margin: 1em;
-  max-width: 700px;
 }
 
 .esri-legend__message {

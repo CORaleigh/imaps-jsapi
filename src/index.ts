@@ -10,7 +10,6 @@ import MapView from 'esri/views/MapView';
 import geometryEngine from 'esri/geometry/geometryEngine';
 // widget utils
 import { initWidgets, measurement, select, propertySearch, layerList } from './widgets';
-import Legend from './__mocks__/esri/widgets/Legend';
 /**
  * Initialize application
  */
@@ -86,7 +85,8 @@ view.when(() => {
         }
       });
     })
-    .catch(() => {
+    .catch((reason: any) => {
+      console.log(reason);
       showAlert('Property layer did not load. Please contact iMAPS Help Desk.', 'red');
     });
 });
@@ -142,10 +142,10 @@ view.when(initWidgets);
 
 view.when(initTips);
 
-document.querySelectorAll('calcite-panel').forEach(item => {
-  //item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
-  // (item.shadowRoot as any).innerHTML += '<style>.content-container { height: 100%; } </style>';
-});
+//document.querySelectorAll('calcite-panel').forEach(item => {
+//item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
+// (item.shadowRoot as any).innerHTML += '<style>.content-container { height: 100%; } </style>';
+//});
 window.addEventListener('pagehide', () => {
   view.map.removeMany(
     view.map.allLayers
@@ -157,7 +157,6 @@ window.addEventListener('pagehide', () => {
   const json = (view.map as any).toJSON();
   json.initialState.viewpoint.targetGeometry = view.extent;
   window.localStorage.setItem('imaps', JSON.stringify(json));
-  window.localStorage.setItem('imaps_created', JSON.stringify((view.map as __esri.WebMap).portalItem.modified));
   // if (drawWidget.viewModel.graphics.graphics.length) {
   //   drawWidget.viewModel.graphics.graphics.removeMany(
   //     drawWidget.viewModel.graphics.graphics.filter(graphic => {

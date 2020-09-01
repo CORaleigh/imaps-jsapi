@@ -7,6 +7,7 @@ import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
+import { measurement } from '../../widgets';
 
 @subclass('app.widgets.Select.SelectViewModel')
 export default class SelectViewModel extends declared(Accessor) {
@@ -33,6 +34,14 @@ export default class SelectViewModel extends declared(Accessor) {
     this.sketch.on('create', ev => {
       if (ev.state === 'complete') {
         this.graphics.removeAll();
+      }
+      if (ev.state === 'start') {
+        measurement?.measurement?.clear();
+      }
+    });
+    this.sketch.watch('activeTool', tool => {
+      if (tool != undefined) {
+        measurement?.measurement?.clear();
       }
     });
   }
