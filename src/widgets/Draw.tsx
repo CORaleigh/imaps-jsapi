@@ -43,12 +43,14 @@ export default class Draw extends declared(Widget) {
 
   render() {
     const fill = document.querySelector('#fill');
+    fill?.setAttribute('value', '#ff0000');
     fill?.addEventListener('calciteColorChange', (e: any) => {
       const hex: string = e.target.value;
       this.viewModel.sketch.viewModel.pointSymbol.color = Color.fromHex(hex);
       this.viewModel.sketch.viewModel.polygonSymbol.color = Color.fromHex(hex);
     });
     const line = document.querySelector('#line');
+    line?.setAttribute('value', '#ff0000');
     line?.addEventListener('calciteColorChange', (e: any) => {
       const hex: string = e.target.value;
       this.viewModel.sketch.viewModel.polylineSymbol.color = Color.fromHex(hex);
@@ -56,11 +58,11 @@ export default class Draw extends declared(Widget) {
       (this.viewModel.sketch.viewModel.polygonSymbol as esri.SimpleFillSymbol).outline.color = Color.fromHex(hex);
     });
     const opacity = document.querySelector('#opacity');
-    opacity?.addEventListener('calciteInputBlur', (e: any) => {
-      this.viewModel.graphics.opacity = parseFloat(e.target.value);
+    opacity?.addEventListener('calciteSliderUpdate', (e: any) => {
+      this.viewModel.sketch.viewModel.polygonSymbol.color.a = e.target.value;
     });
     const width = document.querySelector('#width');
-    width?.addEventListener('calciteInputBlur', (e: any) => {
+    width?.addEventListener('calciteSliderUpdate', (e: any) => {
       (this.viewModel.sketch.viewModel.polylineSymbol as esri.SimpleLineSymbol).width = parseFloat(e.target.value);
       (this.viewModel.sketch.viewModel.pointSymbol as esri.SimpleMarkerSymbol).outline.width = parseFloat(
         e.target.value
@@ -87,13 +89,13 @@ export default class Draw extends declared(Widget) {
             <calcite-label scale="s">Line Color</calcite-label>
             <calcite-color id="line" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
           </calcite-block-section>
-          <calcite-block-section text="Opacity">
+          <calcite-block-section text="Fill Opacity">
             <calcite-label scale="s">Opacity</calcite-label>
-            <calcite-input scale="s" id="opacity" type="number" max="1" min="0" value="1" step="0.1"></calcite-input>
+            <calcite-slider scale="s" id="opacity" max="1" min="0" value="0.5" step="0.1"></calcite-slider>
           </calcite-block-section>
           <calcite-block-section text="Outline">
             <calcite-label scale="s">Width</calcite-label>
-            <calcite-input scale="s" id="width" type="number" max="10" min="0" value="1" step="0.5"></calcite-input>
+            <calcite-slider id="width" max="10" min="0" value="1" step="0.5"></calcite-slider>
           </calcite-block-section>
           <calcite-block-section text="Labeling">
             <calcite-label scale="s">Label</calcite-label>

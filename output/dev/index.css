@@ -33,6 +33,9 @@ body {
   display: flex;
   flex-direction: row;
 }
+article:focus {
+  outline: none;
+}
 
 /* map view */
 #viewDiv {
@@ -67,6 +70,14 @@ body {
     top: 0;
     z-index: 100;
   }
+  calcite-tip-manager {
+    position: absolute;
+    left: 1em;
+    right: 1em;
+    bottom: 0;
+    margin: 1em;
+    max-width: 100%;
+  }  
 
 }
 
@@ -125,12 +136,24 @@ calcite-action-bar {
 
 calcite-tip-manager {
   position: absolute;
-  left: 1em;
-  right: 1em;
+  left: 10%;
+  right: 10%;
   bottom: 0;
   margin: 1em;
+  max-width: 750px;
+box-shadow: 0px 0px 27px 1px rgba(130,130,130,0.62);
 }
 
 .esri-legend__message {
   display: none;
+}
+
+.esri-icon-visible:before {
+    content: "\e611";
+    color: inherit;
+}
+
+.esri-icon-non-visible:before {
+  content: "\e610";
+  color: inherit;
 }

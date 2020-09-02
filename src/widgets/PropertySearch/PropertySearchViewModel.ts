@@ -6,6 +6,9 @@ import { declared, property, subclass } from 'esri/core/accessorSupport/decorato
 import Search from 'esri/widgets/Search';
 import FeatureTable from 'esri/widgets/FeatureTable';
 import FeatureLayer from 'esri/layers/FeatureLayer';
+
+import GraphicsLayer from 'esri/layers/GraphicsLayer';
+
 import Feature from 'esri/widgets/Feature';
 import { whenDefinedOnce, whenDefined } from 'esri/core/watchUtils';
 import LayerSearchSource from 'esri/widgets/Search/LayerSearchSource';
@@ -26,6 +29,20 @@ export default class PropertySearchViewModel extends declared(Accessor) {
   @property() geometry: esri.Geometry;
 
   @property() name = 'Property Search';
+  graphics = new GraphicsLayer({ id: 'property-select', listMode: 'hide' });
+  singleSymbol = {
+    type: 'simple-fill',
+    style: 'none',
+    outline: { width: 2.5, color: [255, 82, 82, 1] },
+    color: [253, 46, 65, 0.25]
+  };
+  multiSymbol = {
+    type: 'simple-fill',
+    style: 'none',
+    outline: { width: 2.5, color: [249, 243, 0, 1] },
+    color: [253, 46, 65, 0.25]
+  };
+
   highlights: any;
   constructor(params?: any) {
     super(params);
@@ -36,17 +53,22 @@ export default class PropertySearchViewModel extends declared(Accessor) {
 
   searchByGeometry(geometry: esri.Geometry) {
     this.propertyLayer
-      .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID'] })
+      .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID', 'REID'] })
       .then(result => {
-        const layerView = this.view.layerViews.find(view => {
-          return view.layer === this.propertyLayer;
-        });
-        if (layerView) {
-          if (this.highlights) {
-            this.highlights.remove();
-          }
-          this.highlights = (layerView as esri.FeatureLayerView).highlight(result.features);
-        }
+        // const layerView = this.view.layerViews.find(view => {
+        //   return view.layer === this.propertyLayer;
+        // });
+        // if (layerView) {
+        // if (this.highlights) {
+        //   this.highlights.remove();
+        // }
+        // this.highlights = (layerView as esri.FeatureLayerView).highlight(result.features);
+        // this.graphics.removeAll();
+        // result.features.forEach(feature => {
+        //   feature.symbol = this.multiSymbol as any;
+        //   this.graphics.add(feature);
+        // });
+        // }
         const relationship = this.propertyLayer.relationships.find(r => {
           return r.name === 'PROPERTY_CONDO';
         });
@@ -78,7 +100,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
   }
 
   init(view: esri.MapView | esri.SceneView) {
-    console.log(view.scale);
+    view.map.add(this.graphics, view.map.allLayers.length - 1);
   }
 
   arcadeExpressionInfos = [
@@ -145,7 +167,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
     ]
   });
 
-  getProperty = (oids: any[]) => {
+  getProperty = (oids: any[], source?: string) => {
     const relationship = this.condosTable.relationships.find(r => {
       return r.name === 'CONDO_PROPERTY';
     });
@@ -153,7 +175,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
       .queryRelatedFeatures({
         relationshipId: relationship?.id,
         objectIds: oids,
-        outFields: ['OBJECTID'],
+        outFields: ['OBJECTID', 'REID'],
         returnGeometry: false
       })
       .then(result => {
@@ -172,15 +194,23 @@ export default class PropertySearchViewModel extends declared(Accessor) {
           })
           .then(result => {
             this.view.goTo(result.features);
-            const layerView = this.view.layerViews.find(view => {
-              return view.layer === this.propertyLayer;
-            });
-            if (layerView) {
-              if (this.highlights) {
-                this.highlights.remove();
-              }
-              this.highlights = (layerView as esri.FeatureLayerView).highlight(result.features);
+            // const layerView = this.view.layerViews.find(view => {
+            //   return view.layer === this.propertyLayer;
+            // });
+            // if (layerView) {
+            // if (this.highlights) {
+            //   this.highlights.remove();
+            // }
+            // this.highlights = (layerView as esri.FeatureLayerView).highlight(result.features);
+            if (!source) {
+              this.graphics.removeAll();
+              result.features.forEach(feature => {
+                feature.symbol = result.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
+                this.graphics.add(feature);
+              });
             }
+
+            // }
           });
       });
   };
@@ -216,7 +246,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
             this.addressTable
               .queryRelatedFeatures({ relationshipId: relationship.id, objectIds: oids, outFields: ['*'] })
               .then(result => {
-                const oids: any[] = [];
+                //const oids: any[] = [];
                 for (const key in result) {
                   result[key].features.forEach((feature: esri.Graphic) => {
                     console.log(feature);
@@ -333,7 +363,24 @@ export default class PropertySearchViewModel extends declared(Accessor) {
         feature.layer = this.condosTable;
         feature.popupTemplate = (feature.layer as esri.FeatureLayer).popupTemplate;
         this.feature.graphic = feature;
-        console.log(feature);
+        this.feature.graphic.symbol = this.singleSymbol as any;
+        const selected = this.graphics.graphics.find(graphic => {
+          return graphic.getAttribute('selected') === 'true';
+        });
+        if (selected) {
+          selected.symbol = this.multiSymbol as any;
+          selected.setAttribute('selected', 'false');
+        }
+        console.log('REID: ', feature.getAttribute('REID'));
+        const graphic = this.graphics.graphics.find(graphic => {
+          console.log(graphic.getAttribute('REID'));
+          return graphic.getAttribute('REID') === feature.getAttribute('REID');
+        });
+        if (graphic) {
+          graphic.symbol = this.singleSymbol as any;
+          graphic.setAttribute('selected', 'true');
+          this.graphics.graphics.reorder(graphic, this.graphics.graphics.length - 1);
+        }
       });
   }
 
@@ -435,19 +482,20 @@ export default class PropertySearchViewModel extends declared(Accessor) {
 
     this.featureTable.on('selection-change', event => {
       if (event.added.length) {
-        this.getProperty([event.added[0].feature.getAttribute('OBJECTID')]);
+        this.getProperty([event.added[0].feature.getAttribute('OBJECTID')], 'table');
         this.setFeature(
           event.added[0].feature,
           this.view as esri.MapView,
           [],
           [event.added[0].feature.getAttribute('OBJECTID')]
         );
+        event.added[0].feature.setAttribute('selected', 'true');
         this.toggleContent('feature');
       }
       (this.featureTable as any).clearSelection();
     });
     this.searchWidget = new Search({
-      allPlaceholder: 'Site Address',
+      allPlaceholder: 'Address, owner, PIN, or REID',
       includeDefaultSources: false,
       container: 'search',
       sources: [

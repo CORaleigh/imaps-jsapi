@@ -61,6 +61,15 @@ view.when(() => {
           }
         });
       });
+    } else {
+      layer.watch('visible', visible => {
+        const group = layerList.operationalItems.find(i => {
+          return i.layer === layer;
+        });
+        if (group) {
+          group.open = visible;
+        }
+      });
     }
   });
   const propertyLayer = map.allLayers.find(layer => {
@@ -68,6 +77,7 @@ view.when(() => {
   });
   view.on('hold', e => {
     propertySearch.geometry = e.mapPoint;
+    debugger;
   });
   view
     .whenLayerView(propertyLayer)
@@ -78,6 +88,15 @@ view.when(() => {
           if (select.viewModel?.bufferDistance > 0) {
             const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'meters');
             propertySearch.geometry = g as __esri.Polygon;
+            ev.graphic.geometry = g;
+            select.viewModel.graphics.add(ev.graphic);
+            ev.graphic.symbol = {
+              type: 'simple-fill',
+              style: 'none',
+              outline: { style: 'short-dash', width: 2.5, color: [221, 221, 221, 1] },
+              color: [255, 243, 13, 0.25]
+            };
+            view.goTo(ev.graphic);
           } else {
             propertySearch.geometry = ev.graphic.geometry;
           }
@@ -107,7 +126,6 @@ document.querySelectorAll('calcite-panel').forEach(item => {
 });
 document.querySelectorAll('.maximize').forEach(item => {
   item.addEventListener('click', () => {
-    debugger;
     item.parentElement?.parentElement?.removeAttribute('dismissed');
     item.parentElement?.parentElement?.classList.remove('hidden');
     if (item.getAttribute('icon') === 'maximize') {
@@ -142,10 +160,10 @@ view.when(initWidgets);
 
 view.when(initTips);
 
-//document.querySelectorAll('calcite-panel').forEach(item => {
-//item?.shadowRoot?.innerHTML.querySelector('.content-container')?.setAttribute('style', 'height: 100%');
-// (item.shadowRoot as any).innerHTML += '<style>.content-container { height: 100%; } </style>';
-//});
+document.querySelectorAll('calcite-panel').forEach(item => {
+  const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
+  i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+});
 window.addEventListener('pagehide', () => {
   view.map.removeMany(
     view.map.allLayers
@@ -172,3 +190,13 @@ document.querySelectorAll('calcite-panel div').forEach(panel => {
     panel.setAttribute('style', 'display: flex; flex-direction: row;');
   }
 });
+
+// document.querySelectorAll('calcite-panel').forEach(item => {
+//   const article: HTMLElement = item?.shadowRoot?.querySelector('article') as HTMLElement;
+//   article.innerHTML +=
+//     '<style>article:-webkit-direct-focus { outline: none; } article:focus { outline: none; } </style>';
+
+//   const section: HTMLElement = item?.shadowRoot?.querySelector('section') as HTMLElement;
+//   section.innerHTML +=
+//     '<style>section:-webkit-direct-focus { outline: none; } section:focus { outline: none; } </style>';
+// });

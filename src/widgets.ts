@@ -39,14 +39,31 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
         slider.setAttribute('value', (item?.layer.opacity * 100).toString());
         slider.setAttribute('data', item.layer.id);
         slider.addEventListener('calciteSliderUpdate', event => {
-          view.map.findLayerById((event.target as HTMLElement).getAttribute('data')).opacity =
-            parseInt(event.target.getAttribute('value')) / 100;
+          view.map.findLayerById((event.target as any).getAttribute('data')).opacity =
+            parseInt((event?.target as any)?.getAttribute('value')) / 100;
         });
         item.panel = {
           content: [slider, 'legend'],
           open: false
         };
+        if (item.layer.title === 'Property') {
+          item.actionsSections = [
+            [
+              {
+                title: 'Show Labels',
+                type: 'toggle',
+                id: 'property-labels',
+                value: item.layer.labelsVisible
+              }
+            ]
+          ];
+        }
       }
+    }
+  });
+  layerList.on('trigger-action', event => {
+    if (event.action.id === 'property-labels') {
+      (event.item.layer as esri.FeatureLayer).labelsVisible = (event.action as esri.ActionToggle).value;
     }
   });
   new Print({

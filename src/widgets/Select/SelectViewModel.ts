@@ -31,6 +31,7 @@ export default class SelectViewModel extends declared(Accessor) {
       layer: this.graphics,
       creationMode: 'single'
     });
+    this.sketch.viewModel.updateOnGraphicClick = false;
     this.sketch.on('create', ev => {
       if (ev.state === 'complete') {
         this.graphics.removeAll();
