@@ -159,10 +159,11 @@ window.onresize = () => {
 view.when(initWidgets);
 
 view.when(initTips);
-
-document.querySelectorAll('calcite-panel').forEach(item => {
-  const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
-  i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+view.when(() => {
+  document.querySelectorAll('calcite-panel').forEach(item => {
+    const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
+    i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+  });
 });
 window.addEventListener('pagehide', () => {
   view.map.removeMany(
