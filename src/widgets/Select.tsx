@@ -53,15 +53,17 @@ export default class Select extends declared(Widget) {
     return (
       <div class={CSS.base}>
         <div afterUpdate={this._sketchCreated} id="selectWidget"></div>
-        <calcite-label scale="s">Buffer Distance (feet) </calcite-label>
-        <calcite-input
-          scale="s"
-          type="number"
-          min="0"
-          max="2000"
-          step="50"
-          value={this.viewModel.bufferDistance}
-        ></calcite-input>
+        <calcite-label scale="s">
+          Buffer Distance (feet)
+          <calcite-input
+            scale="s"
+            type="number"
+            min="0"
+            max="2000"
+            step="50"
+            value={this.viewModel.bufferDistance}
+          ></calcite-input>
+        </calcite-label>
       </div>
     );
   }

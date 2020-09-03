@@ -54,7 +54,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
   searchByGeometry(geometry: esri.Geometry) {
     this.propertyLayer
       .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID', 'REID'] })
-      .then(result => {
+      .then(propertyResult => {
         // const layerView = this.view.layerViews.find(view => {
         //   return view.layer === this.propertyLayer;
         // });
@@ -73,7 +73,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
           return r.name === 'PROPERTY_CONDO';
         });
         const oids: any[] = [];
-        result.features.forEach(f => {
+        propertyResult.features.forEach(f => {
           oids.push(f.getObjectId());
         });
         this.propertyLayer
@@ -91,10 +91,20 @@ export default class PropertySearchViewModel extends declared(Accessor) {
               objectIdField: 'OBJECTID'
             });
             if (features.length === 1) {
+              if (!features[0].geometry) {
+                features[0].geometry = geometry;
+              }
               this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getObjectId()]);
               this.toggleContent('feature');
             }
             this.featureTable.renderNow();
+            this.graphics.removeAll();
+            propertyResult.features.forEach((feature: esri.Graphic) => {
+              feature.symbol =
+                propertyResult.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
+
+              this.graphics.add(feature);
+            });
           });
       });
   }
@@ -194,14 +204,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
           })
           .then(result => {
             this.view.goTo(result.features);
-            // const layerView = this.view.layerViews.find(view => {
-            //   return view.layer === this.propertyLayer;
-            // });
-            // if (layerView) {
-            // if (this.highlights) {
-            //   this.highlights.remove();
-            // }
-            // this.highlights = (layerView as esri.FeatureLayerView).highlight(result.features);
             if (!source) {
               this.graphics.removeAll();
               result.features.forEach(feature => {
@@ -209,8 +211,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
                 this.graphics.add(feature);
               });
             }
-
-            // }
           });
       });
   };
@@ -481,6 +481,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
     button.clickFunction.bind(this.featureTable);
 
     this.featureTable.on('selection-change', event => {
+      (this.featureTable as any).clearSelection();
       if (event.added.length) {
         this.getProperty([event.added[0].feature.getAttribute('OBJECTID')], 'table');
         this.setFeature(
@@ -492,7 +493,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
         event.added[0].feature.setAttribute('selected', 'true');
         this.toggleContent('feature');
       }
-      (this.featureTable as any).clearSelection();
     });
     this.searchWidget = new Search({
       allPlaceholder: 'Address, owner, PIN, or REID',

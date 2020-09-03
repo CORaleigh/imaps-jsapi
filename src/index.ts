@@ -86,7 +86,7 @@ view.when(() => {
       select.viewModel.sketch.on('create', (ev: any) => {
         if (ev.state === 'complete') {
           if (select.viewModel?.bufferDistance > 0) {
-            const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'meters');
+            const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'feet');
             propertySearch.geometry = g as __esri.Polygon;
             ev.graphic.geometry = g;
             select.viewModel.graphics.add(ev.graphic);

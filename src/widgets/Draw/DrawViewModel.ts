@@ -58,6 +58,7 @@ export default class DrawViewModel extends declared(Accessor) {
         if (e.graphic.geometry.type === 'polygon') {
           labelPoint = (e.graphic.geometry as esri.Polygon).centroid;
         }
+        debugger;
         const g = new Graphic({
           geometry: labelPoint,
           symbol: new TextSymbol({
@@ -65,7 +66,9 @@ export default class DrawViewModel extends declared(Accessor) {
             color: this.textColor,
             haloColor: 'white',
             haloSize: 1,
-            verticalAlignment: 'top',
+            xoffset: '5px',
+            yoffset: '5px',
+            verticalAlignment: 'bottom',
             horizontalAlignment: 'right'
           })
         });

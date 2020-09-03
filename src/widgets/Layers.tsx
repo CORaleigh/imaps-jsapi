@@ -21,10 +21,8 @@ const CSS = {
 export default class Layers extends declared(Widget) {
   @aliasOf('viewModel.view')
   view: esri.MapView | esri.SceneView;
-
-  @aliasOf('viewModel.name')
-  @renderable()
-  name = '';
+  @aliasOf('viewModel.layerList')
+  layerList: esri.LayerList;
 
   @property({
     type: LayersViewModel
@@ -35,11 +33,15 @@ export default class Layers extends declared(Widget) {
   constructor(properties?: LayersProperties) {
     super(properties);
   }
-
+  _createLayers = () => {
+    if (this.layerList) {
+      this.layerList.container = 'layers';
+    }
+  };
   render() {
     return (
       <div class={CSS.base}>
-        <p>Welcome {this.name}!</p>
+        <div afterCreate={this._createLayers} id="layers"></div>
       </div>
     );
   }

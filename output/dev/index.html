@@ -34,10 +34,25 @@
 </head>
 <body>
   <noscript> JavaScript is required in order to use this app </noscript>
-  
+   
  <div class="app-container">
     <header class="header">
       <h2 class="heading">iMAPS</h2>
+      <calcite-dropdown alignment="end">
+        <calcite-button slot="dropdown-trigger"><calcite-icon icon="hamburger"></calcite-icon></calcite-button>
+        <calcite-dropdown-group group-title="Help" selection-mode="none">
+          <calcite-dropdown-item>Help Document</calcite-dropdown-item>
+          <calcite-dropdown-item href="https://arcg.is/1GurDS" target="_blank">Feedback</calcite-dropdown-item>
+        </calcite-dropdown-group>
+        <calcite-dropdown-group group-title="Data Download" selection-mode="none">
+          <calcite-dropdown-item href="https://data-wake.opendata.arcgis.com/" target="_blank">Wake County Open Data</calcite-dropdown-item>
+          <calcite-dropdown-item href="https://data.raleighnc.gov/" target="_blank">Raleigh Open Data</calcite-dropdown-item>
+        </calcite-dropdown-group>
+        <calcite-dropdown-group group-title="Links" selection-mode="none">
+          <calcite-dropdown-item href="https://data.raleighnc.gov/" target="_blank">RaleighNC.gov</calcite-dropdown-item>
+          <calcite-dropdown-item href="https://wakegov.com/" target="_blank">WakeGOV.com</calcite-dropdown-item>
+        </calcite-dropdown-group>
+      </calcite-dropdown>      
     </header>
     
     <div class="content">
@@ -95,6 +110,9 @@
       <calcite-panel title="Basemaps" class="panel hidden" dismissible>
         <div slot="header-content">Basemaps</div>
                 <div slot="header-trailing-content">
+                  <calcite-action id="basemapTip" class='tip'
+                  icon="lightbulb" scale="m"
+                ></calcite-action>                    
           <calcite-action class='maximize'
             icon="maximize" scale="m"
           ></calcite-action>
@@ -131,11 +149,23 @@
         </div>        
         <div id="selectDiv"></div>
       </calcite-panel>                                
-
+      <calcite-panel title="Location" class="panel hidden" dismissible>
+        <div slot="header-content">Location Search</div>
+                <div slot="header-trailing-content">
+                  <calcite-action id="locationTip" class='tip'
+                  icon="lightbulb" scale="m"
+                ></calcite-action>                 
+          <calcite-action class='maximize'
+            icon="maximize" scale="m"
+          ></calcite-action>
+        </div>        
+        <div id="locationDiv"></div>
+      </calcite-panel>     
       
         <calcite-action-bar theme="dark">
           <calcite-action text="Search" icon="search">
           </calcite-action>
+          <calcite-action text="Location" icon="pin"></calcite-action>          
           <calcite-action text="Layers" icon="layers"></calcite-action>
           <calcite-action text="Legend" icon="legend"></calcite-action>
           <calcite-action text="Basemaps" icon="basemap"></calcite-action>

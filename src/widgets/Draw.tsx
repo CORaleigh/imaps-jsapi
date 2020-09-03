@@ -76,6 +76,7 @@ export default class Draw extends declared(Widget) {
       this.set('label', e.target.value);
     });
     const textColor = document.querySelector('#textColor');
+    textColor?.setAttribute('value', '#ff0000');
     textColor?.addEventListener('calciteColorChange', (e: any) => {
       this.set('textColor', Color.fromHex(e.target.value));
     });
@@ -84,23 +85,31 @@ export default class Draw extends declared(Widget) {
         <div afterUpdate={this._drawUpdated} id="sketchDiv"></div>
         <calcite-block heading="Settings" open collapsible>
           <calcite-block-section text="Color">
-            <calcite-label scale="s">Fill Color</calcite-label>
-            <calcite-color id="fill" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
-            <calcite-label scale="s">Line Color</calcite-label>
-            <calcite-color id="line" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+            <calcite-label scale="s">
+              Fill Color <calcite-color id="fill" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+            </calcite-label>
+            <calcite-label scale="s">
+              Line Color <calcite-color id="line" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+            </calcite-label>
           </calcite-block-section>
           <calcite-block-section text="Fill Opacity">
-            <calcite-label scale="s">Opacity</calcite-label>
-            <calcite-slider scale="s" id="opacity" max="1" min="0" value="0.5" step="0.1"></calcite-slider>
+            <calcite-label scale="s">
+              Opacity<calcite-slider scale="s" id="opacity" max="1" min="0" value="0.5" step="0.1"></calcite-slider>
+            </calcite-label>
           </calcite-block-section>
           <calcite-block-section text="Outline">
-            <calcite-label scale="s">Width</calcite-label>
-            <calcite-slider id="width" max="10" min="0" value="1" step="0.5"></calcite-slider>
+            <calcite-label scale="s">
+              Width <calcite-slider id="width" max="10" min="0" value="1" step="0.5"></calcite-slider>
+            </calcite-label>
           </calcite-block-section>
           <calcite-block-section text="Labeling">
-            <calcite-label scale="s">Label</calcite-label>
-            <calcite-input scale="s" id="label" type="textarea"></calcite-input>
-            <calcite-color id="textColor" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+            <calcite-label scale="s">
+              Label <calcite-input scale="s" id="label" type="textarea"></calcite-input>
+            </calcite-label>
+            <calcite-label scale="s">
+              Text Color
+              <calcite-color id="textColor" hideChannels hideSaved appearance="minimal" scale="s"></calcite-color>
+            </calcite-label>
           </calcite-block-section>
         </calcite-block>
       </div>

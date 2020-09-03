@@ -24,6 +24,27 @@ const tipGroups = [
           message:
             'To search by a portion of an owner name or address, hit enter without selecting form the list of suggestions.',
           title: 'Wildcard Search'
+        },
+        {
+          message: 'To quickly select a property from the map, long press on a property on the map.',
+          title: 'Long Press'
+        },
+        {
+          message: 'To select by a location use the property selection tool.',
+          title: 'Select By Location'
+        }
+      ]
+    }
+  },
+  {
+    panel: {
+      name: 'basemapTip',
+      title: 'Basemaps',
+      tips: [
+        {
+          message:
+            'The imagery and imagery hybrid base maps listed under the maps tab is a combination of the latest imagery from Raleigh (2019) and from the State of North Carolina (2017).',
+          title: 'Imagery Basemaps'
         }
       ]
     }
