@@ -196,23 +196,24 @@ export default class PropertySearchViewModel extends Accessor {
             outSpatialReference: { wkid: 102100 }
           })
           .then(result => {
-            const points: Graphic[] = [];
-            result.features.forEach(feature => {
-              const pt = feature.clone();
-              this.clusterPoints.source.removeAll();
-              pt.geometry = (pt.geometry as esri.Polygon).centroid;
-              points.push(pt);
-            });
-            this.clusterPoints
-              .queryFeatures({ where: '1=1', returnGeometry: false, outFields: ['OBJECTID'] })
-              .then(result => {
-                this.clusterPoints.applyEdits({ deleteFeatures: result.features });
-                this.clusterPoints.applyEdits({ addFeatures: points });
-              });
-
             this.view.goTo(result.features);
             if (!source) {
               this.addGraphics(result);
+              const points: Graphic[] = [];
+              result.features.forEach(feature => {
+                const pt = feature.clone();
+                pt.geometry = (pt.geometry as esri.Polygon).centroid;
+                points.push(pt);
+              });
+              this.clusterPoints
+                .queryFeatures({ where: '1=1', returnGeometry: false, outFields: ['OBJECTID'] })
+                .then(result => {
+                  this.clusterPoints.applyEdits({ deleteFeatures: result.features }).then(() => {
+                    this.clusterPoints.applyEdits({ addFeatures: points }).then(() => {
+                      this.clusterPoints.refresh();
+                    });
+                  });
+                });
             }
           });
       });
@@ -220,35 +221,60 @@ export default class PropertySearchViewModel extends Accessor {
 
   searchComplete = (event: esri.SearchSearchCompleteEvent) => {
     if (!this.searchWidget.viewModel.selectedSuggestion) {
-      let oids: any[] = [];
-      let where =
-        "OWNER like '" +
-        event.searchTerm.toUpperCase() +
-        "%' OR REID like '" +
-        event.searchTerm.toUpperCase() +
-        "%' OR PIN_NUM like '" +
-        event.searchTerm.toUpperCase() +
-        "'";
+      const oids: any[] = [];
+      debugger;
+      let where = '';
+      debugger;
+      if (!this.searchWidget.activeSource) {
+        where =
+          "OWNER like '" +
+          event.searchTerm.toUpperCase() +
+          "%' OR REID like '" +
+          event.searchTerm.toUpperCase() +
+          "%' OR PIN_NUM like '" +
+          event.searchTerm.toUpperCase() +
+          "%'";
+      } else {
+        if ((this.searchWidget.activeSource as any)?.searchFields.includes('OWNER')) {
+          where = "OWNER like '%" + event.searchTerm.toUpperCase() + "%'";
+        }
+        if ((this.searchWidget.activeSource as any)?.searchFields.includes('PIN_NUM')) {
+          where = "PIN_NUM like '%" + event.searchTerm.toUpperCase() + "%'";
+        }
+        if ((this.searchWidget.activeSource as any)?.searchFields.includes('REID')) {
+          where = "REID like '%" + event.searchTerm.toUpperCase() + "%'";
+        }
+      }
+
       let tableFeatures: any[] = [];
+      debugger;
       this.condosTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
         tableFeatures = result.features;
         result.features.forEach(f => {
           oids.push(f.getObjectId());
         });
-        where = "ADDRESS like '%" + event.searchTerm.toUpperCase() + "%'";
+
+        if (
+          !this.searchWidget.activeSource ||
+          (this.searchWidget.activeSource as any)?.searchFields.includes('ADDRESS')
+        ) {
+          where = "ADDRESS like '%" + event.searchTerm.toUpperCase() + "%'";
+        } else {
+          where = 'ADDRESS IS NULL';
+        }
+
         this.addressTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
           const relationship = this.addressTable.relationships.find(r => {
             return r.name === 'ADDRESSES_CONDO';
           });
-
+          const addrOids: any[] = [];
           result.features.forEach(f => {
-            oids.push(f.getObjectId());
+            addrOids.push(f.getObjectId());
           });
-          if (relationship && oids.length) {
+          if (relationship && addrOids.length) {
             this.addressTable
-              .queryRelatedFeatures({ relationshipId: relationship.id, objectIds: oids, outFields: ['*'] })
+              .queryRelatedFeatures({ relationshipId: relationship.id, objectIds: addrOids, outFields: ['*'] })
               .then(result => {
-                oids = [];
                 for (const key in result) {
                   result[key].features.forEach((feature: esri.Graphic) => {
                     oids.push(feature.getAttribute('OBJECTID'));
@@ -261,6 +287,7 @@ export default class PropertySearchViewModel extends Accessor {
                 this.featureTable.renderNow();
               });
           } else {
+            this.getProperty(oids);
             this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, tableFeatures);
             this.featureTable.renderNow();
           }
