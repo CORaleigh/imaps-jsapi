@@ -1,15 +1,11 @@
-// styles
 import './css/main.css';
-
-// Map data
 import { map } from './data/app';
 import { initTips } from './tips';
 import { showAlert } from './alert';
-// MapView
 import MapView from 'esri/views/MapView';
 import geometryEngine from 'esri/geometry/geometryEngine';
 // widget utils
-import { initWidgets, measurement, select, propertySearch, layerList } from './widgets';
+import { initWidgets, measurement, select, propertySearch, layers } from './widgets';
 /**
  * Initialize application
  */
@@ -18,6 +14,7 @@ const view = new MapView({
   map
 });
 
+//handle action bar toggle
 const toggleAction = (action: string) => {
   document.querySelectorAll('.panel').forEach((panel: HTMLElement) => {
     if (panel.title != action) {
@@ -39,18 +36,23 @@ const toggleAction = (action: string) => {
   });
 };
 
-const actions: any = document.querySelectorAll('calcite-action');
-actions?.forEach((action: any) => {
+const actions: NodeListOf<Element> = document.querySelectorAll('calcite-action');
+actions?.forEach((action: Element) => {
   action?.addEventListener('click', (e: any) => {
     toggleAction(e.target.text);
+    actions.forEach((action: any) => {
+      action.removeAttribute('active');
+    });
+    action.toggleAttribute('active');
   });
 });
 
+//handle when view is ready
 view.when(() => {
   view.map.allLayers.forEach(layer => {
     if (layer.type != 'group') {
       layer.watch('visible', visible => {
-        layerList.operationalItems.forEach(item => {
+        layers.layerList?.operationalItems.forEach(item => {
           if (item.layer.type === 'group') {
             const child = item.children.find(i => {
               return i.layer === layer;
@@ -63,7 +65,7 @@ view.when(() => {
       });
     } else {
       layer.watch('visible', visible => {
-        const group = layerList.operationalItems.find(i => {
+        const group = layers.layerList.operationalItems.find(i => {
           return i.layer === layer;
         });
         if (group) {
@@ -77,12 +79,13 @@ view.when(() => {
   });
   view.on('hold', e => {
     propertySearch.geometry = e.mapPoint;
-    debugger;
+    toggleAction('Search');
   });
   view
     .whenLayerView(propertyLayer)
     .then(() => {
       propertySearch.propertyLayer = propertyLayer as __esri.FeatureLayer;
+      //search by geometry after sketch creation in select widget
       select.viewModel.sketch.on('create', (ev: any) => {
         if (ev.state === 'complete') {
           if (select.viewModel?.bufferDistance > 0) {
@@ -105,13 +108,31 @@ view.when(() => {
       });
     })
     .catch((reason: any) => {
+      //on error loading property layer, display alert
       console.log(reason);
       showAlert('Property layer did not load. Please contact iMAPS Help Desk.', 'red');
     });
 });
+view.when(initWidgets);
+view.when(initTips);
+//save web map to local storage on pagehide
+window.addEventListener('pagehide', () => {
+  view.map.removeMany(
+    view.map.allLayers
+      .filter(layer => {
+        return layer.type === 'group' && !(layer as __esri.GroupLayer).layers.length;
+      })
+      .toArray()
+  );
+  const json = (view.map as any).toJSON();
+  json.initialState.viewpoint.targetGeometry = view.extent;
+  window.localStorage.setItem('imaps', JSON.stringify(json));
+});
 
+//show first panel on devices wider than 500px by default
 if (window.outerWidth >= 500) {
   document.querySelector('calcite-panel')?.classList.remove('hidden');
+  document.querySelector('calcite-panel')?.removeAttribute('dismissed');
 }
 
 document.querySelectorAll('calcite-panel').forEach(item => {
@@ -124,6 +145,8 @@ document.querySelectorAll('calcite-panel').forEach(item => {
     });
   });
 });
+
+//handle panel maximize/minimize
 document.querySelectorAll('.maximize').forEach(item => {
   item.addEventListener('click', () => {
     item.parentElement?.parentElement?.removeAttribute('dismissed');
@@ -137,6 +160,8 @@ document.querySelectorAll('.maximize').forEach(item => {
     }
   });
 });
+
+//handle when device changes sizes
 window.onresize = () => {
   if ((event?.target as any)?.outerWidth >= 500) {
     document.querySelectorAll('calcite-panel').forEach(item => {
@@ -156,48 +181,35 @@ window.onresize = () => {
     });
   }
 };
-view.when(initWidgets);
 
-view.when(initTips);
+//modify DOM after map view loads
 view.when(() => {
   document.querySelectorAll('calcite-panel').forEach(item => {
     const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
     i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+    item.addEventListener('calcitePanelDismissedChange', e => {
+      if (window.outerWidth <= 500) {
+        if ((e.target as any).dismissed) {
+          document.querySelector('#viewDiv')?.classList.remove('below');
+        } else {
+          document.querySelector('#viewDiv')?.classList.add('below');
+        }
+      }
+      if ((e.target as any).dismissed) {
+        actions.forEach((action: any) => {
+          action.removeAttribute('active');
+        });
+      }
+    });
+  });
+  document.querySelectorAll('calcite-action').forEach(item => {
+    item.removeAttribute('disabled');
   });
 });
-window.addEventListener('pagehide', () => {
-  view.map.removeMany(
-    view.map.allLayers
-      .filter(layer => {
-        return layer.type === 'group' && !(layer as __esri.GroupLayer).layers.length;
-      })
-      .toArray()
-  );
-  const json = (view.map as any).toJSON();
-  json.initialState.viewpoint.targetGeometry = view.extent;
-  window.localStorage.setItem('imaps', JSON.stringify(json));
-  // if (drawWidget.viewModel.graphics.graphics.length) {
-  //   drawWidget.viewModel.graphics.graphics.removeMany(
-  //     drawWidget.viewModel.graphics.graphics.filter(graphic => {
-  //       return !graphic.geometry;
-  //     })
-  //   );
-  //   window.localStorage.setItem('imaps_draw', JSON.stringify((drawWidget.viewModel.graphics.graphics as any).toJSON()));
-  // }
-});
 
+//override CSS for calcite panel header
 document.querySelectorAll('calcite-panel div').forEach(panel => {
   if (panel.slot === 'header-trailing-content') {
     panel.setAttribute('style', 'display: flex; flex-direction: row;');
   }
 });
-
-// document.querySelectorAll('calcite-panel').forEach(item => {
-//   const article: HTMLElement = item?.shadowRoot?.querySelector('article') as HTMLElement;
-//   article.innerHTML +=
-//     '<style>article:-webkit-direct-focus { outline: none; } article:focus { outline: none; } </style>';
-
-//   const section: HTMLElement = item?.shadowRoot?.querySelector('section') as HTMLElement;
-//   section.innerHTML +=
-//     '<style>section:-webkit-direct-focus { outline: none; } section:focus { outline: none; } </style>';
-// });

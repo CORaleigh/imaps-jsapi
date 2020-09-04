@@ -16,7 +16,6 @@ import { measurement } from '../../widgets';
 export default class DrawViewModel extends declared(Accessor) {
   @property() view: esri.MapView | esri.SceneView;
   @property() container: string;
-  @property() name = 'Slagathor';
   sketch: Sketch;
   graphics: GraphicsLayer;
   label: string;
@@ -29,13 +28,6 @@ export default class DrawViewModel extends declared(Accessor) {
   initDraw() {
     this.graphics = new GraphicsLayer({ listMode: 'hide' });
     this.view.map.add(this.graphics);
-
-    // this.view.whenLayerView(this.graphics).then(() => {
-    //   if (window.localStorage.getItem('imaps_draw')) {
-    //
-    //     this.graphics.graphics.addMany(JSON.parse(window.localStorage.getItem('imaps_draw') as string));
-    //   }
-    // });
 
     this.sketch = new Sketch({ view: this.view, container: 'sketchDiv', layer: this.graphics, creationMode: 'single' });
     this.sketch.viewModel.pointSymbol.color = Color.fromHex('#FF0000');

@@ -62,7 +62,7 @@ export function initTips() {
       });
 
       const group = document.createElement('calcite-tip-group');
-      group.setAttribute('text-group-title', tipGroup?.panel.title);
+      group.setAttribute('text-group-title', (tipGroup as any)?.panel.title);
       manager.appendChild(group);
       tipGroup?.panel.tips.forEach(tip => {
         const calciteTip = document.createElement('calcite-tip');

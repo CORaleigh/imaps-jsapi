@@ -28,7 +28,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
   @property() feature: esri.Feature;
   @property() geometry: esri.Geometry;
 
-  @property() name = 'Property Search';
   graphics = new GraphicsLayer({ id: 'property-select', listMode: 'hide' });
   singleSymbol = {
     type: 'simple-fill',
@@ -55,20 +54,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
     this.propertyLayer
       .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID', 'REID'] })
       .then(propertyResult => {
-        // const layerView = this.view.layerViews.find(view => {
-        //   return view.layer === this.propertyLayer;
-        // });
-        // if (layerView) {
-        // if (this.highlights) {
-        //   this.highlights.remove();
-        // }
-        // this.highlights = (layerView as esri.FeatureLayerView).highlight(result.features);
-        // this.graphics.removeAll();
-        // result.features.forEach(feature => {
-        //   feature.symbol = this.multiSymbol as any;
-        //   this.graphics.add(feature);
-        // });
-        // }
         const relationship = this.propertyLayer.relationships.find(r => {
           return r.name === 'PROPERTY_CONDO';
         });
@@ -96,6 +81,8 @@ export default class PropertySearchViewModel extends declared(Accessor) {
               }
               this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getObjectId()]);
               this.toggleContent('feature');
+            } else {
+              this.toggleContent('table');
             }
             this.featureTable.renderNow();
             this.graphics.removeAll();

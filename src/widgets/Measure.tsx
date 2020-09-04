@@ -27,9 +27,6 @@ export default class Measure extends declared(Widget) {
   initMeasure: Function;
   @aliasOf('viewModel.measureOpened')
   measureOpened: Function;
-  @aliasOf('viewModel.name')
-  @renderable()
-  name = '';
 
   @property({
     type: MeasureViewModel

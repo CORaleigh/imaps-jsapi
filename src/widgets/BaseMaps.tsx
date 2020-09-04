@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import esri = __esri;
 
 import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';

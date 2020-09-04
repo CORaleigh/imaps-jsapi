@@ -36,9 +36,6 @@ export default class PropertySearch extends declared(Widget) {
   feature: esri.Feature;
   @aliasOf('viewModel.geometry')
   geometry: esri.Geometry;
-  @aliasOf('viewModel.name')
-  @renderable()
-  name = '';
 
   @property({
     type: PropertySearchViewModel
