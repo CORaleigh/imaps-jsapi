@@ -4,13 +4,13 @@ import Accessor from 'esri/core/Accessor';
 import Sketch from 'esri/widgets/Sketch';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 
-import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
 import { measurement } from '../../widgets';
 
 @subclass('app.widgets.Select.SelectViewModel')
-export default class SelectViewModel extends declared(Accessor) {
+export default class SelectViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
   @property() layer: esri.FeatureLayer;
 

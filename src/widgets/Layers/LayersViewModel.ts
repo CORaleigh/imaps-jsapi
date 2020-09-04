@@ -2,12 +2,12 @@ import esri = __esri;
 
 import Accessor from 'esri/core/Accessor';
 
-import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
 import LayerList from 'esri/widgets/LayerList';
 @subclass('app.widgets.Layers.LayersViewModel')
-export default class LayersViewModel extends declared(Accessor) {
+export default class LayersViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
   layerList: esri.LayerList;
 

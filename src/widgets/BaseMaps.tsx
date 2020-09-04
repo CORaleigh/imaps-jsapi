@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import esri = __esri;
 
-import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { aliasOf, property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { renderable, tsx } from 'esri/widgets/support/widget';
 
@@ -18,7 +18,7 @@ const CSS = {
 };
 
 @subclass('app.widgets.BaseMaps')
-export default class BaseMaps extends declared(Widget) {
+export default class BaseMaps extends Widget {
   @aliasOf('viewModel.view')
   view: esri.MapView | esri.SceneView;
 

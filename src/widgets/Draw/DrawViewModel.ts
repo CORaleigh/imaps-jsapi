@@ -2,7 +2,7 @@ import esri = __esri;
 
 import Accessor from 'esri/core/Accessor';
 
-import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { property, subclass } from 'esri/core/accessorSupport/decorators';
 import Sketch from 'esri/widgets/Sketch';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import { whenDefinedOnce } from 'esri/core/watchUtils';
@@ -13,7 +13,7 @@ import Color from 'esri/Color';
 import { measurement } from '../../widgets';
 
 @subclass('app.widgets.Draw.DrawViewModel')
-export default class DrawViewModel extends declared(Accessor) {
+export default class DrawViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
   @property() container: string;
   sketch: Sketch;

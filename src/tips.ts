@@ -1,3 +1,5 @@
+import { theme } from './menu';
+
 const tipGroups = [
   {
     panel: {
@@ -57,6 +59,7 @@ export function initTips() {
       item.parentElement?.parentElement?.removeAttribute('dismissed');
       item.parentElement?.parentElement?.classList.remove('hidden');
       const manager = document.createElement('calcite-tip-manager');
+      manager.setAttribute('theme', theme);
       const tipGroup = tipGroups.find(group => {
         return group.panel.name === item.id;
       });

@@ -1,13 +1,12 @@
 import esri = __esri;
 
-import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { aliasOf, property, subclass } from 'esri/core/accessorSupport/decorators';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { renderable, tsx } from 'esri/widgets/support/widget';
 
 import Widget from 'esri/widgets/Widget';
 
 import SelectViewModel from './Select/SelectViewModel';
-
 export interface SelectProperties extends esri.WidgetProperties {
   name?: string;
   view?: esri.MapView | esri.SceneView;
@@ -19,7 +18,7 @@ const CSS = {
 };
 
 @subclass('app.widgets.Select')
-export default class Select extends declared(Widget) {
+export default class Select extends Widget {
   @aliasOf('viewModel.view')
   view: esri.MapView | esri.SceneView;
   @aliasOf('viewModel.layer')

@@ -1,3 +1,4 @@
+
 html, body {
   height: 100%; 
   width: 100%;
@@ -51,6 +52,9 @@ article:focus {
   height: 100%;
 }
 @media only screen and (max-width: 500px) {
+  .esri-ui-bottom-left .esri-expand {
+    display: none;
+  }
   .panel {
    min-width: calc(100% - 50px);
    z-index: 10;
@@ -89,6 +93,7 @@ article:focus {
     bottom: 0;
     margin: 1em;
     max-width: 100%;
+    z-index: 12;
   }  
 
 }
@@ -190,3 +195,22 @@ header calcite-dropdown {
   height: 100%;
 }
 
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.select-base .esri-sketch__section.esri-sketch__tool-section:nth-child(1) {
+  display: none !important;
+}
+.select-base .esri-sketch__section.esri-sketch__tool-section:nth-child(3) {
+  display: none !important;
+}
+
+.select-base .esri-sketch__tool-section {
+  border-right: none;
+}

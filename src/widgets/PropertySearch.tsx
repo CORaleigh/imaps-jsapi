@@ -1,6 +1,6 @@
 import esri = __esri;
 
-import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { aliasOf, property, subclass } from 'esri/core/accessorSupport/decorators';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { renderable, tsx } from 'esri/widgets/support/widget';
@@ -19,7 +19,7 @@ const CSS = {
   base: 'esri-widget propertysearch-base'
 };
 @subclass('app.widgets.PropertySearch')
-export default class PropertySearch extends declared(Widget) {
+export default class PropertySearch extends Widget {
   @aliasOf('viewModel.view')
   view: esri.MapView | esri.SceneView;
   @aliasOf('viewModel.condosTable')

@@ -2,49 +2,19 @@ import './css/main.css';
 import { map } from './data/app';
 import { initTips } from './tips';
 import { showAlert } from './alert';
+import { toggleAction, enableActionbar } from './actionbar';
 import MapView from 'esri/views/MapView';
 import geometryEngine from 'esri/geometry/geometryEngine';
 // widget utils
-import { initWidgets, measurement, select, propertySearch, layers } from './widgets';
+import { initWidgets, select, propertySearch, layers } from './widgets';
+import { initPanels, initPanelHeaders } from './panels';
+import { initMenu } from './menu';
 /**
  * Initialize application
  */
-const view = new MapView({
+export const view = new MapView({
   container: 'viewDiv',
   map
-});
-
-//handle action bar toggle
-const toggleAction = (action: string) => {
-  document.querySelectorAll('.panel').forEach((panel: HTMLElement) => {
-    if (panel.title != action) {
-      panel.classList.add('hidden');
-    } else {
-      panel.removeAttribute('dismissed');
-      if (window.outerWidth < 500) {
-        panel.setAttribute('style', 'min-width: calc(100% - 50px)');
-      } else {
-        panel.setAttribute('style', 'min-width: 350px');
-      }
-      panel.classList.remove('hidden');
-      if (panel.title != 'Measure') {
-        //measurement.measurement.clear();
-      } else {
-        measurement.measureOpened();
-      }
-    }
-  });
-};
-
-const actions: NodeListOf<Element> = document.querySelectorAll('calcite-action');
-actions?.forEach((action: Element) => {
-  action?.addEventListener('click', (e: any) => {
-    toggleAction(e.target.text);
-    actions.forEach((action: any) => {
-      action.removeAttribute('active');
-    });
-    action.toggleAttribute('active');
-  });
 });
 
 //handle when view is ready
@@ -135,81 +105,11 @@ if (window.outerWidth >= 500) {
   document.querySelector('calcite-panel')?.removeAttribute('dismissed');
 }
 
-document.querySelectorAll('calcite-panel').forEach(item => {
-  item.addEventListener('calcitePanelDismissedChange', () => {
-    document.querySelectorAll('calcite-panel').forEach(item => {
-      item.setAttribute('style', 'min-width: 0px');
-      document.querySelectorAll('.maximize').forEach(item => {
-        item.setAttribute('icon', 'maximize');
-      });
-    });
-  });
-});
-
-//handle panel maximize/minimize
-document.querySelectorAll('.maximize').forEach(item => {
-  item.addEventListener('click', () => {
-    item.parentElement?.parentElement?.removeAttribute('dismissed');
-    item.parentElement?.parentElement?.classList.remove('hidden');
-    if (item.getAttribute('icon') === 'maximize') {
-      item.setAttribute('icon', 'minimize');
-      item.parentElement?.parentElement?.setAttribute('style', 'min-width: calc(100% - 50px)');
-    } else if (item.getAttribute('icon') === 'minimize') {
-      item.setAttribute('icon', 'maximize');
-      item.parentElement?.parentElement?.setAttribute('style', 'min-width:350px');
-    }
-  });
-});
-
-//handle when device changes sizes
-window.onresize = () => {
-  if ((event?.target as any)?.outerWidth >= 500) {
-    document.querySelectorAll('calcite-panel').forEach(item => {
-      if (item.querySelector('.maximize')?.getAttribute('icon') === 'minimize') {
-        item.setAttribute('style', 'min-width: calc(100% - 50px)');
-      } else {
-        item.setAttribute('style', 'min-width: 350px');
-      }
-    });
-  } else {
-    document.querySelectorAll('calcite-panel').forEach(item => {
-      if (item.getAttribute('dismissed')) {
-        item.setAttribute('style', 'min-width: 0px');
-      } else {
-        item.setAttribute('style', 'min-width: calc(100% src)');
-      }
-    });
-  }
-};
-
 //modify DOM after map view loads
 view.when(() => {
-  document.querySelectorAll('calcite-panel').forEach(item => {
-    const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
-    i.innerHTML += '<style>.content-container { height: 100%; } </style>';
-    item.addEventListener('calcitePanelDismissedChange', e => {
-      if (window.outerWidth <= 500) {
-        if ((e.target as any).dismissed) {
-          document.querySelector('#viewDiv')?.classList.remove('below');
-        } else {
-          document.querySelector('#viewDiv')?.classList.add('below');
-        }
-      }
-      if ((e.target as any).dismissed) {
-        actions.forEach((action: any) => {
-          action.removeAttribute('active');
-        });
-      }
-    });
-  });
-  document.querySelectorAll('calcite-action').forEach(item => {
-    item.removeAttribute('disabled');
-  });
+  initPanels();
+  enableActionbar();
 });
 
-//override CSS for calcite panel header
-document.querySelectorAll('calcite-panel div').forEach(panel => {
-  if (panel.slot === 'header-trailing-content') {
-    panel.setAttribute('style', 'display: flex; flex-direction: row;');
-  }
-});
+initPanelHeaders();
+initMenu();

@@ -1,23 +1,20 @@
 import esri = __esri;
-
 import Accessor from 'esri/core/Accessor';
-
-import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { property, subclass } from 'esri/core/accessorSupport/decorators';
 import Search from 'esri/widgets/Search';
 import FeatureTable from 'esri/widgets/FeatureTable';
 import FeatureLayer from 'esri/layers/FeatureLayer';
-
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
-
 import Feature from 'esri/widgets/Feature';
-import { whenDefinedOnce, whenDefined } from 'esri/core/watchUtils';
+import Graphic from 'esri/Graphic';
 import LayerSearchSource from 'esri/widgets/Search/LayerSearchSource';
 import FieldColumnConfig from 'esri/widgets/FeatureTable/FieldColumnConfig';
 import PopupTemplate from 'esri/PopupTemplate';
 import ExpressionInfo from 'esri/popup/ExpressionInfo';
 import MenuButtonItem from 'esri/widgets/FeatureTable/Grid/support/ButtonMenuItem';
+import { whenDefinedOnce, whenDefined } from 'esri/core/watchUtils';
 @subclass('app.widgets.PropertySearch.PropertySearchViewModel')
-export default class PropertySearchViewModel extends declared(Accessor) {
+export default class PropertySearchViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
   @property() condosTable: esri.FeatureLayer;
   @property() addressTable: esri.FeatureLayer;
@@ -28,7 +25,9 @@ export default class PropertySearchViewModel extends declared(Accessor) {
   @property() feature: esri.Feature;
   @property() geometry: esri.Geometry;
 
-  graphics = new GraphicsLayer({ id: 'property-select', listMode: 'hide' });
+  clusterPoints: FeatureLayer;
+
+  graphics = new GraphicsLayer({ id: 'property-select', listMode: 'hide', minScale: 19200 });
   singleSymbol = {
     type: 'simple-fill',
     style: 'none',
@@ -42,62 +41,11 @@ export default class PropertySearchViewModel extends declared(Accessor) {
     color: [253, 46, 65, 0.25]
   };
 
-  highlights: any;
   constructor(params?: any) {
     super(params);
     whenDefinedOnce(this, 'view', this.init.bind(this));
     whenDefinedOnce(this, 'condosTable', this.initSearch.bind(this));
     whenDefined(this, 'geometry', this.searchByGeometry.bind(this));
-  }
-
-  searchByGeometry(geometry: esri.Geometry) {
-    this.propertyLayer
-      .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID', 'REID'] })
-      .then(propertyResult => {
-        const relationship = this.propertyLayer.relationships.find(r => {
-          return r.name === 'PROPERTY_CONDO';
-        });
-        const oids: any[] = [];
-        propertyResult.features.forEach(f => {
-          oids.push(f.getObjectId());
-        });
-        this.propertyLayer
-          .queryRelatedFeatures({ relationshipId: relationship?.id, objectIds: oids, outFields: ['*'] })
-          .then(result => {
-            let features: any[] = [];
-            for (const key in result) {
-              features = features.concat(result[key].features);
-            }
-            this.featureTable.layer = new FeatureLayer({
-              fields: this.condosTable.fields,
-              source: features,
-              title: 'Selected properties',
-              geometryType: 'point',
-              objectIdField: 'OBJECTID'
-            });
-            if (features.length === 1) {
-              if (!features[0].geometry) {
-                features[0].geometry = geometry;
-              }
-              this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getObjectId()]);
-              this.toggleContent('feature');
-            } else {
-              this.toggleContent('table');
-            }
-            this.featureTable.renderNow();
-            this.graphics.removeAll();
-            propertyResult.features.forEach((feature: esri.Graphic) => {
-              feature.symbol =
-                propertyResult.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
-
-              this.graphics.add(feature);
-            });
-          });
-      });
-  }
-
-  init(view: esri.MapView | esri.SceneView) {
-    view.map.add(this.graphics, view.map.allLayers.length - 1);
   }
 
   arcadeExpressionInfos = [
@@ -164,6 +112,64 @@ export default class PropertySearchViewModel extends declared(Accessor) {
     ]
   });
 
+  searchByGeometry(geometry: esri.Geometry) {
+    this.propertyLayer
+      .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID', 'REID'] })
+      .then(propertyResult => {
+        const relationship = this.propertyLayer.relationships.find(r => {
+          return r.name === 'PROPERTY_CONDO';
+        });
+        const oids: any[] = [];
+        propertyResult.features.forEach(f => {
+          oids.push(f.getObjectId());
+        });
+        this.propertyLayer
+          .queryRelatedFeatures({ relationshipId: relationship?.id, objectIds: oids, outFields: ['*'] })
+          .then(result => {
+            let features: any[] = [];
+            for (const key in result) {
+              features = features.concat(result[key].features);
+            }
+            this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, features);
+            if (features.length === 1) {
+              if (!features[0].geometry) {
+                features[0].geometry = geometry;
+              }
+              this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getObjectId()]);
+              this.toggleContent('feature');
+            } else {
+              this.toggleContent('table');
+            }
+            this.featureTable.renderNow();
+            this.graphics.removeAll();
+            propertyResult.features.forEach((feature: esri.Graphic) => {
+              feature.symbol =
+                propertyResult.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
+
+              this.graphics.add(feature);
+            });
+          });
+      });
+  }
+
+  createFeatureTableLayer = (fields: esri.Field[], features: esri.Graphic[]) => {
+    return new FeatureLayer({
+      fields: fields,
+      source: features,
+      title: 'Selected properties',
+      geometryType: 'point',
+      objectIdField: 'OBJECTID',
+      spatialReference: this.view.spatialReference
+    });
+  };
+  addGraphics = (result: esri.FeatureSet) => {
+    this.graphics.removeAll();
+    result.features.forEach(feature => {
+      feature.symbol = result.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
+      this.graphics.add(feature);
+    });
+  };
+
   getProperty = (oids: any[], source?: string) => {
     const relationship = this.condosTable.relationships.find(r => {
       return r.name === 'CONDO_PROPERTY';
@@ -190,13 +196,23 @@ export default class PropertySearchViewModel extends declared(Accessor) {
             outSpatialReference: { wkid: 102100 }
           })
           .then(result => {
+            const points: Graphic[] = [];
+            result.features.forEach(feature => {
+              const pt = feature.clone();
+              this.clusterPoints.source.removeAll();
+              pt.geometry = (pt.geometry as esri.Polygon).centroid;
+              points.push(pt);
+            });
+            this.clusterPoints
+              .queryFeatures({ where: '1=1', returnGeometry: false, outFields: ['OBJECTID'] })
+              .then(result => {
+                this.clusterPoints.applyEdits({ deleteFeatures: result.features });
+                this.clusterPoints.applyEdits({ addFeatures: points });
+              });
+
             this.view.goTo(result.features);
             if (!source) {
-              this.graphics.removeAll();
-              result.features.forEach(feature => {
-                feature.symbol = result.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
-                this.graphics.add(feature);
-              });
+              this.addGraphics(result);
             }
           });
       });
@@ -204,7 +220,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
 
   searchComplete = (event: esri.SearchSearchCompleteEvent) => {
     if (!this.searchWidget.viewModel.selectedSuggestion) {
-      const oids: any[] = [];
+      let oids: any[] = [];
       let where =
         "OWNER like '" +
         event.searchTerm.toUpperCase() +
@@ -215,7 +231,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
         "'";
       let tableFeatures: any[] = [];
       this.condosTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
-        console.log(result);
         tableFeatures = result.features;
         result.features.forEach(f => {
           oids.push(f.getObjectId());
@@ -233,38 +248,25 @@ export default class PropertySearchViewModel extends declared(Accessor) {
             this.addressTable
               .queryRelatedFeatures({ relationshipId: relationship.id, objectIds: oids, outFields: ['*'] })
               .then(result => {
-                //const oids: any[] = [];
+                oids = [];
                 for (const key in result) {
                   result[key].features.forEach((feature: esri.Graphic) => {
-                    console.log(feature);
                     oids.push(feature.getAttribute('OBJECTID'));
                     tableFeatures.push(feature);
                   });
                 }
-                this.featureTable.layer = new FeatureLayer({
-                  fields: this.condosTable.fields,
-                  source: tableFeatures,
-                  title: 'Selected properties',
-                  geometryType: 'point',
-                  objectIdField: 'OBJECTID'
-                });
+                this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, tableFeatures);
+
                 this.getProperty(oids);
                 this.featureTable.renderNow();
               });
           } else {
-            this.featureTable.layer = new FeatureLayer({
-              fields: this.condosTable.fields,
-              source: tableFeatures,
-              title: 'Selected properties',
-              geometryType: 'point',
-              objectIdField: 'OBJECTID'
-            });
+            this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, tableFeatures);
             this.featureTable.renderNow();
           }
         });
       });
     } else {
-      console.log(event.numResults);
       if (event.numResults) {
         const layer = (event.results[0].source as LayerSearchSource).layer as FeatureLayer;
         const oids: any[] = [];
@@ -282,19 +284,12 @@ export default class PropertySearchViewModel extends declared(Accessor) {
                 const oids: any[] = [];
                 for (const key in result) {
                   result[key].features.forEach((feature: esri.Graphic) => {
-                    console.log(feature);
                     oids.push(feature.getAttribute('OBJECTID'));
                     this.getProperty(oids);
                     feature.layer = this.condosTable;
                     this.setFeature(feature, this.view as esri.MapView, [], oids);
                     this.toggleContent('feature');
-                    this.featureTable.layer = new FeatureLayer({
-                      fields: this.condosTable.fields,
-                      source: [feature],
-                      title: 'Selected properties',
-                      geometryType: 'point',
-                      objectIdField: 'OBJECTID'
-                    });
+                    this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, [feature]);
                   });
                 }
               });
@@ -308,24 +303,16 @@ export default class PropertySearchViewModel extends declared(Accessor) {
             this.getProperty(oids);
             this.setFeature(result.features[0], this.view as esri.MapView, [], oids);
             this.toggleContent('feature');
-            this.featureTable.layer = new FeatureLayer({
-              fields: this.condosTable.fields,
-              source: result.features,
-              title: 'Selected properties',
-              geometryType: 'point',
-              objectIdField: 'OBJECTID'
-            });
+            this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, result.features);
           });
         }
       }
     }
   };
   setFeature(feature: esri.Graphic, view: esri.MapView, mediaInfos: any[], oids: any[]) {
-    console.log('setting feature');
     const relationship = this.condosTable.relationships.find(r => {
       return r.name === 'CONDO_PHOTOS';
     });
-    console.log(relationship);
     mediaInfos = [];
     this.condosTable
       .queryRelatedFeatures({ relationshipId: relationship?.id, objectIds: oids, outFields: ['*'] })
@@ -358,9 +345,7 @@ export default class PropertySearchViewModel extends declared(Accessor) {
           selected.symbol = this.multiSymbol as any;
           selected.setAttribute('selected', 'false');
         }
-        console.log('REID: ', feature.getAttribute('REID'));
         const graphic = this.graphics.graphics.find(graphic => {
-          console.log(graphic.getAttribute('REID'));
           return graphic.getAttribute('REID') === feature.getAttribute('REID');
         });
         if (graphic) {
@@ -370,7 +355,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
         }
       });
   }
-
   exportTable() {
     this.featureTable.layer.queryFeatures({ outFields: ['*'] }).then(result => {
       let csv = '';
@@ -407,7 +391,52 @@ export default class PropertySearchViewModel extends declared(Accessor) {
       }
     });
   }
-
+  init(view: esri.MapView | esri.SceneView) {
+    view.map.add(this.graphics, view.map.allLayers.length - 1);
+    this.clusterPoints = new FeatureLayer({
+      source: [],
+      objectIdField: 'OBJECTID',
+      geometryType: 'point',
+      maxScale: 19201,
+      listMode: 'hide',
+      renderer: {
+        type: 'simple',
+        symbol: {
+          type: 'simple-marker',
+          size: 4,
+          color: '#69dcff',
+          outline: {
+            color: 'rgba(0, 139, 174, 0.5)',
+            width: 5
+          }
+        }
+      } as any,
+      featureReduction: {
+        type: 'cluster',
+        labelingInfo: [
+          {
+            // turn off deconfliction to ensure all clusters are labeled
+            deconflictionStrategy: 'none',
+            labelExpressionInfo: {
+              expression: "Text($feature.cluster_count, '#,###')"
+            },
+            symbol: {
+              type: 'text',
+              color: '#004a5d',
+              font: {
+                weight: 'bold',
+                family: 'Noto Sans',
+                size: '12px'
+              }
+            } as any,
+            labelPlacement: 'center-center'
+          }
+        ]
+      },
+      spatialReference: this.view.spatialReference
+    });
+    this.view.map.add(this.clusterPoints);
+  }
   initSearch(condosTable: esri.FeatureLayer) {
     const tableLayer = new FeatureLayer({
       fields: [
@@ -419,7 +448,8 @@ export default class PropertySearchViewModel extends declared(Accessor) {
       source: [],
       title: 'Selected properties',
       geometryType: 'point',
-      objectIdField: 'OBJECTID'
+      objectIdField: 'OBJECTID',
+      spatialReference: this.view.spatialReference
     });
     this.feature = new Feature({ view: this.view });
     this.featureTable = new FeatureTable({
@@ -528,8 +558,6 @@ export default class PropertySearchViewModel extends declared(Accessor) {
       console.log(event);
     });
     this.searchWidget.on('search-complete', this.searchComplete);
-
-    //console.log((result as any).target.selectedSuggestion);
   }
   toggleContent = (value: string) => {
     if (value === 'table') {
