@@ -54,8 +54,8 @@ export const initPanelHeaders = () => {
 };
 export const initPanels = () => {
   document.querySelectorAll('calcite-panel').forEach(item => {
-    //const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
-    //i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+    const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
+    i.innerHTML += '<style>.content-container { height: 100%; } </style>';
     item.addEventListener('calcitePanelDismissedChange', e => {
       if (window.outerWidth <= 500) {
         if ((e.target as any).dismissed) {
