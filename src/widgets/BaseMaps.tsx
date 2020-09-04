@@ -75,7 +75,7 @@ export default class BaseMaps extends Widget {
   handleSliderChange = (e: any) => {
     const layers = this.view.map.layers
       .filter(layer => {
-        return this.viewModel.activeBasemap.baseLayers.includes(layer);
+        return this.viewModel.activeBasemap?.baseLayers.includes(layer);
       })
       .toArray();
     layers.forEach(layer => {

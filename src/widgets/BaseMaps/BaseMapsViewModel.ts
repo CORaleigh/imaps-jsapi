@@ -28,7 +28,6 @@ export default class BaseMapsViewModel extends Accessor {
       basemap.title.toLowerCase().includes('dark') ||
       basemap.title.toLowerCase().includes('night') ||
       basemap.title.toLowerCase().includes('dark') ||
-      basemap.portalItem.description.toLowerCase().includes('dark') ||
       basemap.title.toLowerCase().startsWith('20') ||
       basemap.title.toLowerCase().startsWith('19')
     ) {
@@ -41,7 +40,9 @@ export default class BaseMapsViewModel extends Accessor {
 
   init(view: esri.MapView | esri.SceneView) {
     this.basemaps = new BaseMapGallery({ view: this.view });
-    this.changePropertyLines(this.view.map.basemap);
+    this.view.when(() => {
+      this.changePropertyLines(this.view.map.basemap);
+    });
     this.view.map.watch('basemap', (basemap: esri.Basemap) => {
       this.changePropertyLines(basemap);
       if (document.querySelector('#images')?.classList.contains('hidden')) {
