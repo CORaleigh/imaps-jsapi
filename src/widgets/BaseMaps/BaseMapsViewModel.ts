@@ -31,9 +31,9 @@ export default class BaseMapsViewModel extends Accessor {
       basemap.title.toLowerCase().startsWith('20') ||
       basemap.title.toLowerCase().startsWith('19')
     ) {
-      (newRenderer.symbol as esri.SimpleFillSymbol).outline.color = new Color([255, 255, 255, 0.25]);
+      (newRenderer.symbol as esri.SimpleFillSymbol).outline.color = new Color([255, 255, 255, 0.5]);
     } else {
-      (newRenderer.symbol as esri.SimpleFillSymbol).outline.color = new Color([0, 0, 0, 0.25]);
+      (newRenderer.symbol as esri.SimpleFillSymbol).outline.color = new Color([0, 0, 0, 0.5]);
     }
     propertyLayer.renderer = newRenderer;
   };
