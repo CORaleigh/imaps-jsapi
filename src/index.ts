@@ -49,7 +49,9 @@ view.when(() => {
   });
   view.on('hold', e => {
     propertySearch.geometry = e.mapPoint;
-    toggleAction('Search');
+    setTimeout(() => {
+      toggleAction('Search');
+    }, 1000);
   });
   view
     .whenLayerView(propertyLayer)
