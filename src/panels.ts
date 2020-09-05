@@ -58,7 +58,8 @@ export const initPanels = () => {
     i.innerHTML += '<style>.content-container { height: 100%; } </style>';
     item.addEventListener('calcitePanelDismissedChange', e => {
       if (window.outerWidth <= 500) {
-        if ((e.target as any).dismissed) {
+        debugger;
+        if ((e.target as any).hasAttribute('dismissed')) {
           document.querySelector('#viewDiv')?.classList.remove('below');
         } else {
           document.querySelector('#viewDiv')?.classList.add('below');
