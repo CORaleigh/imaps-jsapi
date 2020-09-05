@@ -27,7 +27,7 @@ export const toggleAction = (action: string) => {
   });
 };
 
-export const actions: NodeListOf<Element> = document.querySelectorAll('calcite-action');
+export const actions: NodeListOf<Element> = document.querySelectorAll('calcite-action-bar calcite-action');
 actions?.forEach((action: Element) => {
   action?.addEventListener('click', (e: any) => {
     console.log(e.target.text);
@@ -44,7 +44,7 @@ actions?.forEach((action: Element) => {
 
 export const enableActionbar = () => {
   initWidget('Search', view);
-  document.querySelectorAll('calcite-action').forEach(item => {
+  document.querySelectorAll('calcite-action-bar calcite-action').forEach(item => {
     item.removeAttribute('disabled');
   });
 };
