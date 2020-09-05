@@ -105,6 +105,7 @@ window.addEventListener('pagehide', () => {
 if (window.outerWidth >= 500) {
   document.querySelector('calcite-panel')?.classList.remove('hidden');
   document.querySelector('calcite-panel')?.removeAttribute('dismissed');
+  document.querySelector('calcite-action-bar calcite-action')?.toggleAttribute('active');
 }
 
 //modify DOM after map view loads

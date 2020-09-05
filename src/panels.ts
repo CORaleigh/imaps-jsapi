@@ -1,5 +1,3 @@
-import { actions } from './actionbar';
-
 export const initPanelHeaders = () => {
   //override CSS for calcite panel header
   document.querySelectorAll('calcite-panel div').forEach(panel => {
@@ -55,20 +53,16 @@ export const initPanelHeaders = () => {
 export const initPanels = () => {
   document.querySelectorAll('calcite-panel').forEach(item => {
     const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
-    i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+    if (i) {
+      i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+    }
     item.addEventListener('calcitePanelDismissedChange', e => {
       if (window.outerWidth <= 500) {
-        debugger;
         if ((e.target as any).hasAttribute('dismissed')) {
           document.querySelector('#viewDiv')?.classList.remove('below');
         } else {
           document.querySelector('#viewDiv')?.classList.add('below');
         }
-      }
-      if ((e.target as any).dismissed) {
-        actions.forEach((action: any) => {
-          action.removeAttribute('active');
-        });
       }
     });
   });

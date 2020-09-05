@@ -6,17 +6,22 @@ export const toggleAction = (action: string) => {
     if (panel.title != action) {
       panel.classList.add('hidden');
     } else {
+      console.log(panel);
       panel.removeAttribute('dismissed');
-      if (window.outerWidth < 500) {
-        panel.setAttribute('style', 'min-width: calc(100% - 50px)');
-      } else {
-        panel.setAttribute('style', 'min-width: 350px');
-      }
-      panel.classList.remove('hidden');
-      if (panel.title != 'Measure') {
-        //measurement.measurement.clear();
-      } else {
-        measurement.measureOpened();
+      console.log(panel);
+      console.log(panel.title);
+      if (!panel.hasAttribute('dismissed')) {
+        if (window.outerWidth < 500) {
+          panel.setAttribute('style', 'min-width: calc(100% - 50px)');
+        } else {
+          panel.setAttribute('style', 'min-width: 350px');
+        }
+        panel.classList.remove('hidden');
+        if (panel.title != 'Measure') {
+          //measurement.measurement.clear();
+        } else {
+          measurement.measureOpened();
+        }
       }
     }
   });
@@ -25,12 +30,15 @@ export const toggleAction = (action: string) => {
 export const actions: NodeListOf<Element> = document.querySelectorAll('calcite-action');
 actions?.forEach((action: Element) => {
   action?.addEventListener('click', (e: any) => {
+    console.log(e.target.text);
     toggleAction(e.target.text);
     initWidget(e.target.text, view);
-    actions.forEach((action: any) => {
-      action.removeAttribute('active');
+    actions.forEach((a: any) => {
+      if (a.text != e.target.text) {
+        a.removeAttribute('active');
+      }
     });
-    action.toggleAttribute('active');
+    action.setAttribute('active', '');
   });
 });
 
