@@ -1,3 +1,5 @@
+import { actions } from './actionbar';
+
 export const initPanelHeaders = () => {
   //override CSS for calcite panel header
   document.querySelectorAll('calcite-panel div').forEach(panel => {
@@ -57,12 +59,24 @@ export const initPanels = () => {
       i.innerHTML += '<style>.content-container { height: 100%; } </style>';
     }
     item.addEventListener('calcitePanelDismissedChange', e => {
-      if (window.outerWidth <= 500) {
-        if ((e.target as any).hasAttribute('dismissed')) {
-          document.querySelector('#viewDiv')?.classList.remove('below');
-        } else {
-          document.querySelector('#viewDiv')?.classList.add('below');
+      debugger;
+      actions.forEach((action: any) => {
+        if (action.text === (e.target as any).title) {
+          if ((e.target as any).hasAttribute('dismissed')) {
+            action.removeAttribute('active');
+          } else {
+            action.setAttribute('active', '');
+          }
         }
+      });
+      if (window.outerWidth <= 500) {
+        setTimeout(() => {
+          if ((e.target as any).hasAttribute('dismissed')) {
+            document.querySelector('#viewDiv')?.classList.remove('below');
+          } else {
+            document.querySelector('#viewDiv')?.classList.add('below');
+          }
+        });
       }
     });
   });
