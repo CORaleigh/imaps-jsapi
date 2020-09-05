@@ -20,7 +20,7 @@
       packages: [
         {
           name: "app",
-          location: locationPath
+          location: locationPath 
         }
       ],
       deps: ['app/index']
@@ -62,7 +62,7 @@
     <div class="content">
 
         <div id="viewDiv"></div>
-        <calcite-panel title="Search" class="panel" dismissible dismissed>
+        <calcite-panel title="Search" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Search</div>        
           <div slot="header-trailing-content">
             <calcite-action id="propertySearchTip" class='tip'
@@ -74,7 +74,7 @@
           </div>        
           <div id="sideDiv"></div>
         </calcite-panel>     
-        <calcite-panel title="Layers" class="panel" dismissible dismissed>
+        <calcite-panel title="Layers" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Layers</div>
                   <div slot="header-trailing-content">
                     
@@ -84,7 +84,7 @@
           </div>        
           <div id="layerDiv"></div>
         </calcite-panel>      
-        <calcite-panel title="Print" class="panel" dismissible dismissed >
+        <calcite-panel title="Print" class="panel hidden" dismissible dismissed >
           <div slot="header-content">Print</div>
                   <div slot="header-trailing-content">
             <calcite-action class='maximize'
@@ -93,7 +93,7 @@
           </div>        
           <div id="printDiv"></div>
         </calcite-panel>        
-        <calcite-panel title="Legend" class="panel" dismissible dismissed>
+        <calcite-panel title="Legend" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Legend</div>
                   <div slot="header-trailing-content">
             <calcite-action class='maximize'
@@ -103,7 +103,7 @@
           <div id="legendDiv"></div>
         </calcite-panel>       
     
-        <calcite-panel title="Bookmarks" class="panel" dismissible dismissed>
+        <calcite-panel title="Bookmarks" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Bookmarks</div>
                   <div slot="header-trailing-content">
             <calcite-action class='maximize'
@@ -112,7 +112,7 @@
           </div>        
           <div id="bookmarkDiv"></div>
         </calcite-panel>       
-        <calcite-panel title="Basemaps" class="panel" dismissible dismissed>
+        <calcite-panel title="Basemaps" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Basemaps</div>
                   <div slot="header-trailing-content">
                     <calcite-action id="basemapTip" class='tip'
@@ -124,7 +124,7 @@
           </div>        
           <div id="basemapDiv"></div>
         </calcite-panel>      
-        <calcite-panel title="Measure" class="panel" dismissible dismissed>
+        <calcite-panel title="Measure" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Measure</div>
                   <div slot="header-trailing-content">
             <calcite-action class='maximize'
@@ -133,7 +133,7 @@
           </div>        
           <div id="measureDiv"></div>
         </calcite-panel>         
-        <calcite-panel title="Draw" class="panel" dismissible dismissed>
+        <calcite-panel title="Draw" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Draw</div>
                   <div slot="header-trailing-content">
             <calcite-action class='maximize'
@@ -142,7 +142,7 @@
           </div>        
           <div id="drawDiv"></div>
         </calcite-panel>    
-        <calcite-panel title="Select" class="panel" dismissible dismissed>
+        <calcite-panel title="Select" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Select</div>
                   <div slot="header-trailing-content">
                     <calcite-action id="selectTip" class='tip'
@@ -154,7 +154,7 @@
           </div>        
           <div id="selectDiv"></div>
         </calcite-panel>                                
-        <calcite-panel title="Location" class="panel" dismissible dismissed>
+        <calcite-panel title="Location" class="panel hidden" dismissible dismissed>
           <div slot="header-content">Location Search</div>
                   <div slot="header-trailing-content">
                     <calcite-action id="locationTip" class='tip'
@@ -182,8 +182,10 @@
         </calcite-action-bar>
       </div>
     </div>
+    <calcite-loader active id="mapLoader"></calcite-loader>
 
   </div>   
+
 </body>
 </html>
 
