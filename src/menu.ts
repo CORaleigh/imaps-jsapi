@@ -12,6 +12,10 @@ const setTheme = (theme: string) => {
   document.querySelectorAll('calcite-dropdown').forEach(item => {
     item.setAttribute('theme', theme);
   });
+  document.querySelectorAll('calcite-alert').forEach(item => {
+    item.setAttribute('theme', theme);
+  });
+
   document.querySelectorAll('link').forEach(link => {
     if (link.href.includes(theme === 'light' ? 'dark' : 'light')) {
       link.href = 'https://js.arcgis.com/4.16/esri/themes/' + theme + '/main.css';
