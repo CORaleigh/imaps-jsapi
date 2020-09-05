@@ -56,6 +56,7 @@ view.when(() => {
   view
     .whenLayerView(propertyLayer)
     .then(() => {
+      document.querySelector('#mapLoader')?.toggleAttribute('active');
       propertySearch.propertyLayer = propertyLayer as __esri.FeatureLayer;
       //search by geometry after sketch creation in select widget
       select.viewModel.sketch.on('create', (ev: any) => {
