@@ -426,6 +426,7 @@ export default class PropertySearchViewModel extends Accessor {
       geometryType: 'point',
       maxScale: 19201,
       listMode: 'hide',
+      legendEnabled: false,
       renderer: {
         type: 'simple',
         symbol: {
