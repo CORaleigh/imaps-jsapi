@@ -58,26 +58,39 @@ export const initPanels = () => {
     if (i) {
       i.innerHTML += '<style>.content-container { height: 100%; } </style>';
     }
-    item.addEventListener('calcitePanelDismissedChange', e => {
-      debugger;
-      actions.forEach((action: any) => {
-        if (action.text === (e.target as any).title) {
-          if ((e.target as any).hasAttribute('dismissed')) {
-            action.removeAttribute('active');
-          } else {
-            action.setAttribute('active', '');
+
+    const config = { attributes: true, childList: false, subtree: false };
+    const callback = (mutationsList: any[]) => {
+      // Use traditional 'for loops' for IE 11
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'attributes') {
+          if (mutation.attributeName === 'dismissed') {
+            console.log(mutation);
+            actions.forEach((action: any) => {
+              if (action.text === (mutation.target as any).title) {
+                if ((mutation.target as any).hasAttribute('dismissed')) {
+                  action.removeAttribute('active');
+                } else {
+                  action.setAttribute('active', '');
+                }
+              }
+            });
+            if (window.outerWidth <= 500) {
+              setTimeout(() => {
+                if ((mutation.target as any).hasAttribute('dismissed')) {
+                  console.log((mutation.target as any).title, 'dismissed');
+                  document.querySelector('#viewDiv')?.classList.remove('below');
+                } else {
+                  console.log((mutation.target as any).title, 'not dismissed');
+                  document.querySelector('#viewDiv')?.classList.add('below');
+                }
+              });
+            }
           }
         }
-      });
-      if (window.outerWidth <= 500) {
-        setTimeout(() => {
-          if ((e.target as any).hasAttribute('dismissed')) {
-            document.querySelector('#viewDiv')?.classList.remove('below');
-          } else {
-            document.querySelector('#viewDiv')?.classList.add('below');
-          }
-        });
       }
-    });
+    };
+    const observer = new MutationObserver(callback);
+    observer.observe(item, config);
   });
 };
