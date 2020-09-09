@@ -9,8 +9,6 @@ import Feature from 'esri/widgets/Feature';
 import Graphic from 'esri/Graphic';
 import LayerSearchSource from 'esri/widgets/Search/LayerSearchSource';
 import FieldColumnConfig from 'esri/widgets/FeatureTable/FieldColumnConfig';
-import PopupTemplate from 'esri/PopupTemplate';
-import ExpressionInfo from 'esri/popup/ExpressionInfo';
 import MenuButtonItem from 'esri/widgets/FeatureTable/Grid/support/ButtonMenuItem';
 import { whenDefinedOnce, whenDefined } from 'esri/core/watchUtils';
 @subclass('app.widgets.PropertySearch.PropertySearchViewModel')
@@ -40,7 +38,7 @@ export default class PropertySearchViewModel extends Accessor {
     outline: { width: 2.5, color: [249, 243, 0, 1] },
     color: [253, 46, 65, 0.25]
   };
-
+  selectedProperty: esri.Graphic;
   constructor(params?: any) {
     super(params);
     whenDefinedOnce(this, 'view', this.init.bind(this));
@@ -48,69 +46,69 @@ export default class PropertySearchViewModel extends Accessor {
     whenDefined(this, 'geometry', this.searchByGeometry.bind(this));
   }
 
-  arcadeExpressionInfos = [
-    {
-      name: 'bom-doc-num',
-      title: 'bom-doc-num',
-      expression:
-        "var results = FeatureSetByRelationshipName($feature, 'CONDO_BOOKS', ['*'], false); return First(results).BOM_DOC_NUM;"
-    },
-    {
-      name: 'deed-doc-num',
-      title: 'deed-doc-num',
-      expression:
-        "var results = FeatureSetByRelationshipName($feature, 'CONDO_BOOKS', ['*'], false); return First(results).DEED_DOC_NUM;"
-    },
-    {
-      name: 'mailing-address',
-      title: 'mailing-address',
-      expression:
-        'When(IsEmpty($feature.ADDR3),$feature.ADDR1 + TextFormatting.NewLine + $feature.ADDR2,$feature.ADDR1 + TextFormatting.NewLine + $feature.ADDR2 + TextFormatting.NewLine + $feature.ADDR3)'
-    },
-    {
-      name: 'property-values',
-      title: 'property-values',
-      expression:
-        '"Building Value"+TextFormatting.NewLine+"$"+$feature.BLDG_VAL+TextFormatting.NewLine+"Land Value"+TextFormatting.NewLine+"$"+$feature.LAND_VAL+TextFormatting.NewLine+"Total Value"+TextFormatting.NewLine+"$"+$feature.TOTAL_VALUE_ASSD'
-    },
-    {
-      name: 'deed-book-page',
-      title: 'deed-book-page',
-      expression: '"Book "+$feature.DEED_BOOK+" Page "+$feature.DEED_PAGE'
-    },
-    {
-      name: 'general',
-      title: 'general',
-      expression:
-        '"PIN"+TextFormatting.NewLine+$feature.PIN_NUM+" "+$feature.PIN_EXT+TextFormatting.NewLine+' +
-        '"REID"+TextFormatting.NewLine+$feature.REID+TextFormatting.NewLine+"City"+TextFormatting.NewLine+' +
-        'Proper($feature.CITY_DECODE)+TextFormatting.NewLine+"Jurisdiction"+TextFormatting.NewLine+' +
-        '$feature.PLANNING_JURISDICTION+TextFormatting.NewLine+"Township"+TextFormatting.NewLine+Proper($feature.TOWNSHIP_DECODE)'
-    }
-  ] as ExpressionInfo[];
+  // arcadeExpressionInfos = [
+  //   {
+  //     name: 'bom-doc-num',
+  //     title: 'bom-doc-num',
+  //     expression:
+  //       "var results = FeatureSetByRelationshipName($feature, 'CONDO_BOOKS', ['*'], false); return First(results).BOM_DOC_NUM;"
+  //   },
+  //   {
+  //     name: 'deed-doc-num',
+  //     title: 'deed-doc-num',
+  //     expression:
+  //       "var results = FeatureSetByRelationshipName($feature, 'CONDO_BOOKS', ['*'], false); return First(results).DEED_DOC_NUM;"
+  //   },
+  //   {
+  //     name: 'mailing-address',
+  //     title: 'mailing-address',
+  //     expression:
+  //       'When(IsEmpty($feature.ADDR3),$feature.ADDR1 + TextFormatting.NewLine + $feature.ADDR2,$feature.ADDR1 + TextFormatting.NewLine + $feature.ADDR2 + TextFormatting.NewLine + $feature.ADDR3)'
+  //   },
+  //   {
+  //     name: 'property-values',
+  //     title: 'property-values',
+  //     expression:
+  //       '"Building Value"+TextFormatting.NewLine+"$"+$feature.BLDG_VAL+TextFormatting.NewLine+"Land Value"+TextFormatting.NewLine+"$"+$feature.LAND_VAL+TextFormatting.NewLine+"Total Value"+TextFormatting.NewLine+"$"+$feature.TOTAL_VALUE_ASSD'
+  //   },
+  //   {
+  //     name: 'deed-book-page',
+  //     title: 'deed-book-page',
+  //     expression: '"Book "+$feature.DEED_BOOK+" Page "+$feature.DEED_PAGE'
+  //   },
+  //   {
+  //     name: 'general',
+  //     title: 'general',
+  //     expression:
+  //       '"<b>PIN</b>"+TextFormatting.NewLine+$feature.PIN_NUM+" "+$feature.PIN_EXT+TextFormatting.NewLine+' +
+  //       '"REID"+TextFormatting.NewLine+$feature.REID+TextFormatting.NewLine+"City"+TextFormatting.NewLine+' +
+  //       'Proper($feature.CITY_DECODE)+TextFormatting.NewLine+"Jurisdiction"+TextFormatting.NewLine+' +
+  //       '$feature.PLANNING_JURISDICTION+TextFormatting.NewLine+"Township"+TextFormatting.NewLine+Proper($feature.TOWNSHIP_DECODE)'
+  //   }
+  // ] as ExpressionInfo[];
 
-  popupTemplate = new PopupTemplate({
-    expressionInfos: this.arcadeExpressionInfos,
-    content: [
-      {
-        type: 'text',
-        text:
-          '<h1 class="text-green">{SITE_ADDRESS}</h1>' +
-          '<h2>General</h2>{expression/general}' +
-          '<h2>Owner</h2>{OWNER}<br/>{expression/mailing-address}' +
-          '<h2>Valuation</h2>{expression/property-values}' +
-          '<h2>Sale Information</h2>{TOTSALPRICE}<br/>{SALE_DATE}' +
-          '<h2>Deeds</h2>{expression/deed-book-page}' +
-          '<br/><strong>Deed Date</strong><br/>{DEED_DATE}<br/>' +
-          '<br/>Legal Description<br/>{PROPDESC}<br/>' +
-          '<a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/bom-doc-num}&RecordDate=" target="_blank">Book of Maps</a><br/><a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/deed-doc-num}&RecordDate=" target="_blank">Deed</a>'
-      },
-      {
-        type: 'media',
-        mediaInfos: []
-      }
-    ]
-  });
+  // popupTemplate = new PopupTemplate({
+  //   expressionInfos: this.arcadeExpressionInfos,
+  //   content: [
+  //     {
+  //       type: 'text',
+  //       text:
+  //         '<h1 class="text-green">{SITE_ADDRESS}</h1>' +
+  //         '<h2>General</h2>{expression/general}' +
+  //         '<h2>Owner</h2>{OWNER}<br/>{expression/mailing-address}' +
+  //         '<h2>Valuation</h2>{expression/property-values}' +
+  //         '<h2>Sale Information</h2>{TOTSALPRICE}<br/>{SALE_DATE}' +
+  //         '<h2>Deeds</h2>{expression/deed-book-page}' +
+  //         '<br/><strong>Deed Date</strong><br/>{DEED_DATE}<br/>' +
+  //         '<br/>Legal Description<br/>{PROPDESC}<br/>' +
+  //         '<a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/bom-doc-num}&RecordDate=" target="_blank">Book of Maps</a><br/><a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/deed-doc-num}&RecordDate=" target="_blank">Deed</a>'
+  //     },
+  //     {
+  //       type: 'media',
+  //       mediaInfos: []
+  //     }
+  //   ]
+  // });
 
   searchByGeometry(geometry: esri.Geometry) {
     this.propertyLayer
@@ -146,6 +144,10 @@ export default class PropertySearchViewModel extends Accessor {
               feature.symbol =
                 propertyResult.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
 
+              if (propertyResult.features.length === 1) {
+                // this.selectedProperty = propertyResult.features[0];
+                feature.geometry = propertyResult.features[0].geometry;
+              }
               this.graphics.add(feature);
             });
           });
@@ -196,6 +198,7 @@ export default class PropertySearchViewModel extends Accessor {
             outSpatialReference: { wkid: 102100 }
           })
           .then(result => {
+            //this.selectedProperty = result.features[0];
             this.view.goTo(result.features);
             if (!source) {
               this.addGraphics(result);
@@ -360,10 +363,16 @@ export default class PropertySearchViewModel extends Accessor {
             });
           });
         }
-        this.condosTable.popupTemplate.content[1].mediaInfos = mediaInfos;
+        const media = (this.condosTable.popupTemplate.content as esri.Content[]).find((content: any) => {
+          return content?.type === 'media';
+        });
+        if (media) {
+          (media as esri.MediaContent).mediaInfos = mediaInfos;
+        }
         feature.layer = this.condosTable;
         feature.popupTemplate = (feature.layer as esri.FeatureLayer).popupTemplate;
         this.feature.graphic = feature;
+        document.querySelector('#featureDiv')?.scrollTo({ top: 0, behavior: 'smooth' });
         this.feature.graphic.symbol = this.singleSymbol as any;
         const selected = this.graphics.graphics.find(graphic => {
           return graphic.getAttribute('selected') === 'true';
@@ -377,6 +386,7 @@ export default class PropertySearchViewModel extends Accessor {
         });
         if (graphic) {
           graphic.symbol = this.singleSymbol as any;
+          this.feature.graphic.geometry = graphic.geometry;
           graphic.setAttribute('selected', 'true');
           this.graphics.graphics.reorder(graphic, this.graphics.graphics.length - 1);
         }
@@ -465,6 +475,7 @@ export default class PropertySearchViewModel extends Accessor {
     });
     this.view.map.add(this.clusterPoints);
   }
+
   initSearch(condosTable: esri.FeatureLayer) {
     const tableLayer = new FeatureLayer({
       fields: [
@@ -480,6 +491,7 @@ export default class PropertySearchViewModel extends Accessor {
       spatialReference: this.view.spatialReference
     });
     this.feature = new Feature({ view: this.view });
+
     this.featureTable = new FeatureTable({
       view: this.view,
       layer: tableLayer,

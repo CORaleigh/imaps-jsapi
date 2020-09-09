@@ -56,6 +56,7 @@
   "dependencies": {
     "@esri/calcite-app-components": "^6.2.0",
     "@esri/calcite-components": "^1.0.0-beta.37",
-    "@esri/calcite-ui-icons": "^3.9.0"
+    "@esri/calcite-ui-icons": "^3.9.0",
+    "scroll-behavior-polyfill": "^2.0.13"
   }
 }

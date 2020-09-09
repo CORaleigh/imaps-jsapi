@@ -76,13 +76,43 @@ export default class PropertySearch extends Widget {
         }
       });
     });
+    const featDiv = document.querySelector('#featureDiv') as HTMLElement;
 
+    document.querySelector('#scrollArrow')?.addEventListener('click', () => {
+      featDiv?.scrollBy({ top: featDiv.offsetHeight, behavior: 'smooth' });
+    });
+    const theme = window.localStorage.getItem('theme');
+    if (theme) {
+      document.querySelector('#arrowPath')?.setAttribute('stroke', theme === 'light' ? 'black' : 'white');
+    }
+
+    featDiv?.addEventListener('scroll', () => {
+      if (featDiv.scrollTop >= featDiv.scrollHeight - featDiv.offsetHeight) {
+        document.querySelector('#scrollArrow')?.classList.add('hidden');
+      } else {
+        document.querySelector('#scrollArrow')?.classList.remove('hidden');
+      }
+    });
     return (
       <div class={CSS.base}>
         <div afterCreate={this._createSearch} id="search"></div>
         <div afterCreate={this._createTable} id="table"></div>
         <div id="feature" class="hidden">
           <div id="featureDiv" afterCreate={this._createFeature}></div>
+          <div
+            id="scrollArrow"
+            class="home-page__scroll-down-arrow home-page__scroll-down-arrow--black"
+            data-dojo-attach-point="arrowContainer"
+          >
+            <svg viewBox="0 0 32 32" width="32" height="32" class="icon-inline  ">
+              <path
+                id="arrowPath"
+                stroke="black"
+                stroke-opacity="0.5"
+                d="M16.5 27.207l-4.854-4.854.707-.707L16 25.293V5h1v20.293l3.646-3.646.707.707z"
+              ></path>
+            </svg>
+          </div>
         </div>
 
         <calcite-radio-group width="full">

@@ -10,6 +10,7 @@ import geometryEngine from 'esri/geometry/geometryEngine';
 import { initWidgets, select, propertySearch, layers } from './widgets';
 import { initPanels, initPanelHeaders } from './panels';
 import { initMenu } from './menu';
+
 /**
  * Initialize application
  */
@@ -53,7 +54,7 @@ view.when(() => {
       });
     } else {
       layer.watch('visible', visible => {
-        const group = layers.layerList.operationalItems.find(i => {
+        const group = layers?.layerList.operationalItems.find(i => {
           return i.layer === layer;
         });
         if (group) {

@@ -15,6 +15,7 @@ const setTheme = (theme: string) => {
   document.querySelectorAll('calcite-alert').forEach(item => {
     item.setAttribute('theme', theme);
   });
+  document.querySelector('#arrowPath')?.setAttribute('stroke', theme === 'light' ? 'black' : 'white');
 
   document.querySelectorAll('link').forEach(link => {
     if (link.href.includes(theme === 'light' ? 'dark' : 'light')) {
@@ -28,7 +29,6 @@ export const initMenu = () => {
       if (element.hasAttribute('active')) {
         const value: string = element.getAttribute('value') as string;
         theme = value;
-        debugger;
         setTheme(theme);
         window.localStorage.setItem('theme', theme);
       }
