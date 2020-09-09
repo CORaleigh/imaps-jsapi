@@ -38,7 +38,7 @@ export default class LayersViewModel extends Accessor {
           });
           item.panel = {
             content: [slider, 'legend'],
-            open: false
+            open: item.layer.visible
           };
           if (item.layer.title === 'Property') {
             item.actionsSections = [

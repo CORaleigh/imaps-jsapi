@@ -173,6 +173,7 @@ const popupTemplate = new PopupTemplate({
     new CustomContent({
       outFields: ['*'],
       creator: (e: any) => {
+        debugger;
         return new Locator({
           url: 'https://maps.raleighnc.gov/arcgis/rest/services/Locators/CompositeLocator/GeocodeServer',
           outSpatialReference: { wkid: 4326 }

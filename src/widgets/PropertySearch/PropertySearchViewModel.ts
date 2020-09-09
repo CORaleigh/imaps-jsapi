@@ -199,6 +199,7 @@ export default class PropertySearchViewModel extends Accessor {
           })
           .then(result => {
             //this.selectedProperty = result.features[0];
+            this.feature.graphic.geometry = result.features[0].geometry;
             this.view.goTo(result.features);
             if (!source) {
               this.addGraphics(result);
@@ -372,6 +373,7 @@ export default class PropertySearchViewModel extends Accessor {
         feature.layer = this.condosTable;
         feature.popupTemplate = (feature.layer as esri.FeatureLayer).popupTemplate;
         this.feature.graphic = feature;
+
         document.querySelector('#featureDiv')?.scrollTo({ top: 0, behavior: 'smooth' });
         this.feature.graphic.symbol = this.singleSymbol as any;
         const selected = this.graphics.graphics.find(graphic => {
@@ -386,7 +388,7 @@ export default class PropertySearchViewModel extends Accessor {
         });
         if (graphic) {
           graphic.symbol = this.singleSymbol as any;
-          this.feature.graphic.geometry = graphic.geometry;
+
           graphic.setAttribute('selected', 'true');
           this.graphics.graphics.reorder(graphic, this.graphics.graphics.length - 1);
         }
