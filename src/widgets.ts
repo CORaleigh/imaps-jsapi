@@ -9,6 +9,7 @@ import Measure from './widgets/Measure';
 import Compass from 'esri/widgets/Compass';
 import Locate from 'esri/widgets/Locate';
 import Track from 'esri/widgets/Track';
+import Fullscreen from 'esri/widgets/Fullscreen';
 
 import { condosTable, addressTable, featureLayer } from './data/search';
 import esri = __esri;
@@ -17,6 +18,8 @@ import Select from './widgets/Select';
 import BaseMaps from './widgets/BaseMaps';
 import Layers from './widgets/Layers';
 import LocationSearch from './widgets/LocationSearch';
+import OverviewMap from './widgets/OverviewMap';
+
 export const measurement: Measure = new Measure();
 export const select: Select = new Select();
 export let layers: Layers;
@@ -84,11 +87,32 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
     console.log(event);
   });
   view.ui.add(track, 'top-left');
-
+  view.ui.add(new Fullscreen({ view }), 'top-left');
   measurement.view = view;
   measurement.container = 'measureDiv';
   drawWidget.view = view;
   drawWidget.container = 'drawDiv';
+  const overviewMap = new OverviewMap({ view });
+  const overviewExpand: Expand = new Expand({
+    content: overviewMap,
+    mode: 'floating',
+    expandIconClass: 'esri-icon-overview-arrow-top-left'
+  });
+  overviewExpand.watch('expanded', expanded => {
+    if (expanded) {
+      overviewMap.viewModel.overviewMapView.goTo({
+        center: view.center,
+        scale:
+          view.scale *
+          2 *
+          Math.max(
+            view.width / overviewMap.viewModel.overviewMapView.width,
+            view.height / overviewMap.viewModel.overviewMapView.height
+          )
+      });
+    }
+  });
+  view.ui.add(overviewExpand, 'bottom-right');
 
   select.container = 'selectDiv';
   select.view = view;

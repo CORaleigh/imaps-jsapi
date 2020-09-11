@@ -241,6 +241,11 @@ calcite-loader {
   max-height: 230px;
 }
 
+#overviewDiv {
+  width: 300px;
+  height: 200px;
+}
+
 .home-page__scroll-down-arrow {
   width: 48px;
   height: 48px;
@@ -258,6 +263,10 @@ calcite-loader {
   filter: drop-shadow(0px 2px 4px rgba(255,255,255,1));
 }
 
+
+
 @-webkit-keyframes arrowmove {0% {bottom: 34px; opacity: 1;} 33% {bottom: 24px; opacity: 1;} 67% {bottom: 24px; opacity: 1;} 100% {bottom: 24px; opacity: 0;}}
+
+
 
 @keyframes arrowmove {0% {bottom: 34px; opacity: 1;} 33% {bottom: 24px; opacity: 1;} 67% {bottom: 24px; opacity: 1;} 100% {bottom: 24px; opacity: 0;}}
