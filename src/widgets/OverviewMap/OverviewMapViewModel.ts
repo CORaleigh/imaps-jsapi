@@ -78,25 +78,27 @@ export default class OverviewMapViewModel extends declared(Accessor) {
       }
     } as any);
     this.overviewMapView.graphics.add(graphic);
-    watchUtils.init(view, 'extent', extent => {
-      // if (view.stationary) {
-      this.overviewMapView
-        .goTo({
-          center: view.center,
-          scale:
-            view.scale *
-            2 *
-            Math.max(view.width / this.overviewMapView.width, view.height / this.overviewMapView.height)
-        })
-        .catch(function(error) {
-          // ignore goto-interrupted errors
-          if (error.name != 'view:goto-interrupted') {
-            console.error(error);
-          }
-        });
-      //  }
+    watchUtils.init(view, 'extent', () => {
+      graphic.geometry = view.extent;
+    });
 
-      graphic.geometry = extent;
+    watchUtils.init(view, 'stationary', () => {
+      if (view.stationary) {
+        this.overviewMapView
+          .goTo({
+            center: view.center,
+            scale:
+              view.scale *
+              2 *
+              Math.max(view.width / this.overviewMapView.width, view.height / this.overviewMapView.height)
+          })
+          .catch(function(error) {
+            // ignore goto-interrupted errors
+            if (error.name != 'view:goto-interrupted') {
+              console.error(error);
+            }
+          });
+      }
     });
   }
 }

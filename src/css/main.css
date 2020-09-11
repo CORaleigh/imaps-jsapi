@@ -100,7 +100,9 @@ article:focus {
     max-width: 100%;
     z-index: 12;
   }  
-
+  #overviewDiv {
+    max-width: 250px;
+  }
 }
 
 
@@ -251,6 +253,10 @@ calcite-loader {
 #overviewDiv {
   width: 300px;
   height: 200px;
+}
+
+calcite-action {
+  min-height: 48px;
 }
 
 .home-page__scroll-down-arrow {
