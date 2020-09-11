@@ -11,6 +11,7 @@ import LayerSearchSource from 'esri/widgets/Search/LayerSearchSource';
 import FieldColumnConfig from 'esri/widgets/FeatureTable/FieldColumnConfig';
 import MenuButtonItem from 'esri/widgets/FeatureTable/Grid/support/ButtonMenuItem';
 import { whenDefinedOnce, whenDefined } from 'esri/core/watchUtils';
+import SearchSource from 'esri/widgets/Search/SearchSource';
 @subclass('app.widgets.PropertySearch.PropertySearchViewModel')
 export default class PropertySearchViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
@@ -46,70 +47,6 @@ export default class PropertySearchViewModel extends Accessor {
     whenDefined(this, 'geometry', this.searchByGeometry.bind(this));
   }
 
-  // arcadeExpressionInfos = [
-  //   {
-  //     name: 'bom-doc-num',
-  //     title: 'bom-doc-num',
-  //     expression:
-  //       "var results = FeatureSetByRelationshipName($feature, 'CONDO_BOOKS', ['*'], false); return First(results).BOM_DOC_NUM;"
-  //   },
-  //   {
-  //     name: 'deed-doc-num',
-  //     title: 'deed-doc-num',
-  //     expression:
-  //       "var results = FeatureSetByRelationshipName($feature, 'CONDO_BOOKS', ['*'], false); return First(results).DEED_DOC_NUM;"
-  //   },
-  //   {
-  //     name: 'mailing-address',
-  //     title: 'mailing-address',
-  //     expression:
-  //       'When(IsEmpty($feature.ADDR3),$feature.ADDR1 + TextFormatting.NewLine + $feature.ADDR2,$feature.ADDR1 + TextFormatting.NewLine + $feature.ADDR2 + TextFormatting.NewLine + $feature.ADDR3)'
-  //   },
-  //   {
-  //     name: 'property-values',
-  //     title: 'property-values',
-  //     expression:
-  //       '"Building Value"+TextFormatting.NewLine+"$"+$feature.BLDG_VAL+TextFormatting.NewLine+"Land Value"+TextFormatting.NewLine+"$"+$feature.LAND_VAL+TextFormatting.NewLine+"Total Value"+TextFormatting.NewLine+"$"+$feature.TOTAL_VALUE_ASSD'
-  //   },
-  //   {
-  //     name: 'deed-book-page',
-  //     title: 'deed-book-page',
-  //     expression: '"Book "+$feature.DEED_BOOK+" Page "+$feature.DEED_PAGE'
-  //   },
-  //   {
-  //     name: 'general',
-  //     title: 'general',
-  //     expression:
-  //       '"<b>PIN</b>"+TextFormatting.NewLine+$feature.PIN_NUM+" "+$feature.PIN_EXT+TextFormatting.NewLine+' +
-  //       '"REID"+TextFormatting.NewLine+$feature.REID+TextFormatting.NewLine+"City"+TextFormatting.NewLine+' +
-  //       'Proper($feature.CITY_DECODE)+TextFormatting.NewLine+"Jurisdiction"+TextFormatting.NewLine+' +
-  //       '$feature.PLANNING_JURISDICTION+TextFormatting.NewLine+"Township"+TextFormatting.NewLine+Proper($feature.TOWNSHIP_DECODE)'
-  //   }
-  // ] as ExpressionInfo[];
-
-  // popupTemplate = new PopupTemplate({
-  //   expressionInfos: this.arcadeExpressionInfos,
-  //   content: [
-  //     {
-  //       type: 'text',
-  //       text:
-  //         '<h1 class="text-green">{SITE_ADDRESS}</h1>' +
-  //         '<h2>General</h2>{expression/general}' +
-  //         '<h2>Owner</h2>{OWNER}<br/>{expression/mailing-address}' +
-  //         '<h2>Valuation</h2>{expression/property-values}' +
-  //         '<h2>Sale Information</h2>{TOTSALPRICE}<br/>{SALE_DATE}' +
-  //         '<h2>Deeds</h2>{expression/deed-book-page}' +
-  //         '<br/><strong>Deed Date</strong><br/>{DEED_DATE}<br/>' +
-  //         '<br/>Legal Description<br/>{PROPDESC}<br/>' +
-  //         '<a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/bom-doc-num}&RecordDate=" target="_blank">Book of Maps</a><br/><a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/deed-doc-num}&RecordDate=" target="_blank">Deed</a>'
-  //     },
-  //     {
-  //       type: 'media',
-  //       mediaInfos: []
-  //     }
-  //   ]
-  // });
-
   searchByGeometry(geometry: esri.Geometry) {
     this.propertyLayer
       .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID', 'REID'] })
@@ -130,9 +67,8 @@ export default class PropertySearchViewModel extends Accessor {
             }
             this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, features);
             if (features.length === 1) {
-              if (!features[0].geometry) {
-                features[0].geometry = geometry;
-              }
+              features[0].geometry = propertyResult.features[0].geometry;
+
               this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getObjectId()]);
               this.toggleContent('feature');
             } else {
@@ -145,7 +81,6 @@ export default class PropertySearchViewModel extends Accessor {
                 propertyResult.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
 
               if (propertyResult.features.length === 1) {
-                // this.selectedProperty = propertyResult.features[0];
                 feature.geometry = propertyResult.features[0].geometry;
               }
               this.graphics.add(feature);
@@ -198,8 +133,9 @@ export default class PropertySearchViewModel extends Accessor {
             outSpatialReference: { wkid: 102100 }
           })
           .then(result => {
-            //this.selectedProperty = result.features[0];
-            this.feature.graphic.geometry = result.features[0].geometry;
+            if (this.feature?.graphic) {
+              this.feature.graphic.geometry = result?.features[0].geometry;
+            }
             this.view.goTo(result.features);
             if (!source) {
               this.addGraphics(result);
@@ -224,11 +160,12 @@ export default class PropertySearchViewModel extends Accessor {
   };
 
   searchComplete = (event: esri.SearchSearchCompleteEvent) => {
+    debugger;
     if (!this.searchWidget.viewModel.selectedSuggestion) {
       const oids: any[] = [];
-      debugger;
+
       let where = '';
-      debugger;
+
       if (!this.searchWidget.activeSource) {
         where =
           "OWNER like '" +
@@ -251,7 +188,7 @@ export default class PropertySearchViewModel extends Accessor {
       }
 
       let tableFeatures: any[] = [];
-      debugger;
+
       this.condosTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
         tableFeatures = result.features;
         result.features.forEach(f => {
@@ -288,18 +225,32 @@ export default class PropertySearchViewModel extends Accessor {
                 this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, tableFeatures);
 
                 this.getProperty(oids);
+                if (tableFeatures.length > 1) {
+                  this.feature.graphic = new Graphic();
+                  this.toggleContent('table');
+                }
                 this.featureTable.renderNow();
               });
           } else {
             this.getProperty(oids);
             this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, tableFeatures);
+            if (tableFeatures.length > 1) {
+              this.feature.graphic = new Graphic();
+              this.toggleContent('table');
+            }
             this.featureTable.renderNow();
           }
         });
       });
     } else {
       if (event.numResults) {
-        const layer = (event.results[0].source as LayerSearchSource).layer as FeatureLayer;
+        let layer = (event.results[0].source as LayerSearchSource).layer as FeatureLayer;
+        if (!layer && event.results[0].source.name === 'Owner') {
+          layer = this.condosTable;
+        }
+        if (!layer && ['Site Address', 'Street Name'].includes(event.results[0].source.name)) {
+          layer = this.addressTable;
+        }
         const oids: any[] = [];
         event.results[0].results.forEach(r => {
           oids.push(r.feature.getObjectId());
@@ -313,16 +264,24 @@ export default class PropertySearchViewModel extends Accessor {
               .queryRelatedFeatures({ relationshipId: relationship.id, objectIds: oids, outFields: ['*'] })
               .then(result => {
                 const oids: any[] = [];
+                const features: any[] = [];
                 for (const key in result) {
                   result[key].features.forEach((feature: esri.Graphic) => {
                     oids.push(feature.getAttribute('OBJECTID'));
-                    this.getProperty(oids);
+                    features.push(feature);
                     feature.layer = this.condosTable;
-                    this.setFeature(feature, this.view as esri.MapView, [], oids);
-                    this.toggleContent('feature');
-                    this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, [feature]);
                   });
                 }
+                this.getProperty(oids);
+                if (features.length > 1) {
+                  this.feature.graphic = new Graphic();
+                  this.toggleContent('table');
+                } else {
+                  this.setFeature(features[0], this.view as esri.MapView, [], oids);
+                  this.toggleContent('feature');
+                }
+
+                this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, features);
               });
           }
         } else {
@@ -331,9 +290,16 @@ export default class PropertySearchViewModel extends Accessor {
             result.features.forEach((feature: esri.Graphic) => {
               oids.push(feature.getAttribute('OBJECTID'));
             });
+
             this.getProperty(oids);
-            this.setFeature(result.features[0], this.view as esri.MapView, [], oids);
-            this.toggleContent('feature');
+
+            if (result.features.length > 1) {
+              this.feature.graphic = new Graphic();
+              this.toggleContent('table');
+            } else {
+              this.setFeature(result.features[0], this.view as esri.MapView, [], oids);
+              this.toggleContent('feature');
+            }
             this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, result.features);
           });
         }
@@ -344,6 +310,7 @@ export default class PropertySearchViewModel extends Accessor {
     const relationship = this.condosTable.relationships.find(r => {
       return r.name === 'CONDO_PHOTOS';
     });
+    const oid = feature.getObjectId();
     mediaInfos = [];
     this.condosTable
       .queryRelatedFeatures({ relationshipId: relationship?.id, objectIds: oids, outFields: ['*'] })
@@ -373,9 +340,10 @@ export default class PropertySearchViewModel extends Accessor {
         feature.layer = this.condosTable;
         feature.popupTemplate = (feature.layer as esri.FeatureLayer).popupTemplate;
         this.feature.graphic = feature;
-
+        console.log(this.feature.graphic.attributes);
         document.querySelector('#featureDiv')?.scrollTo({ top: 0, behavior: 'smooth' });
         this.feature.graphic.symbol = this.singleSymbol as any;
+        this.feature.graphic.setAttribute('OBJECTID', oid);
         const selected = this.graphics.graphics.find(graphic => {
           return graphic.getAttribute('selected') === 'true';
         });
@@ -478,6 +446,45 @@ export default class PropertySearchViewModel extends Accessor {
     this.view.map.add(this.clusterPoints);
   }
 
+  getSuggestions = (
+    params: any,
+    name: string,
+    layer: esri.FeatureLayer,
+    outFields: string[],
+    orderByFields: string[],
+    searchFields: string[],
+    startsWith: boolean
+  ) => {
+    const whereArray: string[] = [];
+    searchFields.forEach(field => {
+      if (startsWith) {
+        whereArray.push(`${field} LIKE '${params.suggestTerm.toUpperCase()}%'`);
+      } else {
+        whereArray.push(`${field} LIKE '%${params.suggestTerm.toUpperCase()}%'`);
+      }
+    });
+    return layer
+      .queryFeatures({
+        returnDistinctValues: true,
+        outFields: outFields,
+        returnGeometry: false,
+        orderByFields: orderByFields,
+        where: whereArray.join(' OR ')
+      })
+      .then(results => {
+        return results.features
+          .filter(feature => {
+            return !outFields.includes('ADDR_LIST') || feature.getAttribute('ADDR_LIST') === 'Yes';
+          })
+          .map(feature => {
+            return {
+              key: name,
+              text: feature.getAttribute(outFields[0]),
+              sourceIndex: params.sourceIndex
+            };
+          });
+      });
+  };
   initSearch(condosTable: esri.FeatureLayer) {
     const tableLayer = new FeatureLayer({
       fields: [
@@ -558,24 +565,78 @@ export default class PropertySearchViewModel extends Accessor {
       includeDefaultSources: false,
       container: 'search',
       sources: [
-        new LayerSearchSource({
-          layer: this.addressTable,
-          searchFields: ['ADDRESS'],
-          displayField: 'ADDRESS',
-          exactMatch: false,
-          outFields: ['ADDRESS', 'REA_REID'],
+        // new LayerSearchSource({
+        //   layer: this.addressTable,
+        //   searchFields: ['ADDRESS', 'ADDRESS_NODIR'],
+        //   displayField: 'ADDRESS',
+        //   exactMatch: false,
+        //   outFields: ['ADDRESS', 'REA_REID'],
+        //   name: 'Site Address',
+        //   placeholder: 'example: 222 W HARGETT'
+        // }),
+        new SearchSource({
+          placeholder: 'example: 222 W HARGETT ST',
           name: 'Site Address',
-          placeholder: 'example: 222 W HARGETT'
-        }),
-        new LayerSearchSource({
-          layer: condosTable,
-          searchFields: ['OWNER'],
-          displayField: 'OWNER',
-          exactMatch: false,
-          outFields: ['OWNER', 'REID', 'OBJECTID'],
+          getSuggestions: (params: any) => {
+            return this.getSuggestions(
+              params,
+              'Site Address',
+              this.addressTable,
+              ['ADDRESS', 'ADDR_LIST'],
+              ['ADDRESS'],
+              ['ADDRESS', 'ADDRESS_NODIR'],
+              true
+            );
+          },
+          getResults: (params: any) => {
+            debugger;
+            return this.addressTable
+              .queryFeatures({
+                where: "ADDRESS = '" + params.suggestResult.text.toUpperCase() + "'",
+                outFields: ['ADDRESS', 'REA_REID', 'OBJECTID']
+              })
+              .then(results => {
+                return results.features.map(feature => {
+                  return {
+                    feature: feature,
+                    name: 'Address'
+                  };
+                });
+              }) as any;
+          }
+        } as any),
+        // new LayerSearchSource({
+        //   layer: condosTable,
+        //   searchFields: ['OWNER'],
+        //   displayField: 'OWNER',
+        //   exactMatch: false,
+        //   outFields: ['OWNER', 'REID', 'OBJECTID'],
+        //   name: 'Owner',
+        //   placeholder: 'example: SMITH, JOHN'
+        // }),
+        new SearchSource({
+          placeholder: 'example: SMITH, JOHN',
           name: 'Owner',
-          placeholder: 'example: SMITH, JOHN'
-        }),
+          getSuggestions: (params: any) => {
+            return this.getSuggestions(params, 'Owner', this.condosTable, ['OWNER'], ['OWNER'], ['OWNER'], false);
+          },
+          getResults: (params: any) => {
+            debugger;
+            return this.addressTable
+              .queryFeatures({
+                where: "OWNER = '" + params.suggestResult.text.toUpperCase() + "'",
+                outFields: ['OWNER', 'OBJECTID']
+              })
+              .then(results => {
+                return results.features.map(feature => {
+                  return {
+                    feature: feature,
+                    name: 'Owner'
+                  };
+                });
+              }) as any;
+          }
+        } as any),
         new LayerSearchSource({
           layer: condosTable,
           searchFields: ['PIN_NUM'],
@@ -593,7 +654,37 @@ export default class PropertySearchViewModel extends Accessor {
           outFields: ['REID', 'OBJECTID'],
           name: 'REID',
           placeholder: 'example: 0123456'
-        })
+        }),
+        new SearchSource({
+          placeholder: 'example: W HARGETT ST',
+          name: 'Street Name',
+          getSuggestions: (params: any) => {
+            return this.getSuggestions(
+              params,
+              'Street Name',
+              this.addressTable,
+              ['STREET', 'ADDR_LIST'],
+              ['STREET'],
+              ['STREET', 'STREET_NODIR'],
+              false
+            );
+          },
+          getResults: (params: any) => {
+            return this.addressTable
+              .queryFeatures({
+                where: "STREET = '" + params.suggestResult.text.toUpperCase() + "'",
+                outFields: ['STREET', 'REA_REID', 'OBJECTID']
+              })
+              .then(results => {
+                return results.features.map(feature => {
+                  return {
+                    feature: feature,
+                    name: 'Street Name'
+                  };
+                });
+              }) as any;
+          }
+        } as any)
       ]
     });
     this.searchWidget.viewModel.watch('results', event => {

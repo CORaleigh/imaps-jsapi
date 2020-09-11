@@ -88,19 +88,62 @@ const arcadeExpressionInfos = [
       '$feature.PLANNING_JURISDICTION+TextFormatting.NewLine+"Township"+TextFormatting.NewLine+Proper($feature.TOWNSHIP_DECODE)'
   }
 ] as ExpressionInfo[];
+const services: any[] = [
+  {
+    group: {
+      title: 'Electoral',
+      layers: [
+        'Precincts',
+        'Congressional Districts',
+        'NC House of Representatives Districts',
+        'NC Senate Districts',
+        'School Board Districts',
+        'Board of Commissioners Districts',
+        'Superior Court Districts',
+        'Raleigh City Council',
+        'Morrisville Town Council Districts'
+      ]
+    }
+  },
+  {
+    group: {
+      title: 'Environmental',
+      layers: [
+        'Special Flood Hazard Areas - FloodPlain - Floodplain',
+        'Soils',
+        'Critical Watersheds',
+        'Water Supply Watersheds'
+      ]
+    }
+  }
+];
 const serviceChanged = (graphic: __esri.Graphic, e: any) => {
-  debugger;
   if (
     !e.detail.requestedAccordionItem.hasAttribute('active') &&
     e.detail.requestedAccordionItem.childElementCount === 0
   ) {
-    const group = view.map.layers.find(layer => {
-      return layer.title === e.detail.requestedAccordionItem.getAttribute('item-title');
-    }) as __esri.GroupLayer;
-    group.layers.forEach(layer => {
-      (layer as __esri.FeatureLayer)
-        .queryFeatures({ geometry: graphic.geometry, outFields: ['*'], returnGeometry: true })
-        .then(result => {
+    const serviceGroup: any = services.find(service => {
+      return service.group.title === e.detail.requestedAccordionItem.getAttribute('item-title');
+    });
+    const promises: Promise<__esri.FeatureSet>[] = [];
+
+    if (serviceGroup) {
+      const layers = view.map.allLayers.filter(layer => {
+        return serviceGroup.group.layers.includes(layer.title);
+      });
+      layers.forEach(layer => {
+        promises.push(
+          (layer as __esri.FeatureLayer).queryFeatures({
+            geometry: graphic.geometry,
+            outFields: ['*'],
+            returnGeometry: true
+          })
+        );
+      });
+    }
+    if (promises.length) {
+      return Promise.all(promises).then(results => {
+        results.forEach(result => {
           if (result.features.length) {
             result.features.forEach((feature: __esri.Graphic) => {
               const div = document.createElement('div');
@@ -109,7 +152,10 @@ const serviceChanged = (graphic: __esri.Graphic, e: any) => {
             });
           }
         });
-    });
+      });
+    } else {
+      return 'No services found.';
+    }
   }
 };
 const deedCreator = (e: any) => {
@@ -173,7 +219,6 @@ const popupTemplate = new PopupTemplate({
     new CustomContent({
       outFields: ['*'],
       creator: (e: any) => {
-        debugger;
         return new Locator({
           url: 'https://maps.raleighnc.gov/arcgis/rest/services/Locators/CompositeLocator/GeocodeServer',
           outSpatialReference: { wkid: 4326 }
@@ -361,7 +406,7 @@ const popupTemplate = new PopupTemplate({
     },
 
     new CustomContent({
-      outFields: ['*'],
+      outFields: ['OBJECTID', 'REID'],
       creator: deedCreator
     }),
     // {
@@ -424,10 +469,11 @@ const popupTemplate = new PopupTemplate({
       outFields: ['*'],
       creator: (e: any) => {
         const accordion = document.createElement('calcite-accordion');
-        const titles = ['Electoral', 'Planning', 'Solid Waste', 'Public Safety', 'Environmental'];
-        titles.forEach(title => {
+        accordion.setAttribute('selection-mode', 'single');
+
+        services.forEach(service => {
           const item = document.createElement('calcite-accordion-item');
-          item.setAttribute('item-title', title);
+          item.setAttribute('item-title', service.group.title);
           accordion.append(item);
         });
         //const f = serviceChanged.bind(e.Graphic);

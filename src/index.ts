@@ -4,6 +4,7 @@ import { initTips } from './tips';
 import { showAlert } from './alert';
 import { toggleAction, enableActionbar } from './actionbar';
 import MapView from 'esri/views/MapView';
+
 import WebMap from 'esri/WebMap';
 import geometryEngine from 'esri/geometry/geometryEngine';
 // widget utils
@@ -41,7 +42,7 @@ view.when(() => {
   view.map.allLayers.forEach(layer => {
     if (layer.type != 'group') {
       layer.watch('visible', visible => {
-        layers.layerList?.operationalItems.forEach(item => {
+        layers?.layerList?.operationalItems.forEach(item => {
           if (item.layer.type === 'group') {
             const child = item.children.find(i => {
               return i.layer === layer;

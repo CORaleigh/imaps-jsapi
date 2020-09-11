@@ -244,6 +244,10 @@ calcite-loader {
   padding: 4px;
 }
 
+#feature .esri-feature-content img {
+  max-height: 230px;
+}
+
 .home-page__scroll-down-arrow {
   width: 48px;
   height: 48px;

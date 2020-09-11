@@ -50,7 +50,7 @@ export default class DrawViewModel extends Accessor {
         if (e.graphic.geometry.type === 'polygon') {
           labelPoint = (e.graphic.geometry as esri.Polygon).centroid;
         }
-        debugger;
+
         const g = new Graphic({
           geometry: labelPoint,
           symbol: new TextSymbol({

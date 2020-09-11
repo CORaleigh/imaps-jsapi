@@ -34,6 +34,10 @@ const tipGroups = [
         {
           message: 'To select by a location use the property selection tool.',
           title: 'Select By Location'
+        },
+        {
+          message: 'Previous "tab" layout has been consolidated into a single scrollable panel.',
+          title: 'Single Details Panel'
         }
       ]
     }
