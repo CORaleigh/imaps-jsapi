@@ -218,6 +218,10 @@ header calcite-dropdown {
   border-right: none;
 }
 
+.esri-search__warning-menu {
+  display: none;
+}
+
 calcite-loader {
   position: absolute;
     left: calc(50% - 50px);

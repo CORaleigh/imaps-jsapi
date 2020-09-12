@@ -12,6 +12,7 @@ import FieldColumnConfig from 'esri/widgets/FeatureTable/FieldColumnConfig';
 import MenuButtonItem from 'esri/widgets/FeatureTable/Grid/support/ButtonMenuItem';
 import { whenDefinedOnce, whenDefined } from 'esri/core/watchUtils';
 import SearchSource from 'esri/widgets/Search/SearchSource';
+import FeatureSet from 'esri/tasks/support/FeatureSet';
 @subclass('app.widgets.PropertySearch.PropertySearchViewModel')
 export default class PropertySearchViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
@@ -65,17 +66,18 @@ export default class PropertySearchViewModel extends Accessor {
             for (const key in result) {
               features = features.concat(result[key].features);
             }
-            this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, features);
             if (features.length === 1) {
               features[0].geometry = propertyResult.features[0].geometry;
 
-              this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getObjectId()]);
+              this.setFeature(features[0], this.view as esri.MapView, [], [features[0].getAttribute('OBJECTID')]);
               this.toggleContent('feature');
             } else {
               this.toggleContent('table');
             }
-            this.featureTable.renderNow();
+
             this.graphics.removeAll();
+
+            const featureSet: FeatureSet = new FeatureSet({ features: [] });
             propertyResult.features.forEach((feature: esri.Graphic) => {
               feature.symbol =
                 propertyResult.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
@@ -83,8 +85,11 @@ export default class PropertySearchViewModel extends Accessor {
               if (propertyResult.features.length === 1) {
                 feature.geometry = propertyResult.features[0].geometry;
               }
+              this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, features);
               this.graphics.add(feature);
+              featureSet.features.push(feature);
             });
+            this.addClusterGraphics(featureSet);
           });
       });
   }
@@ -99,12 +104,29 @@ export default class PropertySearchViewModel extends Accessor {
       spatialReference: this.view.spatialReference
     });
   };
+  addClusterGraphics = (result: esri.FeatureSet) => {
+    const points: Graphic[] = [];
+    result.features.forEach(feature => {
+      const pt = feature.clone();
+      pt.geometry = (pt.geometry as esri.Polygon).centroid;
+      points.push(pt);
+    });
+    this.clusterPoints.queryFeatures({ where: '1=1', returnGeometry: false, outFields: ['OBJECTID'] }).then(result => {
+      this.clusterPoints.applyEdits({ deleteFeatures: result.features }).then(() => {
+        this.clusterPoints.applyEdits({ addFeatures: points }).then(() => {
+          this.clusterPoints.refresh();
+        });
+      });
+    });
+  };
   addGraphics = (result: esri.FeatureSet) => {
     this.graphics.removeAll();
     result.features.forEach(feature => {
       feature.symbol = result.features.length > 1 ? (this.multiSymbol as any) : (this.singleSymbol as any);
       this.graphics.add(feature);
     });
+
+    this.addClusterGraphics(result);
   };
 
   getProperty = (oids: any[], source?: string) => {
@@ -137,23 +159,10 @@ export default class PropertySearchViewModel extends Accessor {
               this.feature.graphic.geometry = result?.features[0].geometry;
             }
             this.view.goTo(result.features);
+            debugger;
+
             if (!source) {
               this.addGraphics(result);
-              const points: Graphic[] = [];
-              result.features.forEach(feature => {
-                const pt = feature.clone();
-                pt.geometry = (pt.geometry as esri.Polygon).centroid;
-                points.push(pt);
-              });
-              this.clusterPoints
-                .queryFeatures({ where: '1=1', returnGeometry: false, outFields: ['OBJECTID'] })
-                .then(result => {
-                  this.clusterPoints.applyEdits({ deleteFeatures: result.features }).then(() => {
-                    this.clusterPoints.applyEdits({ addFeatures: points }).then(() => {
-                      this.clusterPoints.refresh();
-                    });
-                  });
-                });
             }
           });
       });
@@ -167,20 +176,13 @@ export default class PropertySearchViewModel extends Accessor {
       let where = '';
 
       if (!this.searchWidget.activeSource) {
-        where =
-          "OWNER like '" +
-          event.searchTerm.toUpperCase() +
-          "%' OR REID like '" +
-          event.searchTerm.toUpperCase() +
-          "%' OR PIN_NUM like '" +
-          event.searchTerm.toUpperCase() +
-          "%'";
+        where = `OWNER like '${event.searchTerm.toUpperCase()}%' OR REID like '${event.searchTerm.toUpperCase()}%' OR PIN_NUM like '${event.searchTerm.toUpperCase()}%'`;
       } else {
         if ((this.searchWidget.activeSource as any)?.searchFields.includes('OWNER')) {
-          where = "OWNER like '%" + event.searchTerm.toUpperCase() + "%'";
+          where = `OWNER like '%${event.searchTerm.toUpperCase()}%'`;
         }
         if ((this.searchWidget.activeSource as any)?.searchFields.includes('PIN_NUM')) {
-          where = "PIN_NUM like '%" + event.searchTerm.toUpperCase() + "%'";
+          where = `PIN_NUM like '%${event.searchTerm.toUpperCase()}%'`;
         }
         if ((this.searchWidget.activeSource as any)?.searchFields.includes('REID')) {
           where = "REID like '%" + event.searchTerm.toUpperCase() + "%'";
@@ -199,7 +201,7 @@ export default class PropertySearchViewModel extends Accessor {
           !this.searchWidget.activeSource ||
           (this.searchWidget.activeSource as any)?.searchFields.includes('ADDRESS')
         ) {
-          where = "ADDRESS like '%" + event.searchTerm.toUpperCase() + "%'";
+          where = `ADDRESS like '%${event.searchTerm.toUpperCase()}%'`;
         } else {
           where = 'ADDRESS IS NULL';
         }
@@ -307,6 +309,9 @@ export default class PropertySearchViewModel extends Accessor {
     }
   };
   setFeature(feature: esri.Graphic, view: esri.MapView, mediaInfos: any[], oids: any[]) {
+    const params = new URL(document.location.href).searchParams;
+    params.set('reid', feature.getAttribute('REID'));
+    window.history.replaceState({}, '', `${location.pathname}?${params}`);
     const relationship = this.condosTable.relationships.find(r => {
       return r.name === 'CONDO_PHOTOS';
     });
@@ -322,11 +327,9 @@ export default class PropertySearchViewModel extends Accessor {
               type: 'image',
               caption: '',
               value: {
-                sourceURL:
-                  'http://services.wakegov.com/realestate/photos/mvideo/' +
-                  feature.getAttribute('IMAGEDIR') +
-                  '/' +
-                  feature.getAttribute('IMAGENAME')
+                sourceURL: `http://services.wakegov.com/realestate/photos/mvideo/${feature.getAttribute(
+                  'IMAGEDIR'
+                )}/${feature.getAttribute('IMAGENAME')}`
               }
             });
           });
@@ -366,17 +369,17 @@ export default class PropertySearchViewModel extends Accessor {
     this.featureTable.layer.queryFeatures({ outFields: ['*'] }).then(result => {
       let csv = '';
       result.fields.forEach(field => {
-        csv += field.alias + ',';
+        csv += `${field.alias},`;
       });
       csv += '\r\n';
       result.features.forEach(feature => {
         for (const key in feature.attributes) {
           if (key.toLowerCase().includes('date')) {
-            csv += '"' + new Date(feature.attributes[key]).toDateString() + '",';
+            csv += `"${new Date(feature.attributes[key]).toDateString()}",`;
           } else if (key.toLowerCase().includes('acres')) {
-            csv += '"' + parseFloat(feature.attributes[key]).toFixed(2) + '",';
+            csv += `"${parseFloat(feature.attributes[key]).toFixed(2)}",`;
           } else {
-            csv += '"' + feature.attributes[key] + '",';
+            csv += `"${feature.attributes[key]}",`;
           }
         }
         csv += '\r\n';
@@ -398,6 +401,37 @@ export default class PropertySearchViewModel extends Accessor {
       }
     });
   }
+
+  checkSearchParams = () => {
+    const params = new URL(document.location.href).searchParams;
+    const reid = params.get('reid');
+    const pin = params.get('pin');
+    let where = '';
+    if (reid || pin) {
+      if (reid) {
+        where = `REID IN ('${reid.split(',').join("','")}')`;
+      } else if (pin) {
+        where = `PIN_NUM = '${pin}'`;
+      }
+      this.condosTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
+        const oids: any[] = [];
+        result.features.forEach((feature: esri.Graphic) => {
+          oids.push(feature.getAttribute('OBJECTID'));
+        });
+
+        this.getProperty(oids);
+
+        if (result.features.length > 1) {
+          this.feature.graphic = new Graphic();
+          this.toggleContent('table');
+        } else {
+          this.setFeature(result.features[0], this.view as esri.MapView, [], oids);
+          this.toggleContent('feature');
+        }
+        this.featureTable.layer = this.createFeatureTableLayer(this.condosTable.fields, result.features);
+      });
+    }
+  };
   init(view: esri.MapView | esri.SceneView) {
     view.map.add(this.graphics, view.map.allLayers.length - 1);
     this.clusterPoints = new FeatureLayer({
@@ -444,6 +478,7 @@ export default class PropertySearchViewModel extends Accessor {
       spatialReference: this.view.spatialReference
     });
     this.view.map.add(this.clusterPoints);
+    this.checkSearchParams();
   }
 
   getSuggestions = (
@@ -592,7 +627,7 @@ export default class PropertySearchViewModel extends Accessor {
             debugger;
             return this.addressTable
               .queryFeatures({
-                where: "ADDRESS = '" + params.suggestResult.text.toUpperCase() + "'",
+                where: `ADDRESS = '${params.suggestResult.text.toUpperCase()}'`,
                 outFields: ['ADDRESS', 'REA_REID', 'OBJECTID']
               })
               .then(results => {
@@ -622,9 +657,9 @@ export default class PropertySearchViewModel extends Accessor {
           },
           getResults: (params: any) => {
             debugger;
-            return this.addressTable
+            return this.condosTable
               .queryFeatures({
-                where: "OWNER = '" + params.suggestResult.text.toUpperCase() + "'",
+                where: `OWNER = '${params.suggestResult.text.toUpperCase()}'`,
                 outFields: ['OWNER', 'OBJECTID']
               })
               .then(results => {
@@ -672,7 +707,7 @@ export default class PropertySearchViewModel extends Accessor {
           getResults: (params: any) => {
             return this.addressTable
               .queryFeatures({
-                where: "STREET = '" + params.suggestResult.text.toUpperCase() + "'",
+                where: `STREET = '${params.suggestResult.text.toUpperCase()}'`,
                 outFields: ['STREET', 'REA_REID', 'OBJECTID']
               })
               .then(results => {

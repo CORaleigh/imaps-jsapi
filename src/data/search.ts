@@ -117,11 +117,23 @@ const services: any[] = [
     }
   }
 ];
+
+const scrollToService = (e: any) => {
+  const rect = (e.detail.requestedAccordionItem as HTMLElement).getBoundingClientRect();
+  const div = document.querySelector('#featureDiv');
+  setTimeout(() => {
+    div?.scrollTo({ top: rect.top + div.scrollTop - 155, behavior: 'smooth' });
+  }, 500);
+};
 const serviceChanged = (graphic: __esri.Graphic, e: any) => {
   if (
     !e.detail.requestedAccordionItem.hasAttribute('active') &&
     e.detail.requestedAccordionItem.childElementCount === 0
   ) {
+    const loader = document.createElement('calcite-loader');
+    loader.setAttribute('inline', '');
+    const header = e.detail.requestedAccordionItem.shadowRoot.querySelector('.accordion-item-header') as HTMLElement;
+    header.insertBefore(loader, header.childNodes[1]);
     const serviceGroup: any = services.find(service => {
       return service.group.title === e.detail.requestedAccordionItem.getAttribute('item-title');
     });
@@ -152,10 +164,15 @@ const serviceChanged = (graphic: __esri.Graphic, e: any) => {
             });
           }
         });
+        scrollToService(e);
+        header.removeChild(loader);
       });
     } else {
+      header.removeChild(loader);
       return 'No services found.';
     }
+  } else {
+    scrollToService(e);
   }
 };
 const deedCreator = (e: any) => {
