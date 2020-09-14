@@ -15,6 +15,12 @@ const setTheme = (theme: string) => {
   document.querySelectorAll('calcite-alert').forEach(item => {
     item.setAttribute('theme', theme);
   });
+  setTimeout(() => {
+    document.querySelectorAll('calcite-action-bar').forEach(item => {
+      item.setAttribute('theme', theme);
+    });
+  });
+
   document.querySelector('#arrowPath')?.setAttribute('stroke', theme === 'light' ? 'black' : 'white');
 
   document.querySelectorAll('link').forEach(link => {

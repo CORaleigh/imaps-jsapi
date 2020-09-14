@@ -24,7 +24,7 @@ export default class Select extends Widget {
   @aliasOf('viewModel.layer')
   layer: esri.FeatureLayer;
   @aliasOf('viewModel.sketch')
-  sketch: esri.FeatureLayer;
+  sketch: esri.Sketch;
   @aliasOf('viewModel.bufferDistance')
   bufferDistance: number;
   @property({

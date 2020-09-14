@@ -1,5 +1,3 @@
-import { actions } from './actionbar';
-
 export const initPanelHeaders = () => {
   //override CSS for calcite panel header
   document.querySelectorAll('calcite-panel div').forEach(panel => {
@@ -7,13 +5,15 @@ export const initPanelHeaders = () => {
       panel.setAttribute('style', 'display: flex; flex-direction: row;');
     }
   });
-  window.onresize = () => {
-    if ((event?.target as any)?.outerWidth >= 500) {
+  window.onresize = (event: any) => {
+    if ((event?.target as any)?.innerWidth >= 500) {
       document.querySelectorAll('calcite-panel').forEach(item => {
-        if (item.querySelector('.maximize')?.getAttribute('icon') === 'minimize') {
-          item.setAttribute('style', 'min-width: calc(100% - 50px)');
-        } else {
-          item.setAttribute('style', 'min-width: 350px');
+        if (!item.hasAttribute('dismissed')) {
+          if (item.querySelector('.maximize')?.getAttribute('icon') === 'minimize') {
+            item.setAttribute('style', 'min-width: calc(100% - 48px)');
+          } else {
+            item.setAttribute('style', 'min-width: 350px');
+          }
         }
       });
     } else {
@@ -21,7 +21,7 @@ export const initPanelHeaders = () => {
         if (item.getAttribute('dismissed')) {
           item.setAttribute('style', 'min-width: 0px');
         } else {
-          item.setAttribute('style', 'min-width: calc(100% - 50px)');
+          item.setAttribute('style', 'min-width: calc(100% - 48px)');
         }
       });
     }
@@ -29,11 +29,8 @@ export const initPanelHeaders = () => {
 
   document.querySelectorAll('calcite-panel').forEach(item => {
     item.addEventListener('calcitePanelDismissedChange', () => {
-      document.querySelectorAll('calcite-panel').forEach(item => {
+      document.querySelectorAll('calcite-panel').forEach(() => {
         item.setAttribute('style', 'min-width: 0px');
-        document.querySelectorAll('.maximize').forEach(item => {
-          item.setAttribute('icon', 'maximize');
-        });
       });
     });
   });
@@ -44,15 +41,21 @@ export const initPanelHeaders = () => {
       item.parentElement?.parentElement?.classList.remove('hidden');
       if (item.getAttribute('icon') === 'maximize') {
         item.setAttribute('icon', 'minimize');
-        item.parentElement?.parentElement?.setAttribute('style', 'min-width: calc(100% - 50px)');
+        item.parentElement?.parentElement?.classList.add('maximized'); //.setAttribute('style', 'min-width: calc(100% - 96px)');
+        document.querySelectorAll('calcite-panel.left:not(.hidden)').forEach(item => {
+          item.classList.add('hidden');
+          item.setAttribute('dismissed', '');
+        });
+        document.querySelector('calcite-action[side="left"][active]')?.removeAttribute('active');
       } else if (item.getAttribute('icon') === 'minimize') {
         item.setAttribute('icon', 'maximize');
-        item.parentElement?.parentElement?.setAttribute('style', 'min-width:350px');
+        item.parentElement?.parentElement?.classList.remove('maximized');
+        //item.parentElement?.parentElement?.setAttribute('style', 'min-width:350px');
       }
     });
   });
 };
-export const initPanels = () => {
+export const initPanels = (actions: any) => {
   document.querySelectorAll('calcite-panel').forEach(item => {
     const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
     if (i) {
@@ -75,7 +78,7 @@ export const initPanels = () => {
                 }
               }
             });
-            if (window.outerWidth <= 500) {
+            if (window.innerWidth <= 500) {
               setTimeout(() => {
                 if ((mutation.target as any).hasAttribute('dismissed')) {
                   console.log((mutation.target as any).title, 'dismissed');

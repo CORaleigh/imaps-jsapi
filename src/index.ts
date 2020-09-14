@@ -2,15 +2,18 @@ import './css/main.css';
 import { map } from './data/app';
 import { initTips } from './tips';
 import { showAlert } from './alert';
-import { toggleAction, enableActionbar } from './actionbar';
+//import { toggleAction, enableActionbar } from './actionbar';
 import MapView from 'esri/views/MapView';
 
 import WebMap from 'esri/WebMap';
-import geometryEngine from 'esri/geometry/geometryEngine';
 // widget utils
 import { initWidgets, select, propertySearch, layers } from './widgets';
 import { initPanels, initPanelHeaders } from './panels';
 import { initMenu } from './menu';
+import ActionBar from './widgets/ActionBar';
+const actionBar = new ActionBar({ side: 'right', container: 'actionBar' });
+
+new ActionBar({ side: 'left', container: 'leftActionbar' });
 
 /**
  * Initialize application
@@ -70,7 +73,7 @@ view.when(() => {
   view.on('hold', e => {
     propertySearch.geometry = e.mapPoint;
     setTimeout(() => {
-      toggleAction('Search');
+      //toggleAction('Search');
     }, 1000);
   });
   view
@@ -79,25 +82,13 @@ view.when(() => {
       document.querySelector('#mapLoader')?.toggleAttribute('active');
       propertySearch.propertyLayer = propertyLayer as __esri.FeatureLayer;
       //search by geometry after sketch creation in select widget
-      select.viewModel.sketch.on('create', (ev: any) => {
-        if (ev.state === 'complete') {
-          if (select.viewModel?.bufferDistance > 0) {
-            const g = geometryEngine.geodesicBuffer(ev.graphic.geometry, select.viewModel.bufferDistance, 'feet');
-            propertySearch.geometry = g as __esri.Polygon;
-            ev.graphic.geometry = g;
-            select.viewModel.graphics.add(ev.graphic);
-            ev.graphic.symbol = {
-              type: 'simple-fill',
-              style: 'none',
-              outline: { style: 'short-dash', width: 2.5, color: [221, 221, 221, 1] },
-              color: [255, 243, 13, 0.25]
-            };
-            view.goTo(ev.graphic);
-          } else {
-            propertySearch.geometry = ev.graphic.geometry;
+      select.viewModel.watch('geometry', geometry => {
+        propertySearch.geometry = geometry;
+        actionBar.actions.forEach((action: any) => {
+          if (action.text === 'Search') {
+            actionBar.toggleAction(action);
           }
-          toggleAction('Search');
-        }
+        });
       });
     })
     .catch((reason: any) => {
@@ -123,16 +114,16 @@ window.addEventListener('pagehide', () => {
 });
 
 //show first panel on devices wider than 500px by default
-if (window.outerWidth >= 500) {
-  document.querySelector('calcite-panel')?.classList.remove('hidden');
-  document.querySelector('calcite-panel')?.removeAttribute('dismissed');
-  document.querySelector('calcite-action-bar calcite-action')?.toggleAttribute('active');
+if (window.innerWidth >= 500) {
+  document.querySelector('calcite-panel.right')?.classList.remove('hidden');
+  document.querySelector('calcite-panel.right')?.removeAttribute('dismissed');
 }
 
 //modify DOM after map view loads
 view.when(() => {
-  initPanels();
-  enableActionbar();
+  initPanels(actionBar.actions);
+  actionBar.view = view;
+  actionBar.enableActionbar();
 });
 
 initPanelHeaders();

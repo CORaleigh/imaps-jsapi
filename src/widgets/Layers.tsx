@@ -35,13 +35,39 @@ export default class Layers extends Widget {
   }
   _createLayers = () => {
     if (this.layerList) {
-      this.layerList.container = 'layers';
+      this.layerList.container = 'layerWidget';
     }
+  };
+  _createSearch = (input: HTMLElement) => {
+    input.addEventListener('input', e => {
+      this.layerList.operationalItems.forEach((item: esri.ListItem) => {
+        if (item.layer.type === 'group') {
+          (item.layer as esri.GroupLayer).layers.forEach(layer => {
+            if (layer.title.toLowerCase().includes((e.target as HTMLInputElement).value.toLowerCase())) {
+              layer.listMode = 'show';
+              item.open = true;
+            } else {
+              layer.listMode = 'hide';
+              item.open = false;
+            }
+          });
+          if (!(e.target as HTMLInputElement).value.length) {
+            item.open = false;
+          }
+        }
+      });
+    });
   };
   render() {
     return (
       <div class={CSS.base}>
-        <div afterCreate={this._createLayers} id="layers"></div>
+        <calcite-input
+          placeholder="Filter by layer name"
+          scale="s"
+          afterCreate={this._createSearch}
+          id="layerSearch"
+        ></calcite-input>
+        <div afterCreate={this._createLayers} id="layerWidget"></div>
       </div>
     );
   }

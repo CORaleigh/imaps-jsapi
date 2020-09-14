@@ -159,7 +159,6 @@ export default class PropertySearchViewModel extends Accessor {
               this.feature.graphic.geometry = result?.features[0].geometry;
             }
             this.view.goTo(result.features);
-            debugger;
 
             if (!source) {
               this.addGraphics(result);
@@ -169,7 +168,6 @@ export default class PropertySearchViewModel extends Accessor {
   };
 
   searchComplete = (event: esri.SearchSearchCompleteEvent) => {
-    debugger;
     if (!this.searchWidget.viewModel.selectedSuggestion) {
       const oids: any[] = [];
 
@@ -624,7 +622,6 @@ export default class PropertySearchViewModel extends Accessor {
             );
           },
           getResults: (params: any) => {
-            debugger;
             return this.addressTable
               .queryFeatures({
                 where: `ADDRESS = '${params.suggestResult.text.toUpperCase()}'`,
@@ -656,7 +653,6 @@ export default class PropertySearchViewModel extends Accessor {
             return this.getSuggestions(params, 'Owner', this.condosTable, ['OWNER'], ['OWNER'], ['OWNER'], false);
           },
           getResults: (params: any) => {
-            debugger;
             return this.condosTable
               .queryFeatures({
                 where: `OWNER = '${params.suggestResult.text.toUpperCase()}'`,

@@ -42,7 +42,7 @@ export function initWidget(name: string, view: esri.MapView | esri.SceneView) {
     });
   }
   if (name === 'Layers' && !layers) {
-    layers = new Layers({ view, container: 'layersDiv' });
+    layers = new Layers({ view, container: 'layerDiv' });
   }
   if (name === 'Legend' && !legend) {
     legend = new Legend({ view, container: 'legendDiv' });
