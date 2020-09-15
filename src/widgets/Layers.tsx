@@ -98,7 +98,7 @@ export default class Layers extends Widget {
   render() {
     return (
       <div class={CSS.base}>
-        <div class="flex">
+        <div class="flex sticky">
           <calcite-input
             clearable
             placeholder="Filter by layer name"

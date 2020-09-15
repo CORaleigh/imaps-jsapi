@@ -294,6 +294,22 @@ calcite-action {
   width: 100%;
 }
 
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.layers-base {
+  overflow: hidden;
+}
+
+.layers-base  .esri-layer-list__list {
+  position: relative;
+top: 20px;
+overflow: auto;
+}
+
 
 @-webkit-keyframes arrowmove {0% {bottom: 34px; opacity: 1;} 33% {bottom: 24px; opacity: 1;} 67% {bottom: 24px; opacity: 1;} 100% {bottom: 24px; opacity: 0;}}
 
