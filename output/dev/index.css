@@ -282,10 +282,20 @@ calcite-action {
   filter: drop-shadow(0px 2px 4px rgba(255,255,255,1));
 }
 
+.esri-view-surface:focus, calcite-panel:focus {
+  outline: none;
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+}
+.flex calcite-input {
+  width: 100%;
+}
 
 
 @-webkit-keyframes arrowmove {0% {bottom: 34px; opacity: 1;} 33% {bottom: 24px; opacity: 1;} 67% {bottom: 24px; opacity: 1;} 100% {bottom: 24px; opacity: 0;}}
-
 
 
 @keyframes arrowmove {0% {bottom: 34px; opacity: 1;} 33% {bottom: 24px; opacity: 1;} 67% {bottom: 24px; opacity: 1;} 100% {bottom: 24px; opacity: 0;}}

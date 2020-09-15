@@ -59,7 +59,8 @@ export const initPanels = (actions: any) => {
   document.querySelectorAll('calcite-panel').forEach(item => {
     const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
     if (i) {
-      i.innerHTML += '<style>.content-container { height: 100%; } </style>';
+      i.innerHTML +=
+        '<style>.content-container { height: 100%; } .container:focus, .content-container:focus { outline: none; }</style>';
     }
 
     const config = { attributes: true, childList: false, subtree: false };

@@ -19,6 +19,7 @@ import BaseMaps from './widgets/BaseMaps';
 import Layers from './widgets/Layers';
 import LocationSearch from './widgets/LocationSearch';
 import OverviewMap from './widgets/OverviewMap';
+import Clear from './widgets/Clear';
 
 export const measurement: Measure = new Measure();
 export const select: Select = new Select();
@@ -88,6 +89,7 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   });
   view.ui.add(track, 'top-left');
   view.ui.add(new Fullscreen({ view }), 'top-left');
+  view.ui.add(new Clear({ view }), 'top-left');
   measurement.view = view;
   measurement.container = 'measureDiv';
   drawWidget.view = view;

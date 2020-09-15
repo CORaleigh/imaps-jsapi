@@ -21,15 +21,15 @@ export default class ActionBarViewModel extends declared(Accessor) {
 
   reorderPanels = () => {
     if (this.view) {
-      this.actions.forEach(() => {
-        document.querySelectorAll('.panel.left').forEach((panel: HTMLElement) => {
-          if (window.innerWidth >= 1000) {
-            panel.parentElement?.insertBefore(panel, document.querySelector('#viewDiv'));
-          } else {
-            panel.parentElement?.insertBefore(panel, document?.querySelector('#viewDiv')?.nextElementSibling as any);
-          }
-        });
+      //this.actions.forEach(() => {
+      document.querySelectorAll('.panel.left').forEach((panel: HTMLElement) => {
+        if (window.innerWidth >= 1000) {
+          panel.parentElement?.insertBefore(panel, document.querySelector('#viewDiv'));
+        } else {
+          panel.parentElement?.insertBefore(panel, document?.querySelector('#viewDiv')?.nextElementSibling as any);
+        }
       });
+      //});
     }
   };
 
@@ -38,7 +38,9 @@ export default class ActionBarViewModel extends declared(Accessor) {
     this.actions?.forEach((action: Element) => {
       action?.addEventListener('click', (e: any) => {
         this.toggleAction(e.target);
-        initWidget(e.target.text, this.view);
+        setTimeout(() => {
+          initWidget(e.target.text, this.view);
+        });
         this.actions.forEach((a: any) => {
           if (a.text != e.target.text) {
             if (window.innerWidth >= 1000) {
@@ -56,7 +58,6 @@ export default class ActionBarViewModel extends declared(Accessor) {
     if (window.innerWidth >= 500) {
       document.querySelector('calcite-action[text="Search"')?.setAttribute('active', '');
     }
-    this.reorderPanels();
   };
   toggleAction = (action: HTMLElement) => {
     if (window.innerWidth >= 1000) {
@@ -108,6 +109,7 @@ export default class ActionBarViewModel extends declared(Accessor) {
   };
   enableActionbar = () => {
     initWidget('Search', this.view);
+    this.reorderPanels();
     document.querySelectorAll('calcite-action-bar calcite-action').forEach(item => {
       item.removeAttribute('disabled');
     });
