@@ -11,7 +11,8 @@ import { initWidget } from '../../widgets';
 export default class ActionBarViewModel extends declared(Accessor) {
   @property() view: esri.MapView | esri.SceneView;
   @property() side: string;
-  actions: NodeListOf<Element>;
+  @property() ready = false;
+  @property() actions: NodeListOf<Element>;
 
   constructor(params?: any) {
     super(params);
@@ -39,6 +40,7 @@ export default class ActionBarViewModel extends declared(Accessor) {
       action?.addEventListener('click', (e: any) => {
         this.toggleAction(e.target);
         setTimeout(() => {
+          debugger;
           initWidget(e.target.text, this.view);
         });
         this.actions.forEach((a: any) => {
@@ -108,11 +110,15 @@ export default class ActionBarViewModel extends declared(Accessor) {
     }
   };
   enableActionbar = () => {
-    initWidget('Search', this.view);
     this.reorderPanels();
-    document.querySelectorAll('calcite-action-bar calcite-action').forEach(item => {
-      item.removeAttribute('disabled');
-    });
+
+    setTimeout(() => {
+      document.querySelectorAll('calcite-action-bar calcite-action').forEach(item => {
+        item.removeAttribute('disabled');
+      });
+    }, 1000);
+
+    this.ready = true;
   };
   sideSet(side: string) {
     if (side === 'right') {
@@ -143,6 +149,7 @@ export default class ActionBarViewModel extends declared(Accessor) {
   }
   init(view: esri.MapView | esri.SceneView) {
     console.log(view.scale);
+    initWidget('Search', this.view);
     window.addEventListener('resize', () => {
       setTimeout(() => {
         if (window.innerWidth >= 1000) {

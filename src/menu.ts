@@ -28,6 +28,12 @@ const setTheme = (theme: string) => {
       link.href = 'https://js.arcgis.com/4.16/esri/themes/' + theme + '/main.css';
     }
   });
+  document
+    .querySelector(`calcite-dropdown-item[value="${theme === 'light' ? 'dark' : 'light'}"]`)
+    ?.setAttribute('active', '');
+  document
+    .querySelector(`calcite-dropdown-item[value="${theme === 'light' ? 'light' : 'dark'}"]`)
+    ?.removeAttribute('active');
 };
 export const initMenu = () => {
   document.querySelector('calcite-dropdown')?.addEventListener('calciteDropdownSelect', (e: any) => {
@@ -58,5 +64,7 @@ export const initMenu = () => {
         }
       }
     });
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme('dark');
   }
 };

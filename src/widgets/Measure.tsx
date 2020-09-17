@@ -23,10 +23,6 @@ export default class Measure extends Widget {
   view: esri.MapView | esri.SceneView;
   @aliasOf('viewModel.measurement')
   measurement: esri.Measurement;
-  @aliasOf('viewModel.initMeasure')
-  initMeasure: Function;
-  @aliasOf('viewModel.measureOpened')
-  measureOpened: Function;
 
   @property({
     type: MeasureViewModel
@@ -39,15 +35,16 @@ export default class Measure extends Widget {
   }
 
   _measureCreated = () => {
-    this.initMeasure();
+    if (this.measurement) {
+      this.measurement.container = 'measureWidget';
+    }
   };
 
   render() {
     const items = document.querySelectorAll('#measureDiv calcite-radio-group-item');
     items.forEach(item => {
       item?.addEventListener('calciteRadioGroupItemChange', (e: any) => {
-        if (e.target?.checked) {
-          console.log(e.target?.title);
+        if (!e.target.hasAttribute('checked')) {
           if (e.target?.title === 'clear') {
             this.measurement.clear();
           } else {
@@ -59,8 +56,8 @@ export default class Measure extends Widget {
     return (
       <div class={CSS.base}>
         <calcite-radio-group width="full">
-          <calcite-radio-group-item checked title="distance" value="distance" id="tableItem" icon="measure">
-            Line
+          <calcite-radio-group-item title="distance" value="distance" id="tableItem" icon="measure">
+            Distance
           </calcite-radio-group-item>
           <calcite-radio-group-item title="area" value="area" id="featureItem" icon="measure-area">
             Area

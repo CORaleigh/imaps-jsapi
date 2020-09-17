@@ -21,17 +21,17 @@ import LocationSearch from './widgets/LocationSearch';
 import OverviewMap from './widgets/OverviewMap';
 import Clear from './widgets/Clear';
 
-export const measurement: Measure = new Measure();
+export let measurement: Measure;
 export const select: Select = new Select();
 export let layers: Layers;
 export let legend: Legend;
 export let basemaps: BaseMaps;
 export let bookmarks: Bookmarks;
 export let locationSearch: LocationSearch;
-
+export let drawWidget: Draw;
 export let printWidget: Print;
 export let propertySearch: PropertySearch;
-export const drawWidget: Draw = new Draw();
+
 export function initWidget(name: string, view: esri.MapView | esri.SceneView) {
   if (name === 'Search' && !propertySearch) {
     propertySearch = new PropertySearch({
@@ -66,6 +66,12 @@ export function initWidget(name: string, view: esri.MapView | esri.SceneView) {
   if (name === 'Location' && !locationSearch) {
     locationSearch = new LocationSearch({ view, container: 'locationDiv' });
   }
+  if (name === 'Measure' && !measurement) {
+    measurement = new Measure({ view, container: 'measureDiv' });
+  }
+  if (name === 'Draw' && !drawWidget) {
+    drawWidget = new Draw({ view, container: 'drawDiv' });
+  }
 }
 export function initWidgets(view: esri.MapView | esri.SceneView) {
   const coordinates: esri.CoordinateConversion = new CoordinateConversion({ view });
@@ -90,10 +96,7 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   view.ui.add(track, 'top-left');
   view.ui.add(new Fullscreen({ view }), 'top-left');
   view.ui.add(new Clear({ view }), 'top-left');
-  measurement.view = view;
-  measurement.container = 'measureDiv';
-  drawWidget.view = view;
-  drawWidget.container = 'drawDiv';
+
   const overviewMap = new OverviewMap({ view });
   const overviewExpand: Expand = new Expand({
     content: overviewMap,

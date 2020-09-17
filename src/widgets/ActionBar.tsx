@@ -24,6 +24,9 @@ export default class ActionBar extends declared(Widget) {
   view: esri.MapView | esri.SceneView;
   @aliasOf('viewModel.side')
   side: string;
+  @property()
+  @aliasOf('viewModel.ready')
+  ready: boolean;
   @aliasOf('viewModel.actions')
   actions: NodeListOf<Element>;
   @aliasOf('viewModel.toggleAction')
