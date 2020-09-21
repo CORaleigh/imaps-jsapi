@@ -40,7 +40,6 @@ export default class ActionBarViewModel extends declared(Accessor) {
       action?.addEventListener('click', (e: any) => {
         this.toggleAction(e.target);
         setTimeout(() => {
-          debugger;
           initWidget(e.target.text, this.view);
         });
         this.actions.forEach((a: any) => {

@@ -518,7 +518,7 @@ export default class PropertySearchViewModel extends Accessor {
           });
       });
   };
-  initSearch(condosTable: esri.FeatureLayer) {
+  initSearch() {
     const tableLayer = new FeatureLayer({
       fields: [
         { name: 'SITE_ADDRESS', type: 'string', alias: 'Address' },
@@ -668,24 +668,68 @@ export default class PropertySearchViewModel extends Accessor {
               }) as any;
           }
         } as any),
-        new LayerSearchSource({
-          layer: condosTable,
-          searchFields: ['PIN_NUM'],
-          displayField: 'PIN_NUM',
-          exactMatch: false,
-          outFields: ['PIN_NUM', 'REID', 'OBJECTID'],
+        // new LayerSearchSource({
+        //   layer: condosTable,
+        //   searchFields: ['PIN_NUM'],
+        //   displayField: 'PIN_NUM',
+        //   exactMatch: false,
+        //   outFields: ['PIN_NUM', 'REID', 'OBJECTID'],
+        //   name: 'PIN',
+        //   placeholder: 'example: 0712345678'
+        // }),
+        new SearchSource({
+          placeholder: 'PIN',
           name: 'PIN',
-          placeholder: 'example: 0712345678'
-        }),
-        new LayerSearchSource({
-          layer: condosTable,
-          searchFields: ['REID'],
-          displayField: 'REID',
-          exactMatch: false,
-          outFields: ['REID', 'OBJECTID'],
+          getSuggestions: (params: any) => {
+            return this.getSuggestions(params, 'PIN', this.condosTable, ['PIN_NUM'], ['PIN_NUM'], ['PIN_NUM'], true);
+          },
+          getResults: (params: any) => {
+            return this.condosTable
+              .queryFeatures({
+                where: `PIN_NUM = '${params.suggestResult.text}'`,
+                outFields: ['PIN_NUM', 'OBJECTID']
+              })
+              .then(results => {
+                return results.features.map(feature => {
+                  return {
+                    feature: feature,
+                    name: 'PIN'
+                  };
+                });
+              }) as any;
+          }
+        } as any),
+        // new LayerSearchSource({
+        //   layer: condosTable,
+        //   searchFields: ['REID'],
+        //   displayField: 'REID',
+        //   exactMatch: false,
+        //   outFields: ['REID', 'OBJECTID'],
+        //   name: 'REID',
+        //   placeholder: 'example: 0123456'
+        // }),
+        new SearchSource({
+          placeholder: 'REID',
           name: 'REID',
-          placeholder: 'example: 0123456'
-        }),
+          getSuggestions: (params: any) => {
+            return this.getSuggestions(params, 'REID', this.condosTable, ['REID'], ['REID'], ['REID'], true);
+          },
+          getResults: (params: any) => {
+            return this.condosTable
+              .queryFeatures({
+                where: `REID = '${params.suggestResult.text}'`,
+                outFields: ['REID', 'OBJECTID']
+              })
+              .then(results => {
+                return results.features.map(feature => {
+                  return {
+                    feature: feature,
+                    name: 'REID'
+                  };
+                });
+              }) as any;
+          }
+        } as any),
         new SearchSource({
           placeholder: 'example: W HARGETT ST',
           name: 'Street Name',

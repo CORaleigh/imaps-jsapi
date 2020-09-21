@@ -69,7 +69,6 @@ export const initPanels = (actions: any) => {
       for (const mutation of mutationsList) {
         if (mutation.type === 'attributes') {
           if (mutation.attributeName === 'dismissed') {
-            console.log(mutation);
             actions.forEach((action: any) => {
               if (action.text === (mutation.target as any).title) {
                 if ((mutation.target as any).hasAttribute('dismissed')) {

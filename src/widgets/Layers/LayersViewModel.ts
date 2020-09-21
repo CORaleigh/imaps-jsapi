@@ -22,6 +22,7 @@ export default class LayersViewModel extends Accessor {
       view,
       container: 'layerDiv',
       listItemCreatedFunction: event => {
+        debugger;
         const item = event.item;
         if (item.layer.type != 'group') {
           const slider = document.createElement('calcite-slider');

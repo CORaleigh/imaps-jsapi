@@ -79,31 +79,34 @@ watchUtils.watch(actionBar, 'actions', actions => {
       actionBar.view = view;
       leftActionBar.view = view;
       checkLocalStorage(view);
-      view.map.allLayers.forEach(layer => {
-        if (layer.type != 'group') {
-          layer.watch('visible', visible => {
-            layers?.layerList?.operationalItems.forEach(item => {
-              if (item.layer.type === 'group') {
-                const child = item.children.find(i => {
-                  return i.layer === layer;
-                });
-                if (child) {
-                  child.panel.open = visible;
+      view.map.watch('layers', () => {
+        view.map.allLayers.forEach(layer => {
+          if (layer.type != 'group') {
+            layer.watch('visible', visible => {
+              layers?.layerList?.operationalItems.forEach(item => {
+                if (item.layer.type === 'group') {
+                  const child = item.children.find(i => {
+                    return i.layer === layer;
+                  });
+                  if (child) {
+                    child.panel.open = visible;
+                  }
                 }
+              });
+            });
+          } else {
+            layer.watch('visible', visible => {
+              const group = layers?.layerList.operationalItems.find(i => {
+                return i.layer === layer;
+              });
+              if (group) {
+                group.open = visible;
               }
             });
-          });
-        } else {
-          layer.watch('visible', visible => {
-            const group = layers?.layerList.operationalItems.find(i => {
-              return i.layer === layer;
-            });
-            if (group) {
-              group.open = visible;
-            }
-          });
-        }
+          }
+        });
       });
+
       const propertyLayer = map.allLayers.find(layer => {
         return layer.title === 'Property' && layer.type === 'feature';
       });

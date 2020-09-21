@@ -15,6 +15,15 @@ const setTheme = (theme: string) => {
   document.querySelectorAll('calcite-alert').forEach(item => {
     item.setAttribute('theme', theme);
   });
+  document.querySelectorAll('calcite-modal').forEach(item => {
+    item.setAttribute('theme', theme);
+  });
+  document.querySelectorAll('calcite-block').forEach(item => {
+    item.setAttribute('theme', theme);
+  });
+  document.querySelectorAll('calcite-pick-list').forEach(item => {
+    item.setAttribute('theme', theme);
+  });
   setTimeout(() => {
     document.querySelectorAll('calcite-action-bar').forEach(item => {
       item.setAttribute('theme', theme);
@@ -28,6 +37,7 @@ const setTheme = (theme: string) => {
       link.href = 'https://js.arcgis.com/4.16/esri/themes/' + theme + '/main.css';
     }
   });
+
   document
     .querySelector(`calcite-dropdown-item[value="${theme === 'light' ? 'dark' : 'light'}"]`)
     ?.setAttribute('active', '');

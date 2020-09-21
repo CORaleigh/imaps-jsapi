@@ -20,6 +20,7 @@ import Layers from './widgets/Layers';
 import LocationSearch from './widgets/LocationSearch';
 import OverviewMap from './widgets/OverviewMap';
 import Clear from './widgets/Clear';
+//import LayerSelect from './widgets/LayerSelect';
 
 export let measurement: Measure;
 export const select: Select = new Select();
@@ -74,6 +75,8 @@ export function initWidget(name: string, view: esri.MapView | esri.SceneView) {
   }
 }
 export function initWidgets(view: esri.MapView | esri.SceneView) {
+  //const layerSelect = new LayerSelect({ view: view, container: 'layerSelectContent' });
+
   const coordinates: esri.CoordinateConversion = new CoordinateConversion({ view });
   const coordinatesExpand: Expand = new Expand({
     content: coordinates,
