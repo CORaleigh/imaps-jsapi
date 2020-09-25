@@ -55,6 +55,7 @@ export const initPanelHeaders = () => {
     });
   });
 };
+
 export const initPanels = (actions: any) => {
   document.querySelectorAll('calcite-panel').forEach(item => {
     const i: HTMLElement = item?.shadowRoot?.querySelector('.content-container') as HTMLElement;
@@ -69,6 +70,8 @@ export const initPanels = (actions: any) => {
       for (const mutation of mutationsList) {
         if (mutation.type === 'attributes') {
           if (mutation.attributeName === 'dismissed') {
+            const actions: any = document.querySelectorAll('calcite-action-bar calcite-action');
+
             actions.forEach((action: any) => {
               if (action.text === (mutation.target as any).title) {
                 if ((mutation.target as any).hasAttribute('dismissed')) {
@@ -80,6 +83,7 @@ export const initPanels = (actions: any) => {
             });
             if (window.innerWidth <= 500) {
               setTimeout(() => {
+                debugger;
                 if ((mutation.target as any).hasAttribute('dismissed')) {
                   console.log((mutation.target as any).title, 'dismissed');
                   document.querySelector('#viewDiv')?.classList.remove('below');
