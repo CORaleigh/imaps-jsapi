@@ -325,9 +325,7 @@ export default class PropertySearchViewModel extends Accessor {
               type: 'image',
               caption: '',
               value: {
-                sourceURL: `http://services.wakegov.com/realestate/photos/mvideo/${feature.getAttribute(
-                  'IMAGEDIR'
-                )}/${feature.getAttribute('IMAGENAME')}`
+                sourceURL: `http://services.wakegov.com/realestate/photos/mvideo/${feature.getAttribute('PHOTO')}`
               }
             });
           });
