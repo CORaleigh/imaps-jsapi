@@ -489,6 +489,7 @@ export default class PropertySearchViewModel extends Accessor {
     startsWith: boolean
   ) => {
     const whereArray: string[] = [];
+    //test
     searchFields.forEach(field => {
       if (startsWith) {
         whereArray.push(`${field} LIKE '${params.suggestTerm.toUpperCase()}%'`);
