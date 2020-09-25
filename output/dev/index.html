@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/@esri/calcite-components/dist/calcite/calcite.css" />
 
 
-  <link rel="stylesheet" href="https://js.arcgis.com/next/esri/themes/light/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css">
   <link rel="stylesheet" href="index.css">
 
 
@@ -26,7 +26,7 @@
       deps: ['app/index']
     };
   </script>
-  <script src="https://js.arcgis.com/next/"></script>
+  <script src="https://js.arcgis.com/4.16/"></script>
   <script type="module" src="https://unpkg.com/@esri/calcite-app-components@6.2.0/dist/calcite-app/calcite-app.esm.js"></script>
   <script nomodule="" src="https://unpkg.com/@esri/calcite-app-components@6.2.0/dist/calcite-app/calcite-app.js"></script>  
   <script type="module" src="https://unpkg.com/@esri/calcite-components/dist/calcite/calcite.esm.js"></script>
@@ -52,9 +52,9 @@
           <calcite-dropdown-item href="https://data.raleighnc.gov/" target="_blank">RaleighNC.gov</calcite-dropdown-item>
           <calcite-dropdown-item href="https://wakegov.com/" target="_blank">WakeGOV.com</calcite-dropdown-item>
         </calcite-dropdown-group>
-        <calcite-dropdown-group group-title="Theme">
-          <calcite-dropdown-item value="light">Dark</calcite-dropdown-item>
-          <calcite-dropdown-item active value="dark">Light</calcite-dropdown-item>
+        <calcite-dropdown-group group-title="Theme"  selection-mode="single">
+          <calcite-dropdown-item value="dark">Dark</calcite-dropdown-item>
+          <calcite-dropdown-item active value="light">Light</calcite-dropdown-item>
         </calcite-dropdown-group>        
       </calcite-dropdown>      
     </header>

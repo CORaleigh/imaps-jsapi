@@ -53,7 +53,7 @@ export default class PropertySearchViewModel extends Accessor {
       .queryFeatures({ geometry: geometry, returnGeometry: true, outFields: ['OBJECTID', 'REID'] })
       .then(propertyResult => {
         const relationship = this.propertyLayer.relationships.find(r => {
-          return r.name === 'PROPERTY_CONDO';
+          return r.name === 'CONDOS';
         });
         const oids: any[] = [];
         propertyResult.features.forEach(f => {
@@ -131,7 +131,7 @@ export default class PropertySearchViewModel extends Accessor {
 
   getProperty = (oids: any[], source?: string) => {
     const relationship = this.condosTable.relationships.find(r => {
-      return r.name === 'CONDO_PROPERTY';
+      return r.name === 'PROPERTY';
     });
     this.condosTable
       .queryRelatedFeatures({
@@ -206,7 +206,7 @@ export default class PropertySearchViewModel extends Accessor {
 
         this.addressTable.queryFeatures({ where: where, outFields: ['*'] }).then(result => {
           const relationship = this.addressTable.relationships.find(r => {
-            return r.name === 'ADDRESSES_CONDO';
+            return r.name === 'ADDRESSES';
           });
           const addrOids: any[] = [];
           result.features.forEach(f => {
@@ -257,7 +257,7 @@ export default class PropertySearchViewModel extends Accessor {
         });
         if (layer.layerId === 4) {
           const relationship = layer.relationships.find(r => {
-            return r.name === 'ADDRESSES_CONDO';
+            return r.name === 'ADDRESSES';
           });
           if (relationship && oids) {
             layer
@@ -311,7 +311,7 @@ export default class PropertySearchViewModel extends Accessor {
     params.set('reid', feature.getAttribute('REID'));
     window.history.replaceState({}, '', `${location.pathname}?${params}`);
     const relationship = this.condosTable.relationships.find(r => {
-      return r.name === 'CONDO_PHOTOS';
+      return r.name === 'PHOTOS';
     });
     const oid = feature.getObjectId();
     mediaInfos = [];
@@ -505,17 +505,13 @@ export default class PropertySearchViewModel extends Accessor {
         where: whereArray.join(' OR ')
       })
       .then(results => {
-        return results.features
-          .filter(feature => {
-            return !outFields.includes('ADDR_LIST') || feature.getAttribute('ADDR_LIST') === 'Yes';
-          })
-          .map(feature => {
-            return {
-              key: name,
-              text: feature.getAttribute(outFields[0]),
-              sourceIndex: params.sourceIndex
-            };
-          });
+        return results.features.map(feature => {
+          return {
+            key: name,
+            text: feature.getAttribute(outFields[0]),
+            sourceIndex: params.sourceIndex
+          };
+        });
       });
   };
   initSearch() {
@@ -615,9 +611,9 @@ export default class PropertySearchViewModel extends Accessor {
               params,
               'Site Address',
               this.addressTable,
-              ['ADDRESS', 'ADDR_LIST'],
               ['ADDRESS'],
-              ['ADDRESS', 'ADDRESS_NODIR'],
+              ['ADDRESS'],
+              ['ADDRESS'],
               true
             );
           },

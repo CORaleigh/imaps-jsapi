@@ -179,7 +179,7 @@ const deedCreator = (e: any) => {
   return (e.graphic.layer as FeatureLayer)
     .queryRelatedFeatures({
       relationshipId: (e.graphic.layer as FeatureLayer).relationships.find(r => {
-        return r.name === 'CONDO_BOOKS';
+        return r.name === 'BOOKS';
       })?.id,
       objectIds: [e.graphic.getObjectId()],
       outFields: ['BOM_DOC_NUM', 'DEED_DOC_NUM']
@@ -507,14 +507,14 @@ const popupTemplate = new PopupTemplate({
 
 export const featureLayer = new FeatureLayer({
   portalItem: {
-    id: '08050bf067bb4b20adea4b0b4f0a39e3'
+    id: 'd3d02d5e35324b769469b99121c0e996'
   },
   spatialReference: { wkid: 102100 }
 });
 
 export const condosTable = new FeatureLayer({
   portalItem: {
-    id: '08050bf067bb4b20adea4b0b4f0a39e3'
+    id: 'd3d02d5e35324b769469b99121c0e996'
   },
   layerId: 1,
   spatialReference: { wkid: 102100 },
@@ -523,7 +523,7 @@ export const condosTable = new FeatureLayer({
 condosTable.load();
 export const addressTable = new FeatureLayer({
   portalItem: {
-    id: '08050bf067bb4b20adea4b0b4f0a39e3'
+    id: 'd3d02d5e35324b769469b99121c0e996'
   },
   layerId: 4,
   spatialReference: { wkid: 102100 }

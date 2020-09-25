@@ -37,30 +37,17 @@ const setTheme = (theme: string) => {
       link.href = 'https://js.arcgis.com/4.16/esri/themes/' + theme + '/main.css';
     }
   });
-
-  document
-    .querySelector(`calcite-dropdown-item[value="${theme === 'light' ? 'dark' : 'light'}"]`)
-    ?.setAttribute('active', '');
-  document
-    .querySelector(`calcite-dropdown-item[value="${theme === 'light' ? 'light' : 'dark'}"]`)
-    ?.removeAttribute('active');
 };
 export const initMenu = () => {
   document.querySelector('calcite-dropdown')?.addEventListener('calciteDropdownSelect', (e: any) => {
-    e.target.querySelectorAll('calcite-dropdown-item').forEach((element: HTMLElement) => {
-      if (element.hasAttribute('active')) {
-        const value: string = element.getAttribute('value') as string;
-        theme = value;
-        setTheme(theme);
-        window.localStorage.setItem('theme', theme);
-      }
-    });
+    const value: string = e.currentTarget.selectedItems[0]?.getAttribute('value');
+    theme = value;
+    setTheme(theme);
+    window.localStorage.setItem('theme', theme);
   });
   if (window.localStorage.getItem('theme')) {
-    let themeName: string = window.localStorage.getItem('theme') as string;
+    const themeName: string = window.localStorage.getItem('theme') as string;
     setTheme(themeName);
-
-    themeName = themeName === 'light' ? 'dark' : 'light';
     document.querySelectorAll('calcite-dropdown-item').forEach((element: HTMLElement) => {
       if (element.hasAttribute('active')) {
         if ((element.getAttribute('value') as string) != themeName) {
@@ -76,5 +63,6 @@ export const initMenu = () => {
     });
   } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     setTheme('dark');
+    debugger;
   }
 };

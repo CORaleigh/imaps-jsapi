@@ -61,14 +61,14 @@ if (window.innerWidth >= 500) {
 
 //modify DOM after map view loads
 //view.when(() => {
-actionBar.initActions();
+//actionBar.initActions();
 
 initPanels(actionBar.actions);
 //actionBar.view = view;
 //});
 
 watchUtils.watch(actionBar, 'actions', actions => {
-  if (actions.length) {
+  if (actions.length && !view) {
     actionBar.enableActionbar();
 
     view = new MapView({

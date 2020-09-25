@@ -125,9 +125,9 @@ export default class LayerSelect extends declared(Widget) {
 
           const groups = portalItem.groupCategories[0].split('/').filter((item, i) => {
             return i > 1;
-          });
+          }); 
           let groupLayer: GroupLayer;
-
+ 
           groups.forEach(group => {
             let gLayer: GroupLayer = this.view.map.allLayers.find(layer => {
               return layer.title === group && layer.type === 'group';
