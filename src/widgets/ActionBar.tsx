@@ -48,7 +48,7 @@ export default class ActionBar extends declared(Widget) {
     if (this.side === 'left') {
       item.classList.add('hidden');
     }
-    if (!this.actions.length) {
+    if (!this.actions) {
       this.initActions();
     }
   };
@@ -60,7 +60,7 @@ export default class ActionBar extends declared(Widget) {
         document.querySelector('#leftActionbar')?.classList.add('hidden');
       }
     }
-    if (!this.actions.length) {
+    if (!this.actions) {
       this.initActions();
     }
   };

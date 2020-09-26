@@ -82,7 +82,7 @@ export default class LayerSelect extends declared(Widget) {
     //       return i > 1;
     //     });
     //     let groupLayer: GroupLayer;
-    //     debugger;
+    //     
     //     groups.forEach(group => {
     //       let gLayer = this.view.map.allLayers.find(layer => {
     //         return layer.title === group && layer.type === 'group';
@@ -125,9 +125,9 @@ export default class LayerSelect extends declared(Widget) {
 
           const groups = portalItem.groupCategories[0].split('/').filter((item, i) => {
             return i > 1;
-          }); 
+          });
           let groupLayer: GroupLayer;
- 
+
           groups.forEach(group => {
             let gLayer: GroupLayer = this.view.map.allLayers.find(layer => {
               return layer.title === group && layer.type === 'group';
@@ -167,7 +167,7 @@ export default class LayerSelect extends declared(Widget) {
         } else {
           this.view.map.remove(layer);
         }
-        debugger;
+        
         layers.layerList.emit('listItemCreatedFunction');
       }
     }, 500);

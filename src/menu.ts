@@ -63,6 +63,5 @@ export const initMenu = () => {
     });
   } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     setTheme('dark');
-    debugger;
   }
 };

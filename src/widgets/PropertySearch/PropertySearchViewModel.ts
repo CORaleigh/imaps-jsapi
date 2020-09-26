@@ -174,10 +174,10 @@ export default class PropertySearchViewModel extends Accessor {
       let where = '';
 
       if (!this.searchWidget.activeSource) {
-        where = `OWNER like '${event.searchTerm.toUpperCase()}%' OR REID like '${event.searchTerm.toUpperCase()}%' OR PIN_NUM like '${event.searchTerm.toUpperCase()}%'`;
+        where = `OWNER like '_${event.searchTerm.toUpperCase()}%' OR REID like '${event.searchTerm.toUpperCase()}%' OR PIN_NUM like '${event.searchTerm.toUpperCase()}%'`;
       } else {
         if ((this.searchWidget.activeSource as any)?.searchFields.includes('OWNER')) {
-          where = `OWNER like '%${event.searchTerm.toUpperCase()}%'`;
+          where = `OWNER like '_%${event.searchTerm.toUpperCase()}%'`;
         }
         if ((this.searchWidget.activeSource as any)?.searchFields.includes('PIN_NUM')) {
           where = `PIN_NUM like '%${event.searchTerm.toUpperCase()}%'`;

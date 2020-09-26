@@ -23,6 +23,7 @@ export default class ActionBarViewModel extends declared(Accessor) {
   reorderPanels = () => {
     if (this.view) {
       //this.actions.forEach(() => {
+
       document.querySelectorAll('.panel.left').forEach((panel: HTMLElement) => {
         if (window.innerWidth >= 1000) {
           panel.parentElement?.insertBefore(panel, document.querySelector('#viewDiv'));
@@ -36,27 +37,31 @@ export default class ActionBarViewModel extends declared(Accessor) {
 
   initActions = () => {
     setTimeout(() => {
-      this.actions = document.querySelectorAll('calcite-action-bar calcite-action');
-      this.actions?.forEach((action: Element) => {
-        action?.addEventListener('click', (e: any) => {
-          this.toggleAction(e.target);
-          setTimeout(() => {
-            initWidget(e.target.text, this.view);
-          });
-          this.actions.forEach((a: any) => {
-            if (a.text != e.target.text) {
-              if (window.innerWidth >= 1000) {
-                if (a.getAttribute('side') === action.getAttribute('side')) {
+      const actions: NodeListOf<any> = document.querySelectorAll('calcite-action-bar calcite-action');
+      if (actions.length) {
+        this.actions = actions;
+
+        this.actions?.forEach((action: Element) => {
+          action?.addEventListener('click', (e: any) => {
+            this.toggleAction(e.target);
+            setTimeout(() => {
+              initWidget(e.target.text, this.view);
+            });
+            this.actions.forEach((a: any) => {
+              if (a.text != e.target.text) {
+                if (window.innerWidth >= 1000) {
+                  if (a.getAttribute('side') === action.getAttribute('side')) {
+                    a.removeAttribute('active');
+                  }
+                } else {
                   a.removeAttribute('active');
                 }
-              } else {
-                a.removeAttribute('active');
               }
-            }
+            });
+            action.setAttribute('active', '');
           });
-          action.setAttribute('active', '');
         });
-      });
+      }
       if (window.innerWidth >= 500) {
         document.querySelector('calcite-action[text="Search"')?.setAttribute('active', '');
       }
@@ -128,10 +133,13 @@ export default class ActionBarViewModel extends declared(Accessor) {
     if (side === 'left') {
       document.querySelector('#searchGroup')?.classList.add('hidden');
     }
-    this.actions = document.querySelectorAll('calcite-action-bar calcite-action');
+    const actions: NodeListOf<any> = document.querySelectorAll('calcite-action-bar calcite-action');
+    if (actions.length) {
+      this.actions = actions;
+    }
     // this.actions?.forEach((action: Element) => {
     //   action?.addEventListener('click', (e: any) => {
-    //     debugger;
+    //
 
     //     this.toggleAction(e.target);
     //     initWidget(e.target.text, this.view);

@@ -63,21 +63,21 @@ if (window.innerWidth >= 500) {
 //view.when(() => {
 //actionBar.initActions();
 
-initPanels(actionBar.actions);
+initPanels();
 //actionBar.view = view;
 //});
-
-watchUtils.watch(actionBar, 'actions', actions => {
+watchUtils.whenDefinedOnce(actionBar, 'actions', actions => {
   if (actions.length && !view) {
-    actionBar.enableActionbar();
-
     view = new MapView({
       container: 'viewDiv',
       map
     });
+
     view.when(() => {
       actionBar.view = view;
       leftActionBar.view = view;
+      actionBar.enableActionbar();
+
       checkLocalStorage(view);
       view.map.watch('layers', () => {
         view.map.allLayers.forEach(layer => {
