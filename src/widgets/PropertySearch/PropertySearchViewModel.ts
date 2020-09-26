@@ -256,8 +256,9 @@ export default class PropertySearchViewModel extends Accessor {
           oids.push(r.feature.getObjectId());
         });
         if (layer.layerId === 4) {
+          debugger;
           const relationship = layer.relationships.find(r => {
-            return r.name === 'ADDRESSES';
+            return r.name === 'CONDOS';
           });
           if (relationship && oids) {
             layer
@@ -598,7 +599,7 @@ export default class PropertySearchViewModel extends Accessor {
         //   searchFields: ['ADDRESS', 'ADDRESS_NODIR'],
         //   displayField: 'ADDRESS',
         //   exactMatch: false,
-        //   outFields: ['ADDRESS', 'REA_REID'],
+        //   outFields: ['ADDRESS', 'REID'],
         //   name: 'Site Address',
         //   placeholder: 'example: 222 W HARGETT'
         // }),
@@ -620,7 +621,7 @@ export default class PropertySearchViewModel extends Accessor {
             return this.addressTable
               .queryFeatures({
                 where: `ADDRESS = '${params.suggestResult.text.toUpperCase()}'`,
-                outFields: ['ADDRESS', 'REA_REID', 'OBJECTID']
+                outFields: ['ADDRESS', 'REID', 'OBJECTID']
               })
               .then(results => {
                 return results.features.map(feature => {
@@ -743,7 +744,7 @@ export default class PropertySearchViewModel extends Accessor {
             return this.addressTable
               .queryFeatures({
                 where: `STREET = '${params.suggestResult.text.toUpperCase()}'`,
-                outFields: ['STREET', 'REA_REID', 'OBJECTID']
+                outFields: ['STREET', 'REID', 'OBJECTID']
               })
               .then(results => {
                 return results.features.map(feature => {
