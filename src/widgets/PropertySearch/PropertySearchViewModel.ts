@@ -763,6 +763,7 @@ export default class PropertySearchViewModel extends Accessor {
     });
     this.searchWidget.on('search-complete', this.searchComplete);
   }
+
   toggleContent = (value: string) => {
     if (value === 'table') {
       document.querySelector('#table')?.classList.remove('hidden');

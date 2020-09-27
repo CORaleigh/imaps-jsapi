@@ -7,7 +7,7 @@ import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import { property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
-import { measurement } from '../../widgets';
+//import { measurement } from '../../widgets';
 import geometryEngine from 'esri/geometry/geometryEngine';
 import Color from 'esri/Color';
 @subclass('app.widgets.Select.SelectViewModel')
@@ -55,15 +55,15 @@ export default class SelectViewModel extends Accessor {
           this.geometry = ev.graphic.geometry as esri.Geometry;
         }
       }
-      if (ev.state === 'start') {
-        measurement?.measurement?.clear();
-      }
+      // if (ev.state === 'start') {
+      //   measurement?.measurement?.clear();
+      // }
     });
-    this.sketch.watch('activeTool', tool => {
-      if (tool != undefined) {
-        measurement?.measurement?.clear();
-      }
-    });
+    // this.sketch.watch('activeTool', tool => {
+    //   if (tool != undefined) {
+    //     measurement?.measurement?.clear();
+    //   }
+    // });
   }
   init(view: esri.MapView | esri.SceneView) {
     console.log(view.scale);
