@@ -5,8 +5,7 @@ import CustomContent from 'esri/popup/content/CustomContent';
 import Locator from 'esri/tasks/Locator';
 import geodesicUtils from 'esri/geometry/support/geodesicUtils';
 import Feature from 'esri/widgets/Feature';
-// import { view } from '..';
-export let view: __esri.MapView;
+import { view } from '..';
 const arcadeExpressionInfos = [
   {
     name: 'mailing-address',
@@ -529,5 +528,6 @@ export const addressTable = new FeatureLayer({
   layerId: 4,
   spatialReference: { wkid: 102100 }
 });
+export const mapView = null;
 addressTable.load();
 export * from './app';
