@@ -70,9 +70,14 @@ export function initWidget(name: string, view: esri.MapView | esri.SceneView) {
   }
   if (name === 'Measure' && !measurement) {
     measurement = new Measure({ view, container: 'measureDiv' });
-    if (drawWidget) {
-      drawWidget.measurement = measurement.viewModel.measurement;
-    }
+    measurement.postInitialize = () => {
+      if (drawWidget) {
+        drawWidget.measurement = measurement.viewModel.measurement;
+      }
+      if (select) {
+        select.measurement = measurement.viewModel.measurement;
+      }
+    };
   }
   if (name === 'Draw' && !drawWidget) {
     drawWidget = new Draw({ view, container: 'drawDiv' });
@@ -132,5 +137,6 @@ export function initWidgets(view: esri.MapView | esri.SceneView) {
   select.container = 'selectDiv';
   select.view = view;
   select.layer = featureLayer;
+
   return view;
 }

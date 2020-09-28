@@ -56,13 +56,13 @@ export default class Measure extends Widget {
     return (
       <div class={CSS.base}>
         <calcite-radio-group width="full">
-          <calcite-radio-group-item title="distance" value="distance" id="tableItem" icon="measure">
+          <calcite-radio-group-item title="distance" value="distance" id="distanceItem" icon="measure">
             Distance
           </calcite-radio-group-item>
-          <calcite-radio-group-item title="area" value="area" id="featureItem" icon="measure-area">
+          <calcite-radio-group-item title="area" value="area" id="areaItem" icon="measure-area">
             Area
           </calcite-radio-group-item>
-          <calcite-radio-group-item title="clear" value="clear" id="featureItem" icon="trash">
+          <calcite-radio-group-item title="clear" value="clear" id="clearItem" icon="trash">
             Clear
           </calcite-radio-group-item>
         </calcite-radio-group>
