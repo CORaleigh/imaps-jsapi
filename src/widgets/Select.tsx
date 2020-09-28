@@ -5,6 +5,7 @@ import { aliasOf, property, subclass } from 'esri/core/accessorSupport/decorator
 import { renderable, tsx } from 'esri/widgets/support/widget';
 
 import Widget from 'esri/widgets/Widget';
+import Measurement from 'esri/widgets/Measurement';
 
 import SelectViewModel from './Select/SelectViewModel';
 export interface SelectProperties extends esri.WidgetProperties {
@@ -27,6 +28,8 @@ export default class Select extends Widget {
   sketch: esri.Sketch;
   @aliasOf('viewModel.bufferDistance')
   bufferDistance: number;
+  @aliasOf('viewModel.measurement')
+  measurement: Measurement;
   @property({
     type: SelectViewModel
   })

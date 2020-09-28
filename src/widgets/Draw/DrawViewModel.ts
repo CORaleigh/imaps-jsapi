@@ -10,12 +10,14 @@ import Graphic from 'esri/Graphic';
 import TextSymbol from 'esri/symbols/TextSymbol';
 
 import Color from 'esri/Color';
+import Measurement from 'esri/widgets/Measurement';
 //import { measurement } from '../../widgets';
 
 @subclass('app.widgets.Draw.DrawViewModel')
 export default class DrawViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
   @property() container: string;
+  measurement: Measurement;
   sketch: Sketch;
   graphics: GraphicsLayer;
   label: string;
@@ -36,15 +38,15 @@ export default class DrawViewModel extends Accessor {
     (this.sketch.viewModel.polygonSymbol as any).outline.color = Color.fromHex('#FF0000');
     this.sketch.viewModel.polylineSymbol.color = Color.fromHex('#FF0000');
 
-    // this.sketch.watch('activeTool', tool => {
-    //   if (tool != undefined) {
-    //     measurement?.measurement?.clear();
-    //   }
-    // });
+    this.sketch.watch('activeTool', tool => {
+      if (tool != undefined) {
+        this.measurement?.clear();
+      }
+    });
     this.sketch.on('create', e => {
-      // if (e.state === 'start') {
-      //   measurement?.measurement?.clear();
-      // }
+      if (e.state === 'start') {
+        this.measurement?.clear();
+      }
       if (e.state === 'complete' && this.label?.length) {
         let labelPoint: esri.Geometry = e.graphic.geometry;
         if (e.graphic.geometry.type === 'polygon') {

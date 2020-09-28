@@ -7,7 +7,7 @@ import { renderable, tsx } from 'esri/widgets/support/widget';
 import Widget from 'esri/widgets/Widget';
 import Color from 'esri/Color';
 import DrawViewModel from './Draw/DrawViewModel';
-
+import Measurement from 'esri/widgets/Measurement';
 export interface DrawProperties extends esri.WidgetProperties {
   name?: string;
   view?: esri.MapView | esri.SceneView;
@@ -25,6 +25,8 @@ export default class Draw extends Widget {
   label: string;
   @aliasOf('viewModel.textColor')
   textColor: Color;
+  @aliasOf('viewModel.measurement')
+  measurement: Measurement;
   @property({
     type: DrawViewModel
   })

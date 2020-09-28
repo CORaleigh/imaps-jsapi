@@ -11,7 +11,7 @@ import Locate from 'esri/widgets/Locate';
 import Track from 'esri/widgets/Track';
 import Fullscreen from 'esri/widgets/Fullscreen';
 
-import { condosTable, addressTable, featureLayer } from './data/search';
+import { condosTable, addressTable, featureLayer, createTemplate } from './data/search';
 import esri = __esri;
 import Draw from './widgets/Draw';
 import Select from './widgets/Select';
@@ -42,6 +42,7 @@ export function initWidget(name: string, view: esri.MapView | esri.SceneView) {
       propertyLayer: featureLayer,
       container: 'sideDiv'
     });
+    createTemplate(view);
   }
   if (name === 'Layers' && !layers) {
     layers = new Layers({ view, container: 'layerDiv' });
@@ -69,9 +70,15 @@ export function initWidget(name: string, view: esri.MapView | esri.SceneView) {
   }
   if (name === 'Measure' && !measurement) {
     measurement = new Measure({ view, container: 'measureDiv' });
+    if (drawWidget) {
+      drawWidget.measurement = measurement.viewModel.measurement;
+    }
   }
   if (name === 'Draw' && !drawWidget) {
     drawWidget = new Draw({ view, container: 'drawDiv' });
+    if (measurement) {
+      drawWidget.measurement = measurement.viewModel.measurement;
+    }
   }
 }
 export function initWidgets(view: esri.MapView | esri.SceneView) {

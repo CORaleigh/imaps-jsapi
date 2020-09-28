@@ -5,7 +5,7 @@ import CustomContent from 'esri/popup/content/CustomContent';
 import Locator from 'esri/tasks/Locator';
 import geodesicUtils from 'esri/geometry/support/geodesicUtils';
 import Feature from 'esri/widgets/Feature';
-import { view } from '..';
+
 const arcadeExpressionInfos = [
   {
     name: 'mailing-address',
@@ -125,7 +125,7 @@ const scrollToService = (e: any) => {
     div?.scrollTo({ top: rect.top + div.scrollTop - 155, behavior: 'smooth' });
   }, 500);
 };
-const serviceChanged = (graphic: __esri.Graphic, e: any) => {
+const serviceChanged = (graphic: __esri.Graphic, view: __esri.MapView | __esri.SceneView, e: any) => {
   if (
     !e.detail.requestedAccordionItem.hasAttribute('active') &&
     e.detail.requestedAccordionItem.childElementCount === 0
@@ -217,293 +217,6 @@ const deedCreator = (e: any) => {
       return div;
     });
 };
-const popupTemplate = new PopupTemplate({
-  expressionInfos: arcadeExpressionInfos,
-  // content: (event: any) => {
-  //   const graphic = event.graphic;
-  //   const container = document.createElement('div');
-  //   const div = document.createElement('div');
-  //   div.classList.add('text-green');
-  //   container.append(div);
-  //   div.textContent = graphic.getAttribute('SITE_ADDRESS');
-  //   return container;
-  // },
-  content: [
-    {
-      type: 'text',
-      text: '<h1>{SITE_ADDRESS}</h1>'
-    },
-    new CustomContent({
-      outFields: ['*'],
-      creator: (e: any) => {
-        return new Locator({
-          url: 'https://maps.raleighnc.gov/arcgis/rest/services/Locators/CompositeLocator/GeocodeServer',
-          outSpatialReference: { wkid: 4326 }
-        })
-          .addressToLocations({
-            address: { singleLine: e.graphic.getAttribute('SITE_ADDRESS') },
-            outFields: ['*']
-          })
-          .then((candidates: __esri.AddressCandidate[]) => {
-            if (candidates.length) {
-              const candidate = candidates.find(candidate => {
-                return candidate.attributes['Loc_name'] === 'WakeStreets';
-              });
-              if (candidate) {
-                const dist = geodesicUtils.geodesicDistance(candidate.location, {
-                  x: (e.graphic.geometry as __esri.Polygon).centroid.longitude,
-                  y: (e.graphic.geometry as __esri.Polygon).centroid.latitude,
-                  spatialReference: { wkid: 4326 } as any
-                } as any);
-                console.log(dist.distance);
-                console.log(dist.azimuth);
-                const cbll =
-                  (e.graphic.geometry as __esri.Polygon).centroid.latitude +
-                  ',' +
-                  (e.graphic.geometry as __esri.Polygon).centroid.longitude;
-                //const cbll = candidates[0].location.y.toString() + ',' + candidates[0].location.x.toString();
-                console.log(
-                  'https://maps.google.com?layer=c&cbll=' + cbll + '&cbp=0,' + dist.azimuth?.toString() + ',0,0,0'
-                );
-                // window.open(
-                //   'https://maps.google.com?layer=c&cbll=' + cbll + '&cbp=0,' + dist.azimuth?.toString() + ',0,0,0'
-                // );
-                const div = document.createElement('div');
-                div.setAttribute('style', 'display: flex;flex-direction: row;');
-                const btn = document.createElement('calcite-button');
-                btn.setAttribute('scale', 's');
-                btn.setAttribute('target', '_blank');
-                btn.setAttribute('round', '');
-                btn.setAttribute('icon-start', 'person');
-                btn.setAttribute(
-                  'href',
-                  'https://maps.google.com?layer=c&cbll=' + cbll + '&cbp=0,' + dist.azimuth?.toString() + ',0,0,0'
-                );
-
-                btn.textContent = 'Street View';
-
-                div.append(btn);
-                const tax = document.createElement('calcite-button');
-                tax.setAttribute('scale', 's');
-                tax.setAttribute('target', '_blank');
-                tax.setAttribute(
-                  'href',
-                  'http://services.wakegov.com/realestate/Account.asp?id=' + e.graphic.getAttribute('REID')
-                );
-                tax.setAttribute('round', '');
-                tax.setAttribute('icon-start', 'locator');
-                tax.textContent = 'Tax Page';
-                div.append(tax);
-                return div;
-              }
-            }
-          });
-      }
-    }),
-    {
-      type: 'text',
-      text: '<h2>General</h1>'
-    },
-    {
-      type: 'fields',
-      fieldInfos: [
-        {
-          fieldName: 'expression/pin',
-          label: 'PIN'
-        },
-        {
-          fieldName: 'REID',
-          label: 'REID'
-        },
-        {
-          fieldName: 'expression/city',
-          label: 'City'
-        },
-        {
-          fieldName: 'expression/jurisdiction',
-          label: 'Jurisdiction'
-        },
-        {
-          fieldName: 'expression/township',
-          label: 'Township'
-        }
-      ]
-    },
-
-    // {
-    //   type: 'custom',
-    //   text: '<calcite-button scale="s" href="#" class="streetView" target="_blank">Street View</calcite-button>'
-    // },
-    {
-      type: 'text',
-      text: '<h2>Owner</h1>'
-    },
-    {
-      type: 'text',
-      text:
-        // '<h1 class="text-green">{SITE_ADDRESS}</h1>' +
-        // '<h2>General</h2>{expression/general}' +
-        '{OWNER}<br/>{expression/mailing-address}'
-    },
-    {
-      type: 'text',
-      text: '<h2>Valuation</h1>'
-    },
-    {
-      type: 'fields',
-      fieldInfos: [
-        {
-          fieldName: 'expression/build_val'
-        },
-        {
-          fieldName: 'expression/land_val'
-        },
-        {
-          fieldName: 'expression/total_val'
-        },
-        {
-          fieldName: 'BILLING_CLASS_DECODE',
-          label: 'Billing Class'
-        }
-      ]
-    },
-    {
-      type: 'text',
-      text: '<h2>Last Sale</h1>'
-    },
-    {
-      type: 'fields',
-      fieldInfos: [
-        {
-          fieldName: 'SALE_DATE',
-          format: {
-            dateFormat: 'short-date'
-          },
-          label: 'Date Sold'
-        },
-        {
-          fieldName: 'expression/sale_price'
-        }
-      ]
-    },
-    {
-      type: 'text',
-      text: '<h2>Deeds</h1>'
-    },
-    {
-      type: 'fields',
-      fieldInfos: [
-        {
-          fieldName: 'DEED_BOOK',
-          label: 'Book'
-        },
-        {
-          fieldName: 'DEED_PAGE',
-          label: 'Page'
-        },
-        {
-          fieldName: 'DEED_DATE',
-          format: {
-            dateFormat: 'short-date'
-          },
-          label: 'Deed Date'
-        },
-        {
-          fieldName: 'DEED_ACRES',
-          format: {
-            places: 2
-          },
-          label: 'Deed Acres'
-        },
-        {
-          fieldName: 'PROPDESC',
-          label: 'Legal Description'
-        }
-      ]
-    },
-
-    new CustomContent({
-      outFields: ['OBJECTID', 'REID'],
-      creator: deedCreator
-    }),
-    // {
-    //   type: 'text',
-    //   text:
-    // '<h1 class="text-green">{SITE_ADDRESS}</h1>' +
-    // '<h2>General</h2>{expression/general}' +
-    // '<h2>Owner</h2>{OWNER}<br/>{expression/mailing-address}' +
-    // '<h2>Valuation</h2>{expression/property-values}' +
-    // '<h2>Sale Information</h2>{TOTSALPRICE}<br/>{SALE_DATE}' +
-    // '<h2>Deeds</h2>{expression/deed-book-page}' +
-    // '<br/><strong>Deed Date</strong><br/>{DEED_DATE}<br/>' +
-    // '<br/>Legal Description<br/>{PROPDESC}<br/>' +
-    // '<a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/bom-doc-num}&RecordDate=" target="_blank">Book of Maps</a><br/><a href="http://services.wakegov.com/booksweb/pdfview.aspx?docid={expression/deed-doc-num}&RecordDate=" target="_blank">Deed</a>'
-    // },
-    {
-      type: 'text',
-      text: '<h2>Building</h1>'
-    },
-    {
-      type: 'fields',
-      fieldInfos: [
-        {
-          fieldName: 'HEATEDAREA',
-          format: {
-            digitSeparator: true
-          },
-          label: 'Heated Area'
-        },
-        {
-          fieldName: 'YEAR_BUILT',
-          format: {
-            digitSeparator: false
-          },
-          label: 'Year Built'
-        },
-        {
-          fieldName: 'DESIGN_STYLE_DECODE',
-          label: 'Design/Style'
-        },
-        {
-          fieldName: 'TOTSTRUCTS',
-          label: 'Total Structures'
-        },
-        {
-          fieldName: 'TOTUNITS',
-          label: 'Total Units'
-        }
-      ]
-    },
-    {
-      type: 'media',
-      mediaInfos: []
-    },
-    {
-      type: 'text',
-      text: '<h2>Services</h1>'
-    },
-    new CustomContent({
-      outFields: ['*'],
-      creator: (e: any) => {
-        const accordion = document.createElement('calcite-accordion');
-        accordion.setAttribute('selection-mode', 'single');
-
-        services.forEach(service => {
-          const item = document.createElement('calcite-accordion-item');
-          item.setAttribute('item-title', service.group.title);
-          accordion.append(item);
-        });
-        //const f = serviceChanged.bind(e.Graphic);
-        // setTimeout(f, 1000);
-        const graphic = e.graphic;
-        accordion.addEventListener('calciteAccordionChange', (e: any) => {
-          serviceChanged(graphic, e);
-        });
-        return accordion;
-      }
-    })
-  ]
-});
 
 export const featureLayer = new FeatureLayer({
   portalItem: {
@@ -517,8 +230,7 @@ export const condosTable = new FeatureLayer({
     id: 'd3d02d5e35324b769469b99121c0e996'
   },
   layerId: 1,
-  spatialReference: { wkid: 102100 },
-  popupTemplate: popupTemplate
+  spatialReference: { wkid: 102100 }
 });
 condosTable.load();
 export const addressTable = new FeatureLayer({
@@ -528,6 +240,271 @@ export const addressTable = new FeatureLayer({
   layerId: 4,
   spatialReference: { wkid: 102100 }
 });
-export const mapView = null;
 addressTable.load();
+
+export const createTemplate = (view: __esri.MapView | __esri.SceneView) => {
+  const popupTemplate = new PopupTemplate({
+    expressionInfos: arcadeExpressionInfos,
+    content: [
+      {
+        type: 'text',
+        text: '<h1>{SITE_ADDRESS}</h1>'
+      },
+      new CustomContent({
+        outFields: ['*'],
+        creator: (e: any) => {
+          return new Locator({
+            url: 'https://maps.raleighnc.gov/arcgis/rest/services/Locators/CompositeLocator/GeocodeServer',
+            outSpatialReference: { wkid: 4326 }
+          })
+            .addressToLocations({
+              address: { singleLine: e.graphic.getAttribute('SITE_ADDRESS') },
+              outFields: ['*']
+            })
+            .then((candidates: __esri.AddressCandidate[]) => {
+              if (candidates.length) {
+                const candidate = candidates.find(candidate => {
+                  return candidate.attributes['Loc_name'] === 'WakeStreets';
+                });
+                if (candidate) {
+                  const dist = geodesicUtils.geodesicDistance(candidate.location, {
+                    x: (e.graphic.geometry as __esri.Polygon).centroid.longitude,
+                    y: (e.graphic.geometry as __esri.Polygon).centroid.latitude,
+                    spatialReference: { wkid: 4326 } as any
+                  } as any);
+                  console.log(dist.distance);
+                  console.log(dist.azimuth);
+                  const cbll =
+                    (e.graphic.geometry as __esri.Polygon).centroid.latitude +
+                    ',' +
+                    (e.graphic.geometry as __esri.Polygon).centroid.longitude;
+                  console.log(
+                    'https://maps.google.com?layer=c&cbll=' + cbll + '&cbp=0,' + dist.azimuth?.toString() + ',0,0,0'
+                  );
+                  const div = document.createElement('div');
+                  div.setAttribute('style', 'display: flex;flex-direction: row;');
+                  const btn = document.createElement('calcite-button');
+                  btn.setAttribute('scale', 's');
+                  btn.setAttribute('target', '_blank');
+                  btn.setAttribute('round', '');
+                  btn.setAttribute('icon-start', 'person');
+                  btn.setAttribute(
+                    'href',
+                    'https://maps.google.com?layer=c&cbll=' + cbll + '&cbp=0,' + dist.azimuth?.toString() + ',0,0,0'
+                  );
+
+                  btn.textContent = 'Street View';
+
+                  div.append(btn);
+                  const tax = document.createElement('calcite-button');
+                  tax.setAttribute('scale', 's');
+                  tax.setAttribute('target', '_blank');
+                  tax.setAttribute(
+                    'href',
+                    'http://services.wakegov.com/realestate/Account.asp?id=' + e.graphic.getAttribute('REID')
+                  );
+                  tax.setAttribute('round', '');
+                  tax.setAttribute('icon-start', 'locator');
+                  tax.textContent = 'Tax Page';
+                  div.append(tax);
+                  return div;
+                }
+              }
+            });
+        }
+      }),
+      {
+        type: 'text',
+        text: '<h2>General</h1>'
+      },
+      {
+        type: 'fields',
+        fieldInfos: [
+          {
+            fieldName: 'expression/pin',
+            label: 'PIN'
+          },
+          {
+            fieldName: 'REID',
+            label: 'REID'
+          },
+          {
+            fieldName: 'expression/city',
+            label: 'City'
+          },
+          {
+            fieldName: 'expression/jurisdiction',
+            label: 'Jurisdiction'
+          },
+          {
+            fieldName: 'expression/township',
+            label: 'Township'
+          }
+        ]
+      },
+
+      // {
+      //   type: 'custom',
+      //   text: '<calcite-button scale="s" href="#" class="streetView" target="_blank">Street View</calcite-button>'
+      // },
+      {
+        type: 'text',
+        text: '<h2>Owner</h1>'
+      },
+      {
+        type: 'text',
+        text:
+          // '<h1 class="text-green">{SITE_ADDRESS}</h1>' +
+          // '<h2>General</h2>{expression/general}' +
+          '{OWNER}<br/>{expression/mailing-address}'
+      },
+      {
+        type: 'text',
+        text: '<h2>Valuation</h1>'
+      },
+      {
+        type: 'fields',
+        fieldInfos: [
+          {
+            fieldName: 'expression/build_val'
+          },
+          {
+            fieldName: 'expression/land_val'
+          },
+          {
+            fieldName: 'expression/total_val'
+          },
+          {
+            fieldName: 'BILLING_CLASS_DECODE',
+            label: 'Billing Class'
+          }
+        ]
+      },
+      {
+        type: 'text',
+        text: '<h2>Last Sale</h1>'
+      },
+      {
+        type: 'fields',
+        fieldInfos: [
+          {
+            fieldName: 'SALE_DATE',
+            format: {
+              dateFormat: 'short-date'
+            },
+            label: 'Date Sold'
+          },
+          {
+            fieldName: 'expression/sale_price'
+          }
+        ]
+      },
+      {
+        type: 'text',
+        text: '<h2>Deeds</h1>'
+      },
+      {
+        type: 'fields',
+        fieldInfos: [
+          {
+            fieldName: 'DEED_BOOK',
+            label: 'Book'
+          },
+          {
+            fieldName: 'DEED_PAGE',
+            label: 'Page'
+          },
+          {
+            fieldName: 'DEED_DATE',
+            format: {
+              dateFormat: 'short-date'
+            },
+            label: 'Deed Date'
+          },
+          {
+            fieldName: 'DEED_ACRES',
+            format: {
+              places: 2
+            },
+            label: 'Deed Acres'
+          },
+          {
+            fieldName: 'PROPDESC',
+            label: 'Legal Description'
+          }
+        ]
+      },
+
+      new CustomContent({
+        outFields: ['OBJECTID', 'REID'],
+        creator: deedCreator
+      }),
+      {
+        type: 'text',
+        text: '<h2>Building</h1>'
+      },
+      {
+        type: 'fields',
+        fieldInfos: [
+          {
+            fieldName: 'HEATEDAREA',
+            format: {
+              digitSeparator: true
+            },
+            label: 'Heated Area'
+          },
+          {
+            fieldName: 'YEAR_BUILT',
+            format: {
+              digitSeparator: false
+            },
+            label: 'Year Built'
+          },
+          {
+            fieldName: 'DESIGN_STYLE_DECODE',
+            label: 'Design/Style'
+          },
+          {
+            fieldName: 'TOTSTRUCTS',
+            label: 'Total Structures'
+          },
+          {
+            fieldName: 'TOTUNITS',
+            label: 'Total Units'
+          }
+        ]
+      },
+      {
+        type: 'media',
+        mediaInfos: []
+      },
+      {
+        type: 'text',
+        text: '<h2>Services</h1>'
+      },
+      new CustomContent({
+        outFields: ['*'],
+        creator: (e: any) => {
+          const accordion = document.createElement('calcite-accordion');
+          accordion.setAttribute('selection-mode', 'single');
+
+          services.forEach(service => {
+            const item = document.createElement('calcite-accordion-item');
+            item.setAttribute('item-title', service.group.title);
+            accordion.append(item);
+          });
+          //const f = serviceChanged.bind(e.Graphic);
+          // setTimeout(f, 1000);
+          const graphic = e.graphic;
+          accordion.addEventListener('calciteAccordionChange', (e: any) => {
+            serviceChanged(graphic, view, e);
+          });
+          return accordion;
+        }
+      })
+    ]
+  });
+  condosTable.popupTemplate = popupTemplate;
+};
+
 export * from './app';
