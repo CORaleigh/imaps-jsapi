@@ -78,7 +78,7 @@ export default class ActionBarViewModel extends declared(Accessor) {
             if (window.innerWidth < 500) {
               panel.setAttribute('style', 'min-width: calc(100% - 48px)');
             } else {
-              panel.setAttribute('style', 'min-width: 350px');
+              panel.setAttribute('style', 'min-width: 0px');
             }
             panel.classList.remove('hidden');
             if (panel.title != 'Measure') {
@@ -102,7 +102,7 @@ export default class ActionBarViewModel extends declared(Accessor) {
             if (window.innerWidth < 500) {
               panel.setAttribute('style', 'min-width: calc(100% - 48px)');
             } else {
-              panel.setAttribute('style', 'min-width: 350px');
+              panel.setAttribute('style', 'min-width: 0px');
             }
             panel.classList.remove('hidden');
             if (panel.title != 'Measure') {

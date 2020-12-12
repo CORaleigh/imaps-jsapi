@@ -19,7 +19,7 @@ export const initPanelHeaders = () => {
     } else {
       document.querySelectorAll('calcite-panel').forEach(item => {
         if (item.getAttribute('dismissed')) {
-          item.setAttribute('style', 'min-width: 0px');
+          item.setAttribute('style', 'width: 0px');
         } else {
           item.setAttribute('style', 'min-width: calc(100% - 48px)');
         }
@@ -30,7 +30,7 @@ export const initPanelHeaders = () => {
   document.querySelectorAll('calcite-panel').forEach(item => {
     item.addEventListener('calcitePanelDismissedChange', () => {
       document.querySelectorAll('calcite-panel').forEach(() => {
-        item.setAttribute('style', 'min-width: 0px');
+        item.setAttribute('style', 'width: 0px');
       });
     });
   });

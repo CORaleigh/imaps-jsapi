@@ -47,7 +47,7 @@ article:focus {
   
 } 
 .panel {
-  min-width: 350px;
+  min-width: 0px;
   max-width: 350px;
   height: 100%;
 }
@@ -239,6 +239,11 @@ calcite-loader {
     height: 50px;
     z-index: 10000;
     padding: 0;
+}
+
+#sideDiv calcite-radio-group {
+  position: absolute;
+  bottom: 0;
 }
 
 #feature .esri-feature-fields__field-header {

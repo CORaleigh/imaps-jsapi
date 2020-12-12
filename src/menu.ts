@@ -34,7 +34,7 @@ const setTheme = (theme: string) => {
 
   document.querySelectorAll('link').forEach(link => {
     if (link.href.includes(theme === 'light' ? 'dark' : 'light')) {
-      link.href = 'https://js.arcgis.com/4.16/esri/themes/' + theme + '/main.css';
+      link.href = 'https://js.arcgis.com/4.17/esri/themes/' + theme + '/main.css';
     }
   });
 };
