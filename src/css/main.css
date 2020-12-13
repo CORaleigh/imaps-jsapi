@@ -135,9 +135,7 @@ article:focus {
   height: calc(100% - 80px);
 }
 
-.esri-feature-media__item img {
-  max-width: 100%;
-}
+
 
 
 .hidden {
@@ -267,8 +265,8 @@ calcite-loader {
   padding: 4px;
 }
 
-#feature .esri-feature-content img {
-  max-height: 230px;
+#feature .esri-feature-media__item img {
+  max-width: 100%;
 }
 
 #overviewDiv {
