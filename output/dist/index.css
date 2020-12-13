@@ -5,6 +5,8 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  touch-action: none;
+
 }
 
 body {
@@ -19,6 +21,11 @@ body {
 
 .heading {
   padding-left: 0.75rem;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently*/  
 }
 
 .app-container {
@@ -44,10 +51,14 @@ article:focus {
   margin: 0;
   height: 100%;
   width: calc(100% - 48px);
-  
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently*/
 } 
 .panel {
-  min-width: 350px;
+  min-width: 0px;
   max-width: 350px;
   height: 100%;
 }
@@ -129,6 +140,7 @@ article:focus {
   overflow: auto;
   height: calc(100% - 80px);
 }
+
 
 
 
@@ -241,6 +253,11 @@ calcite-loader {
     padding: 0;
 }
 
+#sideDiv calcite-radio-group {
+  position: absolute;
+  bottom: 0;
+}
+
 #feature .esri-feature-fields__field-header {
   font-weight: bolder;
 }
@@ -252,8 +269,8 @@ calcite-loader {
   padding: 4px;
 }
 
-#feature .esri-feature-content img {
-  max-height: 230px;
+#feature .esri-feature-media__item img {
+  max-width: 100%;
 }
 
 #overviewDiv {
