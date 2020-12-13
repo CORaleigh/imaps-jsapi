@@ -80,7 +80,7 @@ article:focus {
     display: none;
   }
   .panel {
-   min-width: calc(100% - 48px);
+   max-width: calc(100% - 48px);
    z-index: 10;
    position: absolute;
    left: 0;
