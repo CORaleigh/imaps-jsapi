@@ -12,7 +12,7 @@ export const initPanelHeaders = () => {
           if (item.querySelector('.maximize')?.getAttribute('icon') === 'minimize') {
             item.setAttribute('style', 'min-width: calc(100% - 48px)');
           } else {
-            item.setAttribute('style', 'min-width: 350px');
+            item.setAttribute('style', 'min-width: 0px');
           }
         }
       });
