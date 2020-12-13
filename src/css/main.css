@@ -135,7 +135,7 @@ article:focus {
   height: calc(100% - 80px);
 }
 
-#featureDiv .esri-feature-media__item img {
+.esri-feature-media__item img {
   max-width: 100%;
 }
 
