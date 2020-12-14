@@ -82,7 +82,7 @@ export default class LayerSelect extends declared(Widget) {
     //       return i > 1;
     //     });
     //     let groupLayer: GroupLayer;
-    //     
+    //    
     //     groups.forEach(group => {
     //       let gLayer = this.view.map.allLayers.find(layer => {
     //         return layer.title === group && layer.type === 'group';

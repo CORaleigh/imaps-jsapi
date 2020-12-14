@@ -5,6 +5,8 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  touch-action: none;
+
 }
 
 body {
@@ -19,6 +21,11 @@ body {
 
 .heading {
   padding-left: 0.75rem;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently*/  
 }
 
 .app-container {
@@ -44,7 +51,11 @@ article:focus {
   margin: 0;
   height: 100%;
   width: calc(100% - 48px);
-  
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently*/
 } 
 .panel {
   min-width: 0px;
@@ -61,7 +72,7 @@ article:focus {
     display: none;
   }
   .panel {
-   min-width: calc(100% - 48px);
+   max-width: calc(100% - 48px);
    z-index: 10;
    position: absolute;
    left: 0;
@@ -132,6 +143,7 @@ article:focus {
 
 
 
+
 .hidden {
   display: none;
   
@@ -158,7 +170,7 @@ calcite-action-bar {
   min-width: 48px;
 }
 
-:host calcite-panel :slotted[slot=content-trailing-header] {
+:host calcite-panel :slotted[slot=header-actions-end] {
   display: flex;
   flex-direction: row;
 }
@@ -257,8 +269,8 @@ calcite-loader {
   padding: 4px;
 }
 
-#feature .esri-feature-content img {
-  max-height: 230px;
+#feature .esri-feature-media__item img {
+  max-width: 100%;
 }
 
 #overviewDiv {

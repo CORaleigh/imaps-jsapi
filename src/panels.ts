@@ -1,7 +1,7 @@
 export const initPanelHeaders = () => {
   //override CSS for calcite panel header
   document.querySelectorAll('calcite-panel div').forEach(panel => {
-    if (panel.slot === 'header-trailing-content') {
+    if (panel.slot === 'header-actions-end') {
       panel.setAttribute('style', 'display: flex; flex-direction: row;');
     }
   });
@@ -39,16 +39,16 @@ export const initPanelHeaders = () => {
     item.addEventListener('click', () => {
       item.parentElement?.parentElement?.removeAttribute('dismissed');
       item.parentElement?.parentElement?.classList.remove('hidden');
-      if (item.getAttribute('icon') === 'maximize') {
-        item.setAttribute('icon', 'minimize');
+      if (item.getAttribute('icon') === 'left-edge') {
+        item.setAttribute('icon', 'right-edge');
         item.parentElement?.parentElement?.classList.add('maximized'); //.setAttribute('style', 'min-width: calc(100% - 96px)');
         document.querySelectorAll('calcite-panel.left:not(.hidden)').forEach(item => {
           item.classList.add('hidden');
           item.setAttribute('dismissed', '');
         });
         document.querySelector('calcite-action[side="left"][active]')?.removeAttribute('active');
-      } else if (item.getAttribute('icon') === 'minimize') {
-        item.setAttribute('icon', 'maximize');
+      } else if (item.getAttribute('icon') === 'right-edge') {
+        item.setAttribute('icon', 'left-edge');
         item.parentElement?.parentElement?.classList.remove('maximized');
         //item.parentElement?.parentElement?.setAttribute('style', 'min-width:350px');
       }
