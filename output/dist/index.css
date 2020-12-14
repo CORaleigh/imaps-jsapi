@@ -170,7 +170,7 @@ calcite-action-bar {
   min-width: 48px;
 }
 
-:host calcite-panel :slotted[slot=content-trailing-header] {
+:host calcite-panel :slotted[slot=header-actions-end] {
   display: flex;
   flex-direction: row;
 }
