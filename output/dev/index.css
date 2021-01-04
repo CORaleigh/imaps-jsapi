@@ -325,6 +325,21 @@ calcite-action {
   position: relative;
 overflow: auto;
 }
+/* 
+
+.panel[theme="dark"] .esri-feature-table .esri-grid__grid {
+  background-color: #353535;
+  color: #fff;
+}
+
+.panel[theme="dark"] [role="gridcell"]{
+  background-color: #353535;
+  color: #fff;
+}
+
+.panel[theme="dark"] [part="checkbox"] {
+background-color: #fff;
+} */
 
 
 @-webkit-keyframes arrowmove {0% {bottom: 34px; opacity: 1;} 33% {bottom: 24px; opacity: 1;} 67% {bottom: 24px; opacity: 1;} 100% {bottom: 24px; opacity: 0;}}

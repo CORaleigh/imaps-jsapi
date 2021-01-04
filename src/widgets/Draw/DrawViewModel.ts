@@ -31,7 +31,15 @@ export default class DrawViewModel extends Accessor {
     this.graphics = new GraphicsLayer({ listMode: 'hide' });
     this.view.map.add(this.graphics);
 
-    this.sketch = new Sketch({ view: this.view, container: 'sketchDiv', layer: this.graphics, creationMode: 'single' });
+    this.sketch = new Sketch({
+      view: this.view,
+      container: 'sketchDiv',
+      layer: this.graphics,
+      creationMode: 'single',
+      defaultCreateOptions: {
+        mode: 'hybrid'
+      }
+    });
     this.sketch.viewModel.pointSymbol.color = Color.fromHex('#FF0000');
     (this.sketch.viewModel.pointSymbol as any).outline.color = Color.fromHex('#FF0000');
     this.sketch.viewModel.polygonSymbol.color = new Color([[255, 0, 0, 0.5]]);

@@ -567,6 +567,17 @@ export default class PropertySearchViewModel extends Accessor {
         ]
       }
     });
+    this.featureTable.watch('viewModel.state', (state: string) => {
+      if (state === 'ready') {
+        const style: HTMLStyleElement = document.createElement('style');
+        style.append(
+          document.createTextNode(
+            'td, th, table { background-color: #353535 !important;color: #fff;} td[role="gridcell"],th[role="columnheader"]{border-color: white !important;}'
+          )
+        );
+        document?.querySelector('.esri-feature-table .esri-grid__grid')?.shadowRoot?.append(style);
+      }
+    });
     const button: MenuButtonItem = this.featureTable?.menuConfig?.items?.find(item => {
       return item.label === 'Export';
     }) as MenuButtonItem;

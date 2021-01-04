@@ -33,7 +33,10 @@ export default class SelectViewModel extends Accessor {
       view: this.view,
       container: 'selectWidget',
       layer: this.graphics,
-      creationMode: 'single'
+      creationMode: 'single',
+      defaultCreateOptions: {
+        mode: 'hybrid'
+      }
     });
     this.sketch.viewModel.updateOnGraphicClick = false;
     this.sketch.on('create', ev => {
