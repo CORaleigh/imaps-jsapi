@@ -1,7 +1,6 @@
 import esri = __esri;
 
 import Accessor from 'esri/core/Accessor';
-
 import { property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
