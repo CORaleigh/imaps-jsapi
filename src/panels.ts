@@ -76,7 +76,7 @@ export const initPanels = () => {
               if (action.text === (mutation.target as any).title) {
                 if ((mutation.target as any).hasAttribute('dismissed')) {
                   mutation.target.classList.remove('maximized');
-                  mutation.target.querySelector('.maximize').setAttribute('icon', 'left-edge');
+                  mutation.target.querySelector('.maximize')?.setAttribute('icon', 'left-edge');
                   action.removeAttribute('active');
                 } else {
                   action.setAttribute('active', '');
