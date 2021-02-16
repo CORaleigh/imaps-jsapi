@@ -162,9 +162,9 @@ calcite-radio-group {
   bottom: 0;
 }
 
-#actionBar, #leftActionbar {
+/* #actionBar, #leftActionbar {
   min-width: 48px;
-}
+} */
 calcite-action-bar {
   height: 100%;
   min-width: 48px;
