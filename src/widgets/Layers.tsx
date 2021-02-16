@@ -82,18 +82,16 @@ export default class Layers extends Widget {
     });
   };
   _reset = () => {
-    console.log(
-      new WebMap({ portalItem: (this.view.map as esri.WebMap).portalItem.clone() }).load().then((map: WebMap) => {
-        map.allLayers.forEach(layer => {
-          this.view.map.findLayerById(layer.id).visible = layer.visible;
-          if (layer.type === 'group') {
-            (layer as esri.GroupLayer).layers.forEach(layer => {
-              this.view.map.findLayerById(layer.id).visible = layer.visible;
-            });
-          }
-        });
-      })
-    );
+    new WebMap({ portalItem: (this.view.map as esri.WebMap).portalItem.clone() }).load().then((map: WebMap) => {
+      map.allLayers.forEach(layer => {
+        this.view.map.findLayerById(layer.id).visible = layer.visible;
+        if (layer.type === 'group') {
+          (layer as esri.GroupLayer).layers.forEach(layer => {
+            this.view.map.findLayerById(layer.id).visible = layer.visible;
+          });
+        }
+      });
+    });
   };
   render() {
     return (

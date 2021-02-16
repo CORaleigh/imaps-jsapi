@@ -47,7 +47,6 @@ export default class BaseMapsViewModel extends Accessor {
       this.changePropertyLines(basemap);
       if (document.querySelector('#images')?.classList.contains('hidden')) {
         this.activeBasemap.baseLayers.forEach(layer => {
-          console.log('remove');
           this.view.map.remove(this.view.map.findLayerById(layer.id));
         });
         this.activeBasemap = this.view.map.basemap;
@@ -60,7 +59,6 @@ export default class BaseMapsViewModel extends Accessor {
         this.view.map.addMany(this.activeBasemap.baseLayers.toArray());
       } else {
         this.activeBasemap.baseLayers.forEach(layer => {
-          console.log('remove');
           this.view.map.remove(this.view.map.findLayerById(layer.id));
         });
       }
@@ -76,7 +74,6 @@ export default class BaseMapsViewModel extends Accessor {
     });
     window.addEventListener('pagehide', () => {
       this.activeBasemap.baseLayers.forEach(layer => {
-        console.log('remove');
         this.view.map.remove(this.view.map.findLayerById(layer.id));
       });
       const json = (view.map as any).toJSON();

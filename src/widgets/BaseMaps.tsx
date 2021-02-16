@@ -48,7 +48,6 @@ export default class BaseMaps extends Widget {
   handleSwitchChange = (e: any) => {
     if (e.target.getAttribute('switched') != '') {
       document.querySelector('#blendSlider')?.classList.remove('hidden');
-      console.log('add');
       this.view.map.addMany(this.viewModel.activeBasemap.baseLayers.toArray(), 0);
       this.view.map.basemap.referenceLayers.forEach(layer => {
         layer.visible = false;
@@ -67,7 +66,6 @@ export default class BaseMaps extends Widget {
         layer.visible = true;
       });
       this.viewModel.activeBasemap.baseLayers.forEach(layer => {
-        console.log('remove');
         this.view.map.remove(this.view.map.findLayerById(layer.id));
       });
     }

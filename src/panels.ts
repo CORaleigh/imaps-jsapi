@@ -41,7 +41,8 @@ export const initPanelHeaders = () => {
       item.parentElement?.parentElement?.classList.remove('hidden');
       if (item.getAttribute('icon') === 'left-edge') {
         item.setAttribute('icon', 'right-edge');
-        item.parentElement?.parentElement?.classList.add('maximized'); //.setAttribute('style', 'min-width: calc(100% - 96px)');
+        item.parentElement?.parentElement?.classList.add('maximized');
+        item.parentElement?.parentElement?.setAttribute('style', 'min-width: calc(100% - 96px)');
         document.querySelectorAll('calcite-panel.left:not(.hidden)').forEach(item => {
           item.classList.add('hidden');
           item.setAttribute('dismissed', '');
@@ -50,7 +51,7 @@ export const initPanelHeaders = () => {
       } else if (item.getAttribute('icon') === 'right-edge') {
         item.setAttribute('icon', 'left-edge');
         item.parentElement?.parentElement?.classList.remove('maximized');
-        //item.parentElement?.parentElement?.setAttribute('style', 'min-width:350px');
+        item.parentElement?.parentElement?.setAttribute('style', 'min-width:350px');
       }
     });
   });
@@ -71,10 +72,11 @@ export const initPanels = () => {
         if (mutation.type === 'attributes') {
           if (mutation.attributeName === 'dismissed') {
             const actions: any = document.querySelectorAll('calcite-action-bar calcite-action');
-
             actions.forEach((action: any) => {
               if (action.text === (mutation.target as any).title) {
                 if ((mutation.target as any).hasAttribute('dismissed')) {
+                  mutation.target.classList.remove('maximized');
+                  mutation.target.querySelector('.maximize').setAttribute('icon', 'left-edge');
                   action.removeAttribute('active');
                 } else {
                   action.setAttribute('active', '');
@@ -84,10 +86,8 @@ export const initPanels = () => {
             if (window.innerWidth <= 500) {
               setTimeout(() => {
                 if ((mutation.target as any).hasAttribute('dismissed')) {
-                  console.log((mutation.target as any).title, 'dismissed');
                   document.querySelector('#viewDiv')?.classList.remove('below');
                 } else {
-                  console.log((mutation.target as any).title, 'not dismissed');
                   document.querySelector('#viewDiv')?.classList.add('below');
                 }
               });

@@ -86,6 +86,12 @@ const arcadeExpressionInfos = [
       '"REID"+TextFormatting.NewLine+$feature.REID+TextFormatting.NewLine+"City"+TextFormatting.NewLine+' +
       'Proper($feature.CITY_DECODE)+TextFormatting.NewLine+"Jurisdiction"+TextFormatting.NewLine+' +
       '$feature.PLANNING_JURISDICTION+TextFormatting.NewLine+"Township"+TextFormatting.NewLine+Proper($feature.TOWNSHIP_DECODE)'
+  },
+  {
+    name: 'addresses',
+    title: 'Addresses',
+    expression:
+      "var rel = FeatureSetByRelationshipName($feature, 'PROPERTY', ['*'], true);var test = Array(Count(rel));var cnt = 0;var f = First(rel);var fs = FeatureSetByPortalItem(Portal('https://ral.maps.arcgis.com/'), '318be24592ea4dcba042511b3125fd53', 2, ['ADDRESS','FEATURETYPE']);var containfs = Contains(f, fs);var addresses = Array(Count(containfs));var cnt = 0;for (var i in containfs){        addresses[cnt] = {'ADDRESS': i['ADDRESS'], 'FEATURETYPE': i['FEATURETYPE']};    cnt+=1;}function sortAddresses(a,b) {    return  a['ADDRESS'] > b['ADDRESS'];}var sorted =  Sort(addresses, sortAddresses);var list = '';for (var i in sorted) {    list += sorted[i]['ADDRESS'] + ' (' + sorted[i]['FEATURETYPE'] + ')' + TextFormatting.NewLine;}return list;"
   }
 ] as ExpressionInfo[];
 const services: any[] = [
@@ -272,15 +278,10 @@ export const createTemplate = (view: __esri.MapView | __esri.SceneView) => {
                     y: (e.graphic.geometry as __esri.Polygon).centroid.latitude,
                     spatialReference: { wkid: 4326 } as any
                   } as any);
-                  console.log(dist.distance);
-                  console.log(dist.azimuth);
                   const cbll =
                     (e.graphic.geometry as __esri.Polygon).centroid.latitude +
                     ',' +
                     (e.graphic.geometry as __esri.Polygon).centroid.longitude;
-                  console.log(
-                    'https://maps.google.com?layer=c&cbll=' + cbll + '&cbp=0,' + dist.azimuth?.toString() + ',0,0,0'
-                  );
                   const div = document.createElement('div');
                   div.setAttribute('style', 'display: flex;flex-direction: row;');
                   const btn = document.createElement('calcite-button');
@@ -501,7 +502,15 @@ export const createTemplate = (view: __esri.MapView | __esri.SceneView) => {
           });
           return accordion;
         }
-      })
+      }),
+      {
+        type: 'text',
+        text: '<h2>Addresses</h1>'
+      },
+      {
+        type: 'text',
+        text: '{expression/addresses}'
+      }
     ]
   });
   condosTable.popupTemplate = popupTemplate;

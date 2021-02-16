@@ -5,12 +5,12 @@ import Portal from 'esri/portal/Portal';
 import PortalGroup from 'esri/portal/PortalGroup';
 import PortalItem from 'esri/portal/PortalItem';
 
-import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
 
 @subclass('app.widgets.LayerSelect.LayerSelectViewModel')
-export default class LayerSelectViewModel extends declared(Accessor) {
+export default class LayerSelectViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
   groups: any[] = [];
   portal: Portal;
@@ -33,7 +33,6 @@ export default class LayerSelectViewModel extends declared(Accessor) {
             accitem.setAttribute('item-title', portalGroup.title);
 
             (result as PortalGroup).queryItems({ sortField: 'title', sortOrder: 'asc' }).then(result => {
-              console.log(result.results);
               //group.items = result.results as any;
               result.results.forEach((item: PortalItem) => {
                 if (item?.groupCategories?.length) {

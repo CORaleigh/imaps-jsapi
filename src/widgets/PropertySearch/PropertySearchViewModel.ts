@@ -256,7 +256,6 @@ export default class PropertySearchViewModel extends Accessor {
           oids.push(r.feature.getObjectId());
         });
         if (layer.layerId === 4) {
-          debugger;
           const relationship = layer.relationships.find(r => {
             return r.name === 'CONDOS';
           });
@@ -326,7 +325,7 @@ export default class PropertySearchViewModel extends Accessor {
               type: 'image',
               caption: '',
               value: {
-                sourceURL: `http://services.wakegov.com/realestate/photos/mvideo/${feature.getAttribute('PHOTO')}`
+                sourceURL: `https://services.wakegov.com/realestate/photos/mvideo/${feature.getAttribute('PHOTO')}`
               }
             });
           });
@@ -340,7 +339,6 @@ export default class PropertySearchViewModel extends Accessor {
         feature.layer = this.condosTable;
         feature.popupTemplate = (feature.layer as esri.FeatureLayer).popupTemplate;
         this.feature.graphic = feature;
-        console.log(this.feature.graphic.attributes);
         document.querySelector('#featureDiv')?.scrollTo({ top: 0, behavior: 'smooth' });
         this.feature.graphic.symbol = this.singleSymbol as any;
         this.feature.graphic.setAttribute('OBJECTID', oid);
@@ -769,9 +767,7 @@ export default class PropertySearchViewModel extends Accessor {
         } as any)
       ]
     });
-    this.searchWidget.viewModel.watch('results', event => {
-      console.log(event);
-    });
+
     this.searchWidget.on('search-complete', this.searchComplete);
   }
 

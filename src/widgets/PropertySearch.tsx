@@ -71,7 +71,6 @@ export default class PropertySearch extends Widget {
       item?.addEventListener('calciteRadioGroupItemChange', (e: any) => {
         // can I get checked and value like this?
         if (e.target?.checked) {
-          console.log(e.target?.value);
           this.viewModel.toggleContent(e.target?.value);
         }
       });
@@ -87,7 +86,7 @@ export default class PropertySearch extends Widget {
     }
 
     featDiv?.addEventListener('scroll', () => {
-      if (featDiv.scrollTop >= featDiv.scrollHeight - featDiv.offsetHeight) {
+      if (featDiv.scrollTop >= featDiv.scrollHeight - featDiv.offsetHeight - 1) {
         document.querySelector('#scrollArrow')?.classList.add('hidden');
       } else {
         document.querySelector('#scrollArrow')?.classList.remove('hidden');

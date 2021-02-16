@@ -2,13 +2,13 @@ import esri = __esri;
 
 import Accessor from 'esri/core/Accessor';
 
-import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
 import { initWidget } from '../../widgets';
 
 @subclass('app.widgets.ActionBar.ActionBarViewModel')
-export default class ActionBarViewModel extends declared(Accessor) {
+export default class ActionBarViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
   @property() side: string;
   @property() ready = false;
@@ -94,10 +94,7 @@ export default class ActionBarViewModel extends declared(Accessor) {
         if (panel.title != (action as any).text) {
           panel.classList.add('hidden');
         } else {
-          console.log(panel);
           panel.removeAttribute('dismissed');
-          console.log(panel);
-          console.log(panel.title);
           if (!panel.hasAttribute('dismissed')) {
             if (window.innerWidth < 500) {
               panel.setAttribute('style', 'min-width: calc(100% - 48px)');

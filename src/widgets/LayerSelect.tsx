@@ -1,5 +1,5 @@
 import esri = __esri;
-import { aliasOf, declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { aliasOf, property, subclass } from 'esri/core/accessorSupport/decorators';
 import { layers } from '../widgets';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { renderable, tsx } from 'esri/widgets/support/widget';
@@ -20,7 +20,7 @@ const CSS = {
 };
 
 @subclass('app.widgets.LayerSelect')
-export default class LayerSelect extends declared(Widget) {
+export default class LayerSelect extends Widget {
   @aliasOf('viewModel.view')
   view: esri.MapView | esri.SceneView;
   @aliasOf('viewModel.groups')
@@ -114,7 +114,6 @@ export default class LayerSelect extends declared(Widget) {
 
   itemClicked = (e: any) => {
     setTimeout(() => {
-      //console.log(e);
       const item = e.target;
       if (item.hasAttribute('selected')) {
         //const item = event.detail.keys().next();

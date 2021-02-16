@@ -17,7 +17,6 @@ export default class LayersViewModel extends Accessor {
   }
 
   init(view: esri.MapView | esri.SceneView) {
-    console.log(view.scale);
     this.layerList = new LayerList({
       view,
       container: 'layerDiv',

@@ -4,13 +4,13 @@ import Map from 'esri/Map';
 import Graphic from 'esri/Graphic';
 import Accessor from 'esri/core/Accessor';
 
-import { declared, property, subclass } from 'esri/core/accessorSupport/decorators';
+import { property, subclass } from 'esri/core/accessorSupport/decorators';
 
 import { whenDefinedOnce } from 'esri/core/watchUtils';
 import watchUtils from 'esri/core/watchUtils';
 
 @subclass('app.widgets.OverviewMap.OverviewMapViewModel')
-export default class OverviewMapViewModel extends declared(Accessor) {
+export default class OverviewMapViewModel extends Accessor {
   @property() view: esri.MapView | esri.SceneView;
 
   overviewMapView: esri.MapView;
